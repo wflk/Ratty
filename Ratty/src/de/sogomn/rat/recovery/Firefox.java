@@ -172,8 +172,7 @@ public final class Firefox {
 		}
 	}
 	
-	private static byte[] getKey(final byte[] data, final byte[] masterPassword) {
-		final byte[] globalSalt = getGlobalSalt(data);
+	private static byte[] getKey(final byte[] globalSalt, final byte[] entrySalt, final byte[] masterPassword) throws NoSuchAlgorithmException, InvalidKeyException {
 		final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
 		
 		sha1.update(globalSalt);
@@ -182,25 +181,27 @@ public final class Firefox {
 		final byte[] hashedPassword = sha1.digest();
 		
 		sha1.update(hashedPassword);
-		sha1.update(passwordCheckEntrySalt);
+		sha1.update(entrySalt);
 		
 		final byte[] combinedHashedPassword = sha1.digest();
 		final Mac mac = Mac.getInstance("HmacSHA1");
 		final SecretKeySpec macKey = new SecretKeySpec(combinedHashedPassword, "HmacSHA1");
-		final byte[] paddedEntrySalt = Arrays.copyOf(passwordCheckEntrySalt, ENTRY_SALT_LENGTH);
+		final byte[] paddedEntrySalt = Arrays.copyOf(entrySalt, ENTRY_SALT_LENGTH);
 		
 		mac.init(macKey);
 		mac.update(paddedEntrySalt);
-		mac.update(passwordCheckEntrySalt);
+		mac.update(entrySalt);
 		
 		final byte[] key1 = mac.doFinal();
 		final byte[] tempKey = mac.doFinal(paddedEntrySalt);
 		
 		mac.update(tempKey);
-		mac.update(passwordCheckEntrySalt);
+		mac.update(entrySalt);
 		
 		final byte[] key2 = mac.doFinal();
 		final byte[] key = concatenate(key1, key2);
+		
+		return key;
 	}
 	
 	/*
@@ -210,39 +211,13 @@ public final class Firefox {
 	public static void main(final String[] args) {
 		final byte[] data = FileUtils.readExternalData("C:/Users/Sogomn/AppData/Roaming/Mozilla/Firefox/Profiles/iluy5ufi.default/key3.db");
 		final byte[] globalSalt = getGlobalSalt(data);
-		//final byte[] privateKey = getPrivateKey(data);
+		final byte[] privateKey = getPrivateKey(data);
 		final byte[] passwordCheckEntrySalt = getPasswordCheckEntrySalt(data);
 		final byte[] passwordCheck = getPasswordCheck(data);
+		final byte[] masterPassword = "testpass".getBytes();
 		
 		try {
-			final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-			final byte[] masterPassword = "ajaliko6".getBytes();
-			
-			sha1.update(globalSalt);
-			sha1.update(masterPassword);
-			
-			final byte[] hashedPassword = sha1.digest();
-			
-			sha1.update(hashedPassword);
-			sha1.update(passwordCheckEntrySalt);
-			
-			final byte[] combinedHashedPassword = sha1.digest();
-			final Mac mac = Mac.getInstance("HmacSHA1");
-			final SecretKeySpec macKey = new SecretKeySpec(combinedHashedPassword, "HmacSHA1");
-			final byte[] paddedEntrySalt = Arrays.copyOf(passwordCheckEntrySalt, ENTRY_SALT_LENGTH);
-			
-			mac.init(macKey);
-			mac.update(paddedEntrySalt);
-			mac.update(passwordCheckEntrySalt);
-			
-			final byte[] key1 = mac.doFinal();
-			final byte[] tempKey = mac.doFinal(paddedEntrySalt);
-			
-			mac.update(tempKey);
-			mac.update(passwordCheckEntrySalt);
-			
-			final byte[] key2 = mac.doFinal();
-			final byte[] key = concatenate(key1, key2);
+			final byte[] key = getKey(globalSalt, passwordCheckEntrySalt, masterPassword);
 			final byte[] tripleDesKey = Arrays.copyOf(key, TRIPLE_DES_KEY_LENGTH);
 			final byte[] initializingVector = Arrays.copyOfRange(key, key.length - INITIALIZING_VECTOR_LENGTH, key.length);
 			
@@ -257,7 +232,7 @@ public final class Firefox {
 			final byte[] test = decryptTripleDesCbc(passwordCheck, tripleDesKey, initializingVector);
 			
 			System.out.println(new String(test));
-		} catch (final NoSuchAlgorithmException | InvalidKeyException ex) {
+		} catch (final InvalidKeyException | NoSuchAlgorithmException ex) {
 			ex.printStackTrace();
 		}
 	}

