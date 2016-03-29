@@ -5,7 +5,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import javax.crypto.Cipher;
 import javax.crypto.Mac;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import de.sogomn.engine.util.FileUtils;
@@ -21,6 +23,9 @@ public final class Firefox {
 	private static final int GLOBAL_SALT_LENGTH = 20;
 	private static final int PASSWORD_CHECK_LENGTH = 16;
 	private static final int PRIVATE_KEY_LENGTH = 143;
+	private static final int ENTRY_SALT_LENGTH = 20;
+	private static final int TRIPLE_DES_KEY_LENGTH = 24;
+	private static final int INITIALIZING_VECTOR_LENGTH = 8;
 	
 	private Firefox() {
 		//...
@@ -149,12 +154,61 @@ public final class Firefox {
 		return null;
 	}
 	
+	private static byte[] decryptTripleDesCbc(final byte[] data, final byte[] key, final byte[] initializingVector) {
+		try {
+			final SecretKeySpec secretKeySpec = new SecretKeySpec(key, "DESede");
+			final IvParameterSpec initializingVectorSpec = new IvParameterSpec(initializingVector);
+			final Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
+			
+			cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, initializingVectorSpec);
+			
+			final byte[] decrypted = cipher.doFinal(data);
+			
+			return decrypted;
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+			
+			return null;
+		}
+	}
+	
+	private static byte[] getKey(final byte[] data, final byte[] masterPassword) {
+		final byte[] globalSalt = getGlobalSalt(data);
+		final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+		
+		sha1.update(globalSalt);
+		sha1.update(masterPassword);
+		
+		final byte[] hashedPassword = sha1.digest();
+		
+		sha1.update(hashedPassword);
+		sha1.update(passwordCheckEntrySalt);
+		
+		final byte[] combinedHashedPassword = sha1.digest();
+		final Mac mac = Mac.getInstance("HmacSHA1");
+		final SecretKeySpec macKey = new SecretKeySpec(combinedHashedPassword, "HmacSHA1");
+		final byte[] paddedEntrySalt = Arrays.copyOf(passwordCheckEntrySalt, ENTRY_SALT_LENGTH);
+		
+		mac.init(macKey);
+		mac.update(paddedEntrySalt);
+		mac.update(passwordCheckEntrySalt);
+		
+		final byte[] key1 = mac.doFinal();
+		final byte[] tempKey = mac.doFinal(paddedEntrySalt);
+		
+		mac.update(tempKey);
+		mac.update(passwordCheckEntrySalt);
+		
+		final byte[] key2 = mac.doFinal();
+		final byte[] key = concatenate(key1, key2);
+	}
+	
 	/*
 	 * TODO: Method to decrypt, entry-salt as parameter
 	 */
 	
 	public static void main(final String[] args) {
-		final byte[] data = FileUtils.readExternalData("C:/Users/Sogomn/AppData/Roaming/Mozilla/Firefox/Profiles/ok9izu3i.default/key3.db");
+		final byte[] data = FileUtils.readExternalData("C:/Users/Sogomn/AppData/Roaming/Mozilla/Firefox/Profiles/iluy5ufi.default/key3.db");
 		final byte[] globalSalt = getGlobalSalt(data);
 		//final byte[] privateKey = getPrivateKey(data);
 		final byte[] passwordCheckEntrySalt = getPasswordCheckEntrySalt(data);
@@ -162,33 +216,47 @@ public final class Firefox {
 		
 		try {
 			final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-			final byte[] masterPassword = sha1.digest("ajaliko6".getBytes());
-			final byte[] saltedPassword = concatenate(globalSalt, masterPassword);
-			final byte[] hashedPassword = sha1.digest(saltedPassword);
-			final byte[] combinedPassword = concatenate(hashedPassword, passwordCheckEntrySalt);
-			final byte[] combinedHashedPassword = sha1.digest(combinedPassword);
+			final byte[] masterPassword = "ajaliko6".getBytes();
+			
+			sha1.update(globalSalt);
+			sha1.update(masterPassword);
+			
+			final byte[] hashedPassword = sha1.digest();
+			
+			sha1.update(hashedPassword);
+			sha1.update(passwordCheckEntrySalt);
+			
+			final byte[] combinedHashedPassword = sha1.digest();
 			final Mac mac = Mac.getInstance("HmacSHA1");
 			final SecretKeySpec macKey = new SecretKeySpec(combinedHashedPassword, "HmacSHA1");
-			final byte[] paddedEntrySalt = Arrays.copyOf(passwordCheckEntrySalt, 20);
-			final byte[] combinedEntrySalt = concatenate(paddedEntrySalt, passwordCheckEntrySalt);
+			final byte[] paddedEntrySalt = Arrays.copyOf(passwordCheckEntrySalt, ENTRY_SALT_LENGTH);
 			
 			mac.init(macKey);
+			mac.update(paddedEntrySalt);
+			mac.update(passwordCheckEntrySalt);
 			
-			final byte[] key1 = mac.doFinal(combinedEntrySalt);
+			final byte[] key1 = mac.doFinal();
 			final byte[] tempKey = mac.doFinal(paddedEntrySalt);
-			final byte[] combinedKeyEntrySalt = concatenate(tempKey, passwordCheckEntrySalt);
-			final byte[] key2 = mac.doFinal(combinedKeyEntrySalt);
+			
+			mac.update(tempKey);
+			mac.update(passwordCheckEntrySalt);
+			
+			final byte[] key2 = mac.doFinal();
 			final byte[] key = concatenate(key1, key2);
-			final byte[] tripleDesKey = Arrays.copyOf(key, 24);
-			final byte[] initializingVector = Arrays.copyOfRange(key, key.length - 8, key.length);
+			final byte[] tripleDesKey = Arrays.copyOf(key, TRIPLE_DES_KEY_LENGTH);
+			final byte[] initializingVector = Arrays.copyOfRange(key, key.length - INITIALIZING_VECTOR_LENGTH, key.length);
 			
 			final String test0 = toHex(passwordCheck);
 			final String test1 = toHex(tripleDesKey);
 			final String test2 = toHex(initializingVector);
 			
-			System.out.println(test0);
-			System.out.println(test1);
-			System.out.println(test2);
+			System.out.println("Cipher: " + test0);
+			System.out.println("3DES key: " + test1);
+			System.out.println("Initializing vector: " + test2);
+			
+			final byte[] test = decryptTripleDesCbc(passwordCheck, tripleDesKey, initializingVector);
+			
+			System.out.println(new String(test));
 		} catch (final NoSuchAlgorithmException | InvalidKeyException ex) {
 			ex.printStackTrace();
 		}
