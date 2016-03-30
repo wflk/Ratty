@@ -50,12 +50,6 @@ public final class ActiveConnection extends TCPConnection {
 		final byte id = readByte();
 		final Class<? extends IPacket> packetClass = PacketType.getClass(id);
 		
-		if (packetClass == null) {
-			readAllAvailable();
-			
-			return null;
-		}
-		
 		try {
 			final IPacket packet = packetClass.newInstance();
 			

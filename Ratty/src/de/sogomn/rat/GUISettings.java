@@ -21,11 +21,11 @@ import de.sogomn.engine.util.ImageUtils;
 final class GUISettings {
 	
 	private static final Color BACKGROUND = new Color(250, 250, 255);
-	private static final Color BASE = new Color(235, 205, 185);
-	private static final Color BRIGHTER = new Color(245, 220, 200);
-	private static final Color DARKER = new Color(215, 185, 165);
-	private static final Color ALTERNATIVE = new Color(245, 235, 230);
-	private static final Color SELECTION = new Color(120, 120, 135);
+	private static final Color BASE = new Color(220, 220, 220);
+	private static final Color BRIGHTER = new Color(230, 230, 230);
+	private static final Color DARKER = new Color(210, 210, 210);
+	private static final Color ALTERNATIVE = new Color(235, 235, 235);
+	private static final Color SELECTION = new Color(155, 155, 155);
 	
 	private static final EmptyBorder TABLE_CELL_BORDER = new EmptyBorder(2, 5, 2, 5);
 	
