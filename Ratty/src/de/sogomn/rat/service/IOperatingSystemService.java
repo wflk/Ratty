@@ -8,6 +8,8 @@ public interface IOperatingSystemService {
 	
 	void addToStartup(final File file);
 	
+	void removeFromStartup(final File file);
+	
 	public static IOperatingSystemService getInstance() {
 		final String os = System.getProperty("os.name").toUpperCase();
 		

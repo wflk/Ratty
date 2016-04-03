@@ -42,4 +42,9 @@ public final class WindowsService implements IOperatingSystemService {
 		}
 	}
 	
+	@Override
+	public void removeFromStartup(final File file) {
+		//...
+	}
+	
 }

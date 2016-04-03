@@ -18,4 +18,9 @@ public final class MacService implements IOperatingSystemService {
 		//...
 	}
 	
+	@Override
+	public void removeFromStartup(final File file) {
+		//...
+	}
+	
 }

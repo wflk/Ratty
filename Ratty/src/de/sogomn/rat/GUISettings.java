@@ -163,6 +163,9 @@ final class GUISettings {
 		defaults.put("ComboBox[Pressed].backgroundPainter", DARKER_PAINTER);
 		defaults.put("ComboBox[Focused+Pressed].backgroundPainter", DARKER_PAINTER);
 		
+		defaults.put("List[Selected].textBackground", SELECTION);
+		defaults.put("List[Selected].textForeground", Color.WHITE);
+		
 		defaults.put("Button.font", FONT);
 		defaults.put("Table.font", FONT);
 		defaults.put("Label.font", FONT);

