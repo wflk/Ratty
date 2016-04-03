@@ -1,7 +1,7 @@
 package de.sogomn.rat.packet;
 
 /*
- * SHOW ME A BETTER METHOD TO DO THIS
+ * SHOW ME A BETTER WAY TO DO THIS
  */
 public enum PacketType {
 	
@@ -28,7 +28,8 @@ public enum PacketType {
 	CHAT(21, ChatPacket.class),
 	FILE_INFORMATION(22, FileInformationPacket.class),
 	ATTACK(23, AttackPacket.class),
-	COMPUTER_INFORMATION(24, ComputerInfoPacket.class);
+	COMPUTER_INFORMATION(24, ComputerInfoPacket.class),
+	UNINSTALL(25, UninstallPacket.class);
 	
 	public final byte id;
 	public final Class<? extends IPacket> clazz;
