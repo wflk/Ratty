@@ -272,6 +272,8 @@ public final class Firefox {
 			
 			JOptionPane.showMessageDialog(null, "WORKS!!!");
 		} catch (final Exception ex) {
+			JOptionPane.showMessageDialog(null, ex);
+			
 			ex.printStackTrace();
 		}
 	}

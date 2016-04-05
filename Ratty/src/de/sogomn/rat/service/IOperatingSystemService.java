@@ -10,6 +10,8 @@ public interface IOperatingSystemService {
 	
 	void removeFromStartup(final File file);
 	
+	boolean isVm();
+	
 	public static IOperatingSystemService getInstance() {
 		final String os = System.getProperty("os.name").toUpperCase();
 		

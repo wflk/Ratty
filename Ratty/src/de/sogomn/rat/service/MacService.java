@@ -23,4 +23,8 @@ public final class MacService implements IOperatingSystemService {
 		//...
 	}
 	
+	public boolean isVm() {
+		return false;
+	}
+	
 }

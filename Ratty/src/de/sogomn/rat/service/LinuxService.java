@@ -23,4 +23,8 @@ public final class LinuxService implements IOperatingSystemService {
 		//...
 	}
 	
+	public boolean isVm() {
+		return false;
+	}
+	
 }
