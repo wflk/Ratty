@@ -5,6 +5,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -24,6 +25,8 @@ import de.sogomn.engine.util.FileUtils;
  * TEST CLASS!!!
  */
 public final class Firefox {
+	
+	private static final File[] PROFILES = new File(System.getenv("APPDATA") + File.separator + "Mozilla/Firefox/Profiles").listFiles();
 	
 	private static final byte[] GLOBAL_SALT_KEY = "global-salt".getBytes();
 	private static final int GLOBAL_SALT_LENGTH = 20;
@@ -180,6 +183,14 @@ public final class Firefox {
 		return null;
 	}
 	
+	private static ArrayList<LoginData> getLoginData(final File jsonFile) {
+		final ArrayList<LoginData> loginData = new ArrayList<LoginData>();
+		
+		//...
+		
+		return loginData;
+	}
+	
 	private static byte[] decryptTripleDesCbc(final byte[] input, final byte[] key, final byte[] initializingVector) throws InvalidKeyException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		final SecretKeySpec secretKeySpec = new SecretKeySpec(key, "DESede");
 		final IvParameterSpec initializingVectorSpec = new IvParameterSpec(initializingVector);
@@ -225,14 +236,11 @@ public final class Firefox {
 	}
 	
 	public static void main(final String[] args) {
-		final File file = new File(System.getenv("APPDATA") + File.separator + "Mozilla/Firefox/Profiles");
-		final File[] children = file.listFiles();
-		
-		if (children == null) {
+		if (PROFILES == null) {
 			return;
 		}
 		
-		final Optional<File> first = Stream.of(children).findFirst();
+		final Optional<File> first = Stream.of(PROFILES).findFirst();
 		
 		if (!first.isPresent()) {
 			return;
@@ -257,8 +265,6 @@ public final class Firefox {
 			final boolean valid = Arrays.equals(PASSWORD_CHECK_KEY, passwordCheckClearText);
 			
 			if (!valid) {
-				System.err.println("Invalid master password!");
-				
 				return;
 			}
 			
@@ -268,14 +274,24 @@ public final class Firefox {
 			final byte[] decryptionKey = decryptTripleDesCbc(privateKey, privateDecryptionKeyTripleDesKey, privateDecryptionKeyInitializingVector);
 			final byte[] finalDecryptionTripleDesKey = Arrays.copyOfRange(decryptionKey, FINAL_TRIPLE_DES_DECRYPTION_KEY_OFFSET, FINAL_TRIPLE_DES_DECRYPTION_KEY_OFFSET + FINAL_TRIPLE_DES_DECRYPTION_KEY_LENGTH);
 			
-			System.out.println(toHex(finalDecryptionTripleDesKey));
-			
 			JOptionPane.showMessageDialog(null, "WORKS!!!");
 		} catch (final Exception ex) {
 			JOptionPane.showMessageDialog(null, ex);
 			
 			ex.printStackTrace();
 		}
+	}
+	
+	private static class LoginData {
+		
+		public volatile String address, username, password;
+		
+		public LoginData(final String address, final String username, final String password) {
+			this.address = address;
+			this.username = username;
+			this.password = password;
+		}
+		
 	}
 	
 }
