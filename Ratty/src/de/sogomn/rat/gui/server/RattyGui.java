@@ -5,6 +5,8 @@ import static de.sogomn.rat.util.Resources.LANGUAGE;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -57,6 +59,8 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	
 	private static final String TITLE = "Ratty " + Resources.VERSION;
 	private static final Dimension SIZE = new Dimension(1150, 600);
+	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 8, 0);
+	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
 	
 	private static final BufferedImage GUI_ICON_SMALL = ImageUtils.loadImage("/gui_icon.png");
 	private static final BufferedImage GUI_ICON_MEDIUM = ImageUtils.scaleImage(GUI_ICON_SMALL, 64, 64);
@@ -156,6 +160,8 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		attack.addActionListener(this::actionPerformed);
 		build.setActionCommand(BUILD);
 		build.addActionListener(this::actionPerformed);
+		menuBar.setLayout(MENU_BAR_LAYOUT);
+		menuBar.setMargin(MENU_BAR_MARGIN);
 		menuBar.add(build);
 		menuBar.add(attack);
 		menu.add(surveillance);
