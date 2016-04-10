@@ -50,13 +50,17 @@ public final class ActiveConnection extends TCPConnection {
 		final byte id = readByte();
 		final Class<? extends IPacket> packetClass = PacketType.getClass(id);
 		
+		if (packetClass == null) {
+			return null;
+		}
+		
 		try {
 			final IPacket packet = packetClass.newInstance();
 			
 			packet.receive(this);
 			
 			return packet;
-		} catch (final InstantiationException | IllegalAccessException ex) {
+		} catch (final Exception ex) {
 			ex.printStackTrace();
 			
 			return null;
@@ -101,7 +105,11 @@ public final class ActiveConnection extends TCPConnection {
 			while (isOpen()) {
 				final IPacket packet = readPacket();
 				
-				if (observer != null && packet != null) {
+				if (packet == null) {
+					break;
+				}
+				
+				if (observer != null) {
 					observer.packetReceived(this, packet);
 				}
 			}

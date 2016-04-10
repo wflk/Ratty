@@ -41,7 +41,6 @@ public final class ChatWindow extends AbstractListenerContainer<IGuiController> 
 		chat.setLineWrap(true);
 		chat.setWrapStyleWord(true);
 		
-		
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		contentPane.add(submit, BorderLayout.SOUTH);
 		
