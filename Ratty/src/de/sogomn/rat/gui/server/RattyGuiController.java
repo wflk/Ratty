@@ -42,6 +42,7 @@ import de.sogomn.rat.packet.NewDirectoryPacket;
 import de.sogomn.rat.packet.PingPacket;
 import de.sogomn.rat.packet.PopupPacket;
 import de.sogomn.rat.packet.ScreenshotPacket;
+import de.sogomn.rat.packet.UninstallPacket;
 import de.sogomn.rat.packet.UploadFilePacket;
 import de.sogomn.rat.packet.VoicePacket;
 import de.sogomn.rat.packet.WebsitePacket;
@@ -500,6 +501,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = createFileInformationPacket(client);
 		} else if (command == RattyGui.INFORMATION) {
 			packet = new ComputerInfoPacket();
+		} else if (command == RattyGui.UNINSTALL) {
+			packet = new UninstallPacket();
 		} else if (command == DisplayPanel.MOUSE_EVENT && client.isStreamingDesktop()) {
 			packet = client.displayPanel.getLastMouseEventPacket();
 		} else if (command == DisplayPanel.KEY_EVENT && client.isStreamingDesktop()) {

@@ -2,6 +2,7 @@ package de.sogomn.rat.gui.server;
 
 import java.io.File;
 
+
 public interface IRattyGui {
 	
 	String getInput(final String message);

@@ -1,12 +1,12 @@
 package de.sogomn.rat.gui;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
+import static de.sogomn.rat.util.Resources.TREE_ICONS;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -18,7 +18,6 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import de.sogomn.engine.fx.SpriteSheet;
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
 
@@ -36,7 +35,6 @@ public final class FileTree extends AbstractListenerContainer<IGuiController> {
 	private static final Dimension SIZE = new Dimension(500, 500);
 	private static final String ROOT_NAME = "";
 	private static final String SEPARATOR_REGEX = "[\\\\\\/]";
-	private static final BufferedImage[] MENU_ICONS = new SpriteSheet(ImageUtils.scaleImage(ImageUtils.loadImage("/gui_tree_icons.png"), 2), 16 * 2, 16 * 2).getSprites();
 	
 	public static final String REQUEST = LANGUAGE.getString("action.request_files");
 	public static final String DOWNLOAD = LANGUAGE.getString("action.download");
@@ -66,9 +64,9 @@ public final class FileTree extends AbstractListenerContainer<IGuiController> {
 		scrollPane = new JScrollPane(tree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		menu = new JPopupMenu();
 		
-		for (int i = 0; i < COMMANDS.length && i < MENU_ICONS.length; i++) {
+		for (int i = 0; i < COMMANDS.length && i < TREE_ICONS.length; i++) {
 			final String command = COMMANDS[i];
-			final ImageIcon icon = new ImageIcon(MENU_ICONS[i]);
+			final ImageIcon icon = new ImageIcon(TREE_ICONS[i]);
 			
 			addMenuItem(command, icon);
 		}

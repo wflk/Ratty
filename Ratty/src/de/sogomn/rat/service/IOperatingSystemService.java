@@ -8,7 +8,7 @@ public interface IOperatingSystemService {
 	
 	void addToStartup(final File file);
 	
-	void removeFromStartup(final File file);
+	void removeFromStartup(final String name);
 	
 	boolean isVm();
 	

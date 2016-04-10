@@ -17,9 +17,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,9 +39,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.JTableHeader;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
-import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.util.Constants;
+import de.sogomn.rat.util.Resources;
 
 public final class RattyGui extends AbstractListenerContainer<IGuiController> implements IRattyGui {
 	
@@ -63,14 +61,10 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 8, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
 	
-	private static final BufferedImage GUI_ICON_SMALL = ImageUtils.loadImage("/gui_icon.png");
-	private static final BufferedImage GUI_ICON_MEDIUM = ImageUtils.scaleImage(GUI_ICON_SMALL, 64, 64);
-	private static final BufferedImage GUI_ICON_LARGE = ImageUtils.scaleImage(GUI_ICON_SMALL, 128, 128);
 	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
 	private static final BufferedImage FILE_MANAGEMENT_ICON = CATEGORY_ICONS[1];
 	private static final BufferedImage UTILITY_ICON = CATEGORY_ICONS[2];
 	private static final BufferedImage OTHER_ICON = CATEGORY_ICONS[3];
-	private static final List<BufferedImage> GUI_ICONS = Arrays.asList(GUI_ICON_SMALL, GUI_ICON_MEDIUM, GUI_ICON_LARGE);
 	
 	private static final String SURVEILLANCE = LANGUAGE.getString("menu.surveillance");
 	private static final String FILE_MANAGEMENT = LANGUAGE.getString("menu.file_management");
@@ -97,6 +91,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	public static final String DROP_EXECUTE = LANGUAGE.getString("action.drop_execute");
 	public static final String CHAT = LANGUAGE.getString("action.chat");
 	public static final String INFORMATION = LANGUAGE.getString("action.information");
+	public static final String UNINSTALL = LANGUAGE.getString("action.uninstall");
 	public static final String CLOSE = "Close";
 	
 	static {
@@ -114,6 +109,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		UTILITY_ITEM_DATA.put(CHAT, MENU_ICONS[12]);
 		OTHER_ITEM_DATA.put(INFORMATION, MENU_ICONS[13]);
 		OTHER_ITEM_DATA.put(FREE, MENU_ICONS[10]);
+		OTHER_ITEM_DATA.put(UNINSTALL, MENU_ICONS[14]);
 	}
 	
 	public RattyGui() {
@@ -184,7 +180,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		frame.setPreferredSize(SIZE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
-		frame.setIconImages(GUI_ICONS);
+		frame.setIconImages(Resources.GUI_ICONS);
 		frame.setVisible(true);
 		frame.requestFocus();
 	}
