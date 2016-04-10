@@ -1,4 +1,4 @@
-package de.sogomn.rat;
+package de.sogomn.rat.util;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -16,11 +16,12 @@ import javax.swing.plaf.ColorUIResource;
 
 import de.sogomn.engine.fx.SpriteSheet;
 import de.sogomn.engine.util.ImageUtils;
+import de.sogomn.rat.Server;
 
 /*
  * WHEEE! Hardcoding!
  */
-public final class GUISettings {
+final class NimbusGuiSettings {
 	
 	private static final Color BACKGROUND = new Color(250, 250, 255);
 	private static final Color BASE = new Color(220, 220, 220);
@@ -124,7 +125,7 @@ public final class GUISettings {
 		FONT = newFont;
 	}
 	
-	private GUISettings() {
+	private NimbusGuiSettings() {
 		//...
 	}
 	

