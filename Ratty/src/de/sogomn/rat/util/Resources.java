@@ -1,100 +1,19 @@
 package de.sogomn.rat.util;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.ResourceBundle;
+import java.awt.image.BufferedImage;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
-import de.sogomn.engine.util.FileUtils;
-import de.sogomn.rat.Server;
-import de.sogomn.rat.service.IOperatingSystemService;
+import de.sogomn.engine.fx.SpriteSheet;
+import de.sogomn.engine.util.ImageUtils;
 
 public final class Resources {
 	
-	private static final String DATA_PATH = "/data";
-	
-	public static final String VERSION = "1.24.0";
-	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
-	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
-	public static final String ADDRESS;
-	public static final int PORT;
-	public static final File JAR_FILE;
-	
-	static {
-		final byte[] data = FileUtils.readInternalData(DATA_PATH);
-		
-		XorCipher.crypt(data);
-		
-		final String text = new String(data);
-		final String[] lines = text.split("\r\n");
-		
-		String address;
-		int port;
-		
-		try {
-			address = lines[0];
-		} catch (final Exception ex) {
-			address = "localhost";
-		}
-		
-		try {
-			final String portString = lines[1];
-			port = Integer.parseInt(portString);
-		} catch (final Exception ex) {
-			port = 23456;
-		}
-		
-		ADDRESS = address;
-		PORT = port;
-	}
-	
-	static {
-		File jarFile = null;
-		
-		try {
-			jarFile = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-		} catch (final URISyntaxException ex) {
-			ex.printStackTrace();
-		}
-		
-		JAR_FILE = jarFile;
-	}
+	public static final BufferedImage[] MENU_ICONS = new SpriteSheet(ImageUtils.scaleImage(ImageUtils.loadImage("/gui_menu_icons.png"), 2), 16 * 2, 16 * 2).getSprites();
+	public static final BufferedImage[] CATEGORY_ICONS = new SpriteSheet(ImageUtils.scaleImage(ImageUtils.loadImage("/gui_category_icons.png"), 2), 16 * 2, 16 * 2).getSprites();
+	public static final BufferedImage[] NOTIFICATION_ICONS = new SpriteSheet("/gui_notification_icons.png", 16, 16).getSprites();
+	public static final BufferedImage[] FILE_ICONS = new SpriteSheet("/gui_file_icons.png", 16, 16).getSprites();
 	
 	private Resources() {
 		//...
-	}
-	
-	public static void setSystemLookAndFeel() {
-		try {
-			final String className = UIManager.getSystemLookAndFeelClassName();
-			
-			JFrame.setDefaultLookAndFeelDecorated(true);
-			JDialog.setDefaultLookAndFeelDecorated(true);
-			
-			UIManager.setLookAndFeel(className);
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	public static void setNimbusLookAndFeel() {
-		final NimbusLookAndFeel nimbus = new NimbusLookAndFeel();
-		final UIDefaults defaults = nimbus.getDefaults();
-		
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		JDialog.setDefaultLookAndFeelDecorated(true);
-		NimbusGuiSettings.setDefaults(defaults);
-		
-		try {
-			UIManager.setLookAndFeel(nimbus);
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 	
 }

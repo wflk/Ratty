@@ -1,6 +1,6 @@
 package de.sogomn.rat.gui.server;
 
-import static de.sogomn.rat.util.Resources.LANGUAGE;
+import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -87,7 +87,9 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_sv.properties",
 		"language/lang_pt.properties",
 		"language/lang_fr.properties",
-		"language/lang_ro.properties"
+		"language/lang_ro.properties",
+		"de/sogomn/rat/Server.class",
+		"de/sogomn/rat/util/Resources.class"
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");

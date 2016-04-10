@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import de.sogomn.rat.util.Resources;
+import de.sogomn.rat.util.Constants;
 
 public final class JarBuilder {
 	
@@ -18,7 +18,7 @@ public final class JarBuilder {
 	}
 	
 	public static void copy(final File destination) throws IOException {
-		final Path sourcePath = Resources.JAR_FILE.toPath();
+		final Path sourcePath = Constants.JAR_FILE.toPath();
 		final Path destinationPath = destination.toPath();
 		
 		Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);

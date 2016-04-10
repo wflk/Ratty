@@ -1,11 +1,13 @@
 package de.sogomn.rat.util;
 
+import static de.sogomn.rat.util.Resources.FILE_ICONS;
+import static de.sogomn.rat.util.Resources.NOTIFICATION_ICONS;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GradientPaint;
 import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -14,7 +16,6 @@ import javax.swing.UIDefaults;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
 
-import de.sogomn.engine.fx.SpriteSheet;
 import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.Server;
 
@@ -34,8 +35,6 @@ final class NimbusGuiSettings {
 	
 	private static final Font FONT;
 	
-	private static final BufferedImage[] NOTIFICATION_ICONS = new SpriteSheet("/gui_notification_icons.png", 16, 16).getSprites();
-	private static final BufferedImage[] FILE_ICONS = new SpriteSheet("/gui_file_icons.png", 16, 16).getSprites();
 	private static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[0], 2));
 	private static final ImageIcon INFORMATION_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[1], 2));
 	private static final ImageIcon QUESTION_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[2], 2));
