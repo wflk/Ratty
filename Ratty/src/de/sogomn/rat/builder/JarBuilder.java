@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import de.sogomn.engine.util.FileUtils;
-import de.sogomn.rat.Ratty;
+import de.sogomn.rat.Server;
 
 public final class JarBuilder {
 	
@@ -21,7 +21,7 @@ public final class JarBuilder {
 		File jarFile = null;
 		
 		try {
-			jarFile = new File(Ratty.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			jarFile = new File(Server.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (final URISyntaxException ex) {
 			ex.printStackTrace();
 		}

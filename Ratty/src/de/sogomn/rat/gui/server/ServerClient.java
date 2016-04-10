@@ -58,12 +58,9 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 	public void logOut() {
 		loggedIn = false;
 		
-		System.err.println();
-		System.err.println("THE FOLLOWING IS A JVM BUG!");
 		displayPanel.close();
 		fileTree.close();
 		chat.close();
-		System.err.println();
 	}
 	
 	public void setStreamingDesktop(final boolean streamingDesktop) {

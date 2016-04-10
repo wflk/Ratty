@@ -3,6 +3,8 @@ package de.sogomn.rat;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.GradientPaint;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -18,12 +20,12 @@ import de.sogomn.engine.util.ImageUtils;
 /*
  * WHEEE! Hardcoding!
  */
-final class GUISettings {
+public final class GUISettings {
 	
 	private static final Color BACKGROUND = new Color(250, 250, 255);
 	private static final Color BASE = new Color(220, 220, 220);
-	private static final Color BRIGHTER = new Color(230, 230, 230);
-	private static final Color DARKER = new Color(210, 210, 210);
+	private static final Color BRIGHTER = new Color(240, 240, 240);
+	private static final Color DARKER = new Color(200, 200, 200);
 	private static final Color ALTERNATIVE = new Color(235, 235, 235);
 	private static final Color SELECTION = new Color(155, 155, 155);
 	
@@ -78,11 +80,41 @@ final class GUISettings {
 		g.fillRect(0, 0, width, height);
 	};
 	
+	private static final Painter<?> BUTTON_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, Color.WHITE, 0, height, new Color(160, 160, 160));
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(gradient);
+		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.setPaint(new Color(190, 190, 190));
+		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+	};
+	
+	private static final Painter<?> BUTTON_HOVERED_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, Color.WHITE, 0, height, new Color(200, 200, 200));
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(gradient);
+		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.setPaint(new Color(225, 225, 225));
+		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+	};
+	
+	private static final Painter<?> BUTTON_PRESSED_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(165, 165, 165), 0, height, Color.WHITE);
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(gradient);
+		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.setPaint(new Color(240, 240, 240));
+		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+	};
+	
 	static {
 		Font newFont;
 		
 		try {
-			newFont = Font.createFont(Font.TRUETYPE_FONT, Ratty.class.getResourceAsStream("/lato.ttf")).deriveFont(13f);
+			newFont = Font.createFont(Font.TRUETYPE_FONT, Server.class.getResourceAsStream("/lato.ttf")).deriveFont(13f);
 		} catch (final IOException | FontFormatException ex) {
 			ex.printStackTrace();
 			
@@ -105,31 +137,31 @@ final class GUISettings {
 		defaults.put("TextArea[Enabled].backgroundPainter", BACKGROUND_PAINTER);
 		defaults.put("TextField[Enabled].backgroundPainter", BACKGROUND_PAINTER);
 		
-		defaults.put("Button[Enabled].backgroundPainter", BASE_PAINTER);
-		defaults.put("Button[Default].backgroundPainter", BASE_PAINTER);
-		defaults.put("Button[Focused].backgroundPainter", BASE_PAINTER);
-		defaults.put("Button[Default+Focused].backgroundPainter", BASE_PAINTER);
-		defaults.put("Button[MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("Button[Default+MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("Button[Focused+MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("Button[Default+Focused+MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("Button[Pressed].backgroundPainter", DARKER_PAINTER);
-		defaults.put("Button[Default+Pressed].backgroundPainter", DARKER_PAINTER);
-		defaults.put("Button[Focused+Pressed].backgroundPainter", DARKER_PAINTER);
-		defaults.put("Button[Default+Focused+Pressed].backgroundPainter", DARKER_PAINTER);
+		defaults.put("Button[Enabled].backgroundPainter", BUTTON_PAINTER);
+		defaults.put("Button[Default].backgroundPainter", BUTTON_PAINTER);
+		defaults.put("Button[Focused].backgroundPainter", BUTTON_PAINTER);
+		defaults.put("Button[Default+Focused].backgroundPainter", BUTTON_PAINTER);
+		defaults.put("Button[MouseOver].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("Button[Default+MouseOver].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("Button[Focused+MouseOver].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("Button[Default+Focused+MouseOver].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("Button[Pressed].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("Button[Default+Pressed].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("Button[Focused+Pressed].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("Button[Default+Focused+Pressed].backgroundPainter", BUTTON_PRESSED_PAINTER);
 		
-		defaults.put("ToggleButton[Enabled].backgroundPainter", BASE_PAINTER);
-		defaults.put("ToggleButton[Focused].backgroundPainter", BASE_PAINTER);
-		defaults.put("ToggleButton[MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("ToggleButton[Focused+MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("ToggleButton[Pressed].backgroundPainter", BASE_PAINTER);
-		defaults.put("ToggleButton[Focused+Pressed].backgroundPainter", BASE_PAINTER);
-		defaults.put("ToggleButton[Selected].backgroundPainter", DARKER_PAINTER);
-		defaults.put("ToggleButton[Focused+Selected].backgroundPainter", DARKER_PAINTER);
-		defaults.put("ToggleButton[MouseOver+Selected].backgroundPainter", BASE_PAINTER);
-		defaults.put("ToggleButton[Focused+MouseOver+Selected].backgroundPainter", BASE_PAINTER);
-		defaults.put("ToggleButton[Pressed+Selected].backgroundPainter", DARKER_PAINTER);
-		defaults.put("ToggleButton[Focused+Pressed+Selected].backgroundPainter", DARKER_PAINTER);
+		defaults.put("ToggleButton[Enabled].backgroundPainter", BUTTON_PAINTER);
+		defaults.put("ToggleButton[Focused].backgroundPainter", BUTTON_PAINTER);
+		defaults.put("ToggleButton[MouseOver].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("ToggleButton[Focused+MouseOver].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("ToggleButton[Pressed].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("ToggleButton[Focused+Pressed].backgroundPainter", BUTTON_HOVERED_PAINTER);
+		defaults.put("ToggleButton[Selected].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("ToggleButton[Focused+Selected].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("ToggleButton[MouseOver+Selected].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("ToggleButton[Focused+MouseOver+Selected].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("ToggleButton[Pressed+Selected].backgroundPainter", BUTTON_PRESSED_PAINTER);
+		defaults.put("ToggleButton[Focused+Pressed+Selected].backgroundPainter", BUTTON_PRESSED_PAINTER);
 		
 		defaults.put("Table.background", new ColorUIResource(ALTERNATIVE));
 		defaults.put("Table.gridColor", DARKER);

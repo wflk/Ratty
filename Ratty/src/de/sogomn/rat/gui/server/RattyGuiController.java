@@ -1,6 +1,6 @@
 package de.sogomn.rat.gui.server;
 
-import static de.sogomn.rat.Ratty.LANGUAGE;
+import static de.sogomn.rat.util.Resources.LANGUAGE;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -760,9 +760,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	@Override
 	public void closed(final ActiveServer server) {
-		super.closed(server);
-		
 		clients.values().forEach(ServerClient::logOut);
+		clients.clear();
+		
+		super.closed(server);
 		
 		System.exit(0);
 	}

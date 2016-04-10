@@ -1,6 +1,6 @@
 package de.sogomn.rat.gui;
 
-import static de.sogomn.rat.Ratty.LANGUAGE;
+import static de.sogomn.rat.util.Resources.LANGUAGE;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

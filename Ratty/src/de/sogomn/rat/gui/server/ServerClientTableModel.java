@@ -1,6 +1,6 @@
 package de.sogomn.rat.gui.server;
 
-import static de.sogomn.rat.Ratty.LANGUAGE;
+import static de.sogomn.rat.util.Resources.LANGUAGE;
 
 import java.util.ArrayList;
 import java.util.function.Function;

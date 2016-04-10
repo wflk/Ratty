@@ -1,6 +1,6 @@
 package de.sogomn.rat.gui.server;
 
-import static de.sogomn.rat.Ratty.LANGUAGE;
+import static de.sogomn.rat.util.Resources.LANGUAGE;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -39,8 +39,8 @@ import javax.swing.table.JTableHeader;
 import de.sogomn.engine.fx.SpriteSheet;
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
-import de.sogomn.rat.Ratty;
 import de.sogomn.rat.gui.IGuiController;
+import de.sogomn.rat.util.Resources;
 
 public final class RattyGui extends AbstractListenerContainer<IGuiController> implements IRattyGui {
 	
@@ -55,7 +55,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private JFileChooser fileChooser;
 	private ServerClient clientClicked;
 	
-	private static final String TITLE = "Ratty " + Ratty.VERSION;
+	private static final String TITLE = "Ratty " + Resources.VERSION;
 	private static final Dimension SIZE = new Dimension(1150, 600);
 	
 	private static final BufferedImage GUI_ICON_SMALL = ImageUtils.loadImage("/gui_icon.png");
