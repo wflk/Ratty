@@ -26,10 +26,9 @@ final class NimbusGuiSettings {
 	
 	private static final Color BACKGROUND = new Color(250, 250, 255);
 	private static final Color BASE = new Color(220, 220, 220);
-	private static final Color BRIGHTER = new Color(240, 240, 240);
 	private static final Color DARKER = new Color(200, 200, 200);
 	private static final Color ALTERNATIVE = new Color(235, 235, 235);
-	private static final Color SELECTION = new Color(155, 155, 155);
+	private static final Color SELECTION = new Color(165, 165, 165);
 	
 	private static final EmptyBorder TABLE_CELL_BORDER = new EmptyBorder(2, 5, 2, 5);
 	
@@ -52,16 +51,6 @@ final class NimbusGuiSettings {
 	
 	private static final Painter<?> BASE_PAINTER = (g, object, width, height) -> {
 		g.setColor(BASE);
-		g.fillRect(0, 0, width, height);
-	};
-	
-	private static final Painter<?> BRIGHTER_PAINTER = (g, object, width, height) -> {
-		g.setColor(BRIGHTER);
-		g.fillRect(0, 0, width, height);
-	};
-	
-	private static final Painter<?> DARKER_PAINTER = (g, object, width, height) -> {
-		g.setColor(DARKER);
 		g.fillRect(0, 0, width, height);
 	};
 	
@@ -91,22 +80,22 @@ final class NimbusGuiSettings {
 	};
 	
 	private static final Painter<?> BUTTON_HOVERED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, Color.WHITE, 0, height, new Color(200, 200, 200));
+		final GradientPaint gradient = new GradientPaint(0, 0, Color.WHITE, 0, height, new Color(180, 180, 180));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
 		g.fillRoundRect(0, 0, width, height, 25, 50);
-		g.setPaint(new Color(225, 225, 225));
+		g.setPaint(new Color(180, 180, 180));
 		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
 	};
 	
 	private static final Painter<?> BUTTON_PRESSED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(165, 165, 165), 0, height, Color.WHITE);
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(180, 180, 180), 0, height, new Color(230, 230, 230));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
 		g.fillRoundRect(0, 0, width, height, 25, 50);
-		g.setPaint(new Color(240, 240, 240));
+		g.setPaint(new Color(210, 210, 210));
 		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
 	};
 	
@@ -129,10 +118,11 @@ final class NimbusGuiSettings {
 	}
 	
 	public static void setDefaults(final UIDefaults defaults) {
+		defaults.put("nimbusBase", Color.GRAY);
+		defaults.put("control", BACKGROUND);
 		defaults.put("nimbusSelection", Color.WHITE);
 		defaults.put("nimbusFocus", Color.WHITE);
 		defaults.put("textHighlight", SELECTION);
-		defaults.put("control", BACKGROUND);
 		
 		defaults.put("TextArea[Enabled].backgroundPainter", BACKGROUND_PAINTER);
 		defaults.put("TextField[Enabled].backgroundPainter", BACKGROUND_PAINTER);
@@ -169,11 +159,6 @@ final class NimbusGuiSettings {
 		defaults.put("Table.alternateRowColor", ALTERNATIVE);
 		defaults.put("Table[Enabled+Selected].textBackground", SELECTION);
 		defaults.put("Table.focusCellHighlightBorder", TABLE_CELL_BORDER);
-		defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled].backgroundPainter", BASE_PAINTER);
-		defaults.put("TableHeader:\"TableHeader.renderer\"[MouseOver].backgroundPainter", BASE_PAINTER);
-		defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled+Sorted].backgroundPainter", BASE_PAINTER);
-		defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled+Focused].backgroundPainter", BASE_PAINTER);
-		defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled+Focused+Sorted].backgroundPainter", BASE_PAINTER);
 		
 		defaults.put("Menu.background", BASE);
 		defaults.put("Menu[Enabled+Selected].backgroundPainter", SELECTION_PAINTER);
@@ -184,16 +169,6 @@ final class NimbusGuiSettings {
 		
 		defaults.put("Tree:TreeCell[Enabled+Selected].backgroundPainter", SELECTION_PAINTER);
 		defaults.put("Tree:TreeCell[Focused+Selected].backgroundPainter", SELECTION_PAINTER);
-		
-		defaults.put("ComboBox:\"ComboBox.listRenderer\"[Selected].background", SELECTION);
-		defaults.put("ComboBox:\"ComboBox.renderer\"[Selected].background", SELECTION);
-		defaults.put("ComboBox[Enabled].backgroundPainter", BASE_PAINTER);
-		defaults.put("ComboBox[Focused].backgroundPainter", BASE_PAINTER);
-		defaults.put("ComboBox[Enabled+Selected].backgroundPainter", BASE_PAINTER);
-		defaults.put("ComboBox[MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("ComboBox[Focused+MouseOver].backgroundPainter", BRIGHTER_PAINTER);
-		defaults.put("ComboBox[Pressed].backgroundPainter", DARKER_PAINTER);
-		defaults.put("ComboBox[Focused+Pressed].backgroundPainter", DARKER_PAINTER);
 		
 		defaults.put("List[Selected].textBackground", SELECTION);
 		defaults.put("List[Selected].textForeground", Color.WHITE);
