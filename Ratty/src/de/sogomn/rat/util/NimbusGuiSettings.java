@@ -68,9 +68,9 @@ final class NimbusGuiSettings {
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.fillRoundRect(0, 0, width, height, 10, 10);
 		g.setPaint(new Color(170, 170, 170));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+		g.drawRoundRect(0, 0, width - 1, height - 1, 10, 10);
 	};
 	
 	private static final Painter<?> BUTTON_HOVERED_PAINTER = (g, object, width, height) -> {
@@ -78,9 +78,9 @@ final class NimbusGuiSettings {
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.fillRoundRect(0, 0, width, height, 10, 10);
 		g.setPaint(new Color(160, 160, 160));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+		g.drawRoundRect(0, 0, width - 1, height - 1, 10, 10);
 	};
 	
 	private static final Painter<?> BUTTON_PRESSED_PAINTER = (g, object, width, height) -> {
@@ -88,9 +88,9 @@ final class NimbusGuiSettings {
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.fillRoundRect(0, 0, width, height, 10, 10);
 		g.setPaint(new Color(180, 180, 180));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+		g.drawRoundRect(0, 0, width - 1, height - 1, 10, 10);
 	};
 	
 	private static final Painter<?> MENU_BAR_PAINTER = (g, object, width, height) -> {

@@ -34,8 +34,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.JTableHeader;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
@@ -43,6 +41,9 @@ import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.Resources;
 
+/*
+ * CONSTANT OVERLOAD!!! WHEEE!
+ */
 public final class RattyGui extends AbstractListenerContainer<IGuiController> implements IRattyGui {
 	
 	private JFrame frame;
@@ -58,7 +59,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	
 	private static final String TITLE = "Ratty " + Constants.VERSION;
 	private static final Dimension SIZE = new Dimension(1200, 600);
-	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 10, 0);
+	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 6, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
 	
 	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
@@ -278,65 +279,6 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		final int input = JOptionPane.showOptionDialog(frame, message, null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
 		
 		return input;
-	}
-	
-	@Override
-	public File getFile(final String type) {
-		final FileFilter filter;
-		
-		if (type != null) {
-			filter = new FileNameExtensionFilter("*." + type, type);
-		} else {
-			filter = null;
-		}
-		
-		fileChooser.setFileFilter(filter);
-		
-		final int input = fileChooser.showOpenDialog(frame);
-		
-		if (input == JFileChooser.APPROVE_OPTION) {
-			final File file = fileChooser.getSelectedFile();
-			
-			return file;
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public File getFile() {
-		return getFile(null);
-	}
-	
-	@Override
-	public File getSaveFile() {
-		final int input = fileChooser.showSaveDialog(frame);
-		
-		if (input == JFileChooser.APPROVE_OPTION) {
-			final File file = fileChooser.getSelectedFile();
-			
-			return file;
-		}
-		
-		return null;
-	}
-	
-	@Override
-	public File getSaveFile(final String type) {
-		File file = getSaveFile();
-		
-		if (file == null) {
-			return null;
-		}
-		
-		final String name = file.getName().toLowerCase();
-		final String suffix = "." + type.toLowerCase();
-		
-		if (!name.endsWith(suffix)) {
-			file = new File(file + suffix);
-		}
-		
-		return file;
 	}
 	
 	@Override

