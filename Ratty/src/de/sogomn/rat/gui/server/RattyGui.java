@@ -57,8 +57,8 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private ServerClient selectedClient;
 	
 	private static final String TITLE = "Ratty " + Constants.VERSION;
-	private static final Dimension SIZE = new Dimension(1150, 600);
-	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 8, 0);
+	private static final Dimension SIZE = new Dimension(1200, 600);
+	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 10, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
 	
 	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
@@ -116,7 +116,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		frame = new JFrame(TITLE);
 		table = new JTable();
 		tableModel = new ServerClientTableModel();
-		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		menu = new JPopupMenu();
 		menuBar = new JMenuBar();
 		build = new JButton(BUILD);

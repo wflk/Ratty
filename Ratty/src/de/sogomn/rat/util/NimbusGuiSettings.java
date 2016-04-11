@@ -25,10 +25,9 @@ import de.sogomn.rat.Server;
 final class NimbusGuiSettings {
 	
 	private static final Color BACKGROUND = new Color(250, 250, 255);
-	private static final Color BASE = new Color(220, 220, 220);
 	private static final Color DARKER = new Color(200, 200, 200);
 	private static final Color ALTERNATIVE = new Color(235, 235, 235);
-	private static final Color SELECTION = new Color(165, 165, 165);
+	private static final Color SELECTION = new Color(175, 175, 175);
 	
 	private static final EmptyBorder TABLE_CELL_BORDER = new EmptyBorder(2, 5, 2, 5);
 	
@@ -49,19 +48,14 @@ final class NimbusGuiSettings {
 	private static final ImageIcon UP_FOLDER_ICON = new ImageIcon(FILE_ICONS[8]);
 	private static final ImageIcon DETAILS_ICON = new ImageIcon(FILE_ICONS[9]);
 	
-	private static final Painter<?> BASE_PAINTER = (g, object, width, height) -> {
-		g.setColor(BASE);
-		g.fillRect(0, 0, width, height);
-	};
-	
 	private static final Painter<?> SELECTION_PAINTER = (g, object, width, height) -> {
 		g.setColor(SELECTION);
 		g.fillRect(0, 0, width, height);
 	};
 	
 	private static final Painter<?> SEPARATOR_PAINTER = (g, object, width, height) -> {
-		g.setColor(DARKER);
-		g.fillRect(0, height / 2, width, height / 4);
+		g.setColor(new Color(190, 190, 190));
+		g.fillRect(width / 10, height / 2, width - (width / 10) * 2, height / 4);
 	};
 	
 	private static final Painter<?> BACKGROUND_PAINTER = (g, object, width, height) -> {
@@ -70,17 +64,27 @@ final class NimbusGuiSettings {
 	};
 	
 	private static final Painter<?> BUTTON_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, Color.WHITE, 0, height, new Color(160, 160, 160));
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(250, 250, 250), 0, height, new Color(180, 180, 180));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
 		g.fillRoundRect(0, 0, width, height, 25, 50);
-		g.setPaint(new Color(190, 190, 190));
+		g.setPaint(new Color(170, 170, 170));
 		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
 	};
 	
 	private static final Painter<?> BUTTON_HOVERED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, Color.WHITE, 0, height, new Color(180, 180, 180));
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255), 0, height, new Color(190, 190, 190));
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(gradient);
+		g.fillRoundRect(0, 0, width, height, 25, 50);
+		g.setPaint(new Color(160, 160, 160));
+		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+	};
+	
+	private static final Painter<?> BUTTON_PRESSED_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(190, 190, 190), 0, height, new Color(220, 220, 220));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
@@ -89,25 +93,51 @@ final class NimbusGuiSettings {
 		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
 	};
 	
-	private static final Painter<?> BUTTON_PRESSED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(180, 180, 180), 0, height, new Color(230, 230, 230));
+	private static final Painter<?> MENU_BAR_PAINTER = (g, object, width, height) -> {
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(new Color(220, 220, 220));
+		g.fillRect(0, 0, width, height);
+		g.setPaint(new Color(150, 150, 150));
+		g.drawRect(0, 0, width - 1, height - 1);
+	};
+	
+	private static final Painter<?> TABLE_HEADER_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(225, 225, 225), 0, height, new Color(190, 190, 190));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 25, 50);
-		g.setPaint(new Color(210, 210, 210));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 25, 50);
+		g.fillRect(0, 0, width, height);
+		g.setPaint(new Color(130, 130, 130));
+		g.drawLine(width - 1, height / 6, width - 1, height - height / 6);
+	};
+	
+	private static final Painter<?> TABLE_HEADER_HOVERED_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(235, 235, 235), 0, height, new Color(200, 200, 200));
+		
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(gradient);
+		g.fillRect(0, 0, width, height);
+		g.setPaint(new Color(130, 130, 130));
+		g.drawLine(width - 1, height / 6, width - 1, height - height / 6);
+	};
+	
+	private static final Painter<?> POPUP_MENU_PAINTER = (g, object, width, height) -> {
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setPaint(new Color(240, 240, 240));
+		g.fillRect(0, 0, width, height);
+		g.setPaint(new Color(150, 150, 150));
+		g.drawRect(0, 0, width - 1, height - 1);
 	};
 	
 	static {
 		Font newFont;
 		
 		try {
-			newFont = Font.createFont(Font.TRUETYPE_FONT, Server.class.getResourceAsStream("/lato.ttf")).deriveFont(13f);
+			newFont = Font.createFont(Font.TRUETYPE_FONT, Server.class.getResourceAsStream("/lato.ttf")).deriveFont(14f);
 		} catch (final IOException | FontFormatException ex) {
 			ex.printStackTrace();
 			
-			newFont = new Font("Trebuchet MS", Font.PLAIN, 13);
+			newFont = new Font("Trebuchet MS", Font.PLAIN, 14);
 		}
 		
 		FONT = newFont;
@@ -121,7 +151,7 @@ final class NimbusGuiSettings {
 		defaults.put("nimbusBase", Color.GRAY);
 		defaults.put("control", BACKGROUND);
 		defaults.put("nimbusSelection", Color.WHITE);
-		defaults.put("nimbusFocus", Color.WHITE);
+		defaults.put("nimbusFocus", new Color(255, 255, 255, 0));
 		defaults.put("textHighlight", SELECTION);
 		
 		defaults.put("TextArea[Enabled].backgroundPainter", BACKGROUND_PAINTER);
@@ -160,12 +190,17 @@ final class NimbusGuiSettings {
 		defaults.put("Table[Enabled+Selected].textBackground", SELECTION);
 		defaults.put("Table.focusCellHighlightBorder", TABLE_CELL_BORDER);
 		
-		defaults.put("Menu.background", BASE);
+		defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled+Focused].backgroundPainter", TABLE_HEADER_PAINTER);
+		defaults.put("TableHeader:\"TableHeader.renderer\"[Enabled].backgroundPainter", TABLE_HEADER_PAINTER);
+		defaults.put("TableHeader:\"TableHeader.renderer\"[MouseOver].backgroundPainter", TABLE_HEADER_HOVERED_PAINTER);
+		defaults.put("TableHeader:\"TableHeader.renderer\"[Pressed].backgroundPainter", TABLE_HEADER_PAINTER);
+		
+		defaults.put("PopupMenu[Enabled].backgroundPainter", POPUP_MENU_PAINTER);
 		defaults.put("Menu[Enabled+Selected].backgroundPainter", SELECTION_PAINTER);
-		defaults.put("PopupMenu[Enabled].backgroundPainter", BASE_PAINTER);
 		defaults.put("MenuItem[MouseOver].backgroundPainter", SELECTION_PAINTER);
-		defaults.put("MenuBar[Enabled].backgroundPainter", BASE_PAINTER);
 		defaults.put("PopupMenuSeparator[Enabled].backgroundPainter", SEPARATOR_PAINTER);
+		
+		defaults.put("MenuBar[Enabled].backgroundPainter", MENU_BAR_PAINTER);
 		
 		defaults.put("Tree:TreeCell[Enabled+Selected].backgroundPainter", SELECTION_PAINTER);
 		defaults.put("Tree:TreeCell[Focused+Selected].backgroundPainter", SELECTION_PAINTER);
