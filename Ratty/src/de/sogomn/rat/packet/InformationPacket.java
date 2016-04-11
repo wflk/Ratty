@@ -28,9 +28,9 @@ public final class InformationPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		connection.writeUTF(name);
-		connection.writeUTF(os);
-		connection.writeUTF(version);
+		connection.writeUtf(name);
+		connection.writeUtf(os);
+		connection.writeUtf(version);
 	}
 	
 	@Override
@@ -40,9 +40,9 @@ public final class InformationPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
-		name = connection.readUTF();
-		os = connection.readUTF();
-		version = connection.readUTF();
+		name = connection.readUtf();
+		os = connection.readUtf();
+		version = connection.readUtf();
 	}
 	
 	@Override

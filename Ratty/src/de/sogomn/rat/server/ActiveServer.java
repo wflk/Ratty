@@ -52,7 +52,7 @@ public final class ActiveServer extends TCPServer {
 			}
 		};
 		
-		thread = new Thread(runnable);
+		thread = new Thread(runnable, "Server");
 		
 		thread.start();
 	}

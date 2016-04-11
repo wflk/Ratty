@@ -32,7 +32,7 @@ public final class ActiveConnection extends TCPConnection {
 			final IPacket packet = packetQueue.take();
 			
 			return packet;
-		} catch (final InterruptedException ex) {
+		} catch (final Exception ex) {
 			return null;
 		}
 	}
@@ -95,6 +95,10 @@ public final class ActiveConnection extends TCPConnection {
 			while (isOpen()) {
 				final IPacket packet = nextPacket();
 				
+				if (packet == null) {
+					break;
+				}
+				
 				if (packet != null) {
 					sendPacket(packet);
 				}
@@ -115,8 +119,8 @@ public final class ActiveConnection extends TCPConnection {
 			}
 		};
 		
-		sender = new Thread(sendingRunnable);
-		reader = new Thread(readingRunnable);
+		sender = new Thread(sendingRunnable, "Sender");
+		reader = new Thread(readingRunnable, "Reader");
 		
 		sender.start();
 		reader.start();

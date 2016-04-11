@@ -56,13 +56,13 @@ public final class WebsitePacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeUTF(address);
+		connection.writeUtf(address);
 		connection.writeInt(amount);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
-		address = connection.readUTF();
+		address = connection.readUtf();
 		amount = connection.readInt();
 	}
 	

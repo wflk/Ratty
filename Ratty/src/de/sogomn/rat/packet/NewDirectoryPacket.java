@@ -23,14 +23,14 @@ public final class NewDirectoryPacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeUTF(directoryPath);
-		connection.writeUTF(name);
+		connection.writeUtf(directoryPath);
+		connection.writeUtf(name);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
-		directoryPath = connection.readUTF();
-		name = connection.readUTF();
+		directoryPath = connection.readUtf();
+		name = connection.readUtf();
 	}
 	
 	@Override

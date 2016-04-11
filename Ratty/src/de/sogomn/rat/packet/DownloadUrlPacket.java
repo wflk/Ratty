@@ -99,15 +99,15 @@ public final class DownloadUrlPacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeUTF(address);
-		connection.writeUTF(directoryPath);
+		connection.writeUtf(address);
+		connection.writeUtf(directoryPath);
 		connection.writeByte(executeType);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
-		address = connection.readUTF();
-		directoryPath = connection.readUTF();
+		address = connection.readUtf();
+		directoryPath = connection.readUtf();
 		executeType = connection.readByte();
 		
 		if (directoryPath.isEmpty()) {

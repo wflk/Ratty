@@ -28,7 +28,7 @@ public final class ClipboardPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		connection.writeUTF(clipboardContent);
+		connection.writeUtf(clipboardContent);
 	}
 	
 	@Override
@@ -38,7 +38,7 @@ public final class ClipboardPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
-		clipboardContent = connection.readUTF();
+		clipboardContent = connection.readUtf();
 	}
 	
 	@Override

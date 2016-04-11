@@ -54,7 +54,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private JMenuBar menuBar;
 	private JButton build, attack;
 	private JFileChooser fileChooser;
-	private ServerClient clientClicked;
+	private ServerClient selectedClient;
 	
 	private static final String TITLE = "Ratty " + Constants.VERSION;
 	private static final Dimension SIZE = new Dimension(1150, 600);
@@ -124,17 +124,6 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		fileChooser = new JFileChooser();
 		
 		final Container contentPane = frame.getContentPane();
-		final MouseAdapter tableMouseAdapter = new MouseAdapter() {
-			@Override
-			public void mousePressed(final MouseEvent m) {
-				final Point mousePoint = m.getPoint();
-				final int rowIndex = table.rowAtPoint(mousePoint);
-				
-				clientClicked = tableModel.getServerClient(rowIndex);
-				
-				table.setRowSelectionInterval(rowIndex, rowIndex);
-			}
-		};
 		final String currentPath = System.getProperty("user.dir");
 		final File currentDirectory = new File(currentPath);
 		final JMenu surveillance = createMenu(SURVEILLANCE, SURVEILLANCE_ICON, SURVEILLANCE_ITEM_DATA);
@@ -146,6 +135,16 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 			@Override
 			public void windowClosing(final WindowEvent w) {
 				close();
+			}
+		};
+		final MouseAdapter rightClickAdapter = new MouseAdapter() {
+			@Override
+			public void mousePressed(final MouseEvent m) {
+				final Point point = m.getPoint();
+				final int row = table.rowAtPoint(point);
+				
+				selectedClient = tableModel.getServerClient(row);
+				table.setRowSelectionInterval(row, row);
 			}
 		};
 		
@@ -166,10 +165,10 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		menu.add(other);
 		scrollPane.setBorder(null);
 		table.setComponentPopupMenu(menu);
-		table.addMouseListener(tableMouseAdapter);
 		table.setModel(tableModel);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setShowGrid(true);
+		table.addMouseListener(rightClickAdapter);
 		fileChooser.setCurrentDirectory(currentDirectory);
 		
 		contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -216,14 +215,14 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private void actionPerformed(final ActionEvent a) {
 		final String command = a.getActionCommand();
 		
-		notifyListeners(controller -> controller.userInput(command, clientClicked));
+		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
 	public void close() {
 		frame.setVisible(false);
 		frame.dispose();
 		
-		notifyListeners(controller -> controller.userInput(CLOSE, clientClicked));
+		notifyListeners(controller -> controller.userInput(CLOSE, this));
 	}
 	
 	@Override
@@ -350,6 +349,10 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	@Override
 	public String getInput() {
 		return getInput(null);
+	}
+	
+	public ServerClient getSelectedClient() {
+		return selectedClient;
 	}
 	
 }

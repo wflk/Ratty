@@ -26,19 +26,19 @@ public final class DownloadFilePacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendRequest(final ActiveConnection connection) {
-		connection.writeUTF(path);
+		connection.writeUtf(path);
 	}
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
 		connection.writeInt(data.length);
 		connection.write(data);
-		connection.writeUTF(fileName);
+		connection.writeUtf(fileName);
 	}
 	
 	@Override
 	protected void receiveRequest(final ActiveConnection connection) {
-		path = connection.readUTF();
+		path = connection.readUtf();
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public final class DownloadFilePacket extends AbstractPingPongPacket {
 		
 		data = new byte[length];
 		connection.read(data);
-		fileName = connection.readUTF();
+		fileName = connection.readUtf();
 		
 	}
 	

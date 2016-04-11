@@ -31,13 +31,13 @@ public final class FileInformationPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendRequest(final ActiveConnection connection) {
-		connection.writeUTF(path);
+		connection.writeUtf(path);
 	}
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		connection.writeUTF(name);
-		connection.writeUTF(path);
+		connection.writeUtf(name);
+		connection.writeUtf(path);
 		connection.writeLong(size);
 		connection.writeByte(fileType);
 		connection.writeLong(creationTime);
@@ -47,13 +47,13 @@ public final class FileInformationPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveRequest(final ActiveConnection connection) {
-		path = connection.readUTF();
+		path = connection.readUtf();
 	}
 	
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
-		name = connection.readUTF();
-		path = connection.readUTF();
+		name = connection.readUtf();
+		path = connection.readUtf();
 		size = connection.readLong();
 		fileType = connection.readByte();
 		creationTime = connection.readLong();

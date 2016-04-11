@@ -16,11 +16,11 @@ public final class CommandPacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeUTF(command);
+		connection.writeUtf(command);
 	}
 	
 	public void receive(final ActiveConnection connection) {
-		command = connection.readUTF();
+		command = connection.readUtf();
 	}
 	
 	public void execute(final ActiveConnection connection) {

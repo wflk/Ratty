@@ -22,11 +22,11 @@ public class ComputerInfoPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		connection.writeUTF(name);
-		connection.writeUTF(hostName);
-		connection.writeUTF(os);
-		connection.writeUTF(osVersion);
-		connection.writeUTF(osArchitecture);
+		connection.writeUtf(name);
+		connection.writeUtf(hostName);
+		connection.writeUtf(os);
+		connection.writeUtf(osVersion);
+		connection.writeUtf(osArchitecture);
 		connection.writeInt(processors);
 		connection.writeLong(ram);
 	}
@@ -38,11 +38,11 @@ public class ComputerInfoPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
-		name = connection.readUTF();
-		hostName = connection.readUTF();
-		os = connection.readUTF();
-		osVersion = connection.readUTF();
-		osArchitecture = connection.readUTF();
+		name = connection.readUtf();
+		hostName = connection.readUtf();
+		os = connection.readUtf();
+		osVersion = connection.readUtf();
+		osArchitecture = connection.readUtf();
 		processors = connection.readInt();
 		ram = connection.readLong();
 	}

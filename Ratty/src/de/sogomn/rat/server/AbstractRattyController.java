@@ -33,12 +33,7 @@ public abstract class AbstractRattyController implements IServerObserver, IConne
 	
 	@Override
 	public void closed(final ActiveServer server) {
-		connections.forEach(connection -> {
-			connection.setObserver(null);
-			connection.close();
-		});
-		
-		connections.clear();
+		//...
 	}
 	
 	public void broadcast(final IPacket packet) {

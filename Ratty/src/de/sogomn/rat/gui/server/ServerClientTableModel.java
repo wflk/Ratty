@@ -118,6 +118,18 @@ final class ServerClientTableModel extends AbstractTableModel {
 		return null;
 	}
 	
+	public ServerClient[] getServerClients(final int... rows) {
+		final ServerClient[] clients = new ServerClient[rows.length];
+		
+		for (int i = 0; i < rows.length; i++) {
+			final int row = rows[i];
+			
+			clients[i] = getServerClient(row);
+		}
+		
+		return clients;
+	}
+	
 	public static final class Column {
 		
 		final String name;

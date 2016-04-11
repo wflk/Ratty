@@ -16,12 +16,12 @@ public final class ChatPacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeUTF(message);
+		connection.writeUtf(message);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
-		message = connection.readUTF();
+		message = connection.readUtf();
 	}
 	
 	@Override

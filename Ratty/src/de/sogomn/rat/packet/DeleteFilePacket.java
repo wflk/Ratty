@@ -18,12 +18,12 @@ public final class DeleteFilePacket implements IPacket {
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeUTF(path);
+		connection.writeUtf(path);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
-		path = connection.readUTF();
+		path = connection.readUtf();
 	}
 	
 	@Override

@@ -35,6 +35,8 @@ public interface IRattyGui {
 	
 	void removeClient(final ServerClient client);
 	
+	ServerClient getSelectedClient();
+	
 	void update();
 	
 }

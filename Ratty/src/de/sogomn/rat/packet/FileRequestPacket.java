@@ -31,14 +31,14 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendRequest(final ActiveConnection connection) {
-		connection.writeUTF(rootFile);
+		connection.writeUtf(rootFile);
 	}
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
 		for (final String path : paths) {
 			connection.writeByte(INCOMING);
-			connection.writeUTF(path);
+			connection.writeUtf(path);
 		}
 		
 		connection.writeByte(END);
@@ -46,7 +46,7 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveRequest(final ActiveConnection connection) {
-		rootFile = connection.readUTF();
+		rootFile = connection.readUtf();
 	}
 	
 	@Override
@@ -54,7 +54,7 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 		final ArrayList<String> pathList = new ArrayList<String>();
 		
 		while (connection.readByte() == INCOMING) {
-			final String path = connection.readUTF();
+			final String path = connection.readUtf();
 			
 			pathList.add(path);
 		}

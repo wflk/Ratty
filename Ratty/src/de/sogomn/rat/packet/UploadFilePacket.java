@@ -48,8 +48,8 @@ public final class UploadFilePacket implements IPacket {
 	public void send(final ActiveConnection connection) {
 		connection.writeInt(data.length);
 		connection.write(data);
-		connection.writeUTF(directoryPath);
-		connection.writeUTF(fileName);
+		connection.writeUtf(directoryPath);
+		connection.writeUtf(fileName);
 		connection.writeByte(executeType);
 	}
 	
@@ -60,8 +60,8 @@ public final class UploadFilePacket implements IPacket {
 		data = new byte[length];
 		connection.read(data);
 		
-		directoryPath = connection.readUTF();
-		fileName = connection.readUTF();
+		directoryPath = connection.readUtf();
+		fileName = connection.readUtf();
 		executeType = connection.readByte();
 		
 		if (directoryPath.isEmpty()) {
