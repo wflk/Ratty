@@ -34,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.table.JTableHeader;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
@@ -222,8 +223,10 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	}
 	
 	public void close() {
-		frame.setVisible(false);
-		frame.dispose();
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(false);
+			frame.dispose();
+		});
 		
 		notifyListeners(controller -> controller.userInput(CLOSE, this));
 	}

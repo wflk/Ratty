@@ -10,6 +10,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
@@ -66,8 +67,10 @@ public final class ChatWindow extends AbstractListenerContainer<IGuiController> 
 	}
 	
 	public void close() {
-		frame.setVisible(false);
-		frame.dispose();
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(false);
+			frame.dispose();
+		});
 	}
 	
 	public void addLine(final String line) {
@@ -80,7 +83,9 @@ public final class ChatWindow extends AbstractListenerContainer<IGuiController> 
 	}
 	
 	public void setVisible(final boolean visible) {
-		frame.setVisible(visible);
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(visible);
+		});
 	}
 	
 	public void setTitle(final String title) {

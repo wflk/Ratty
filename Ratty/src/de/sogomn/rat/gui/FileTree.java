@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -174,14 +175,18 @@ public final class FileTree extends AbstractListenerContainer<IGuiController> {
 	}
 	
 	public void setVisible(final boolean visible) {
-		frame.setVisible(visible);
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(visible);
+		});
 	}
 	
 	public void close() {
 		root.removeAllChildren();
 		
-		frame.setVisible(false);
-		frame.dispose();
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(false);
+			frame.dispose();
+		});
 	}
 	
 	public void setTitle(final String title) {

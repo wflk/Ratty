@@ -18,6 +18,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -137,6 +138,13 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
+	public void close() {
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(false);
+			frame.dispose();
+		});
+	}
+	
 	public void addListEntry(final String entry) {
 		listModel.addElement(entry);
 	}
@@ -146,12 +154,9 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	}
 	
 	public void setVisible(final boolean visible) {
-		frame.setVisible(visible);
-	}
-	
-	public void close() {
-		frame.setVisible(false);
-		frame.dispose();
+		SwingUtilities.invokeLater(() -> {
+			frame.setVisible(visible);
+		});
 	}
 	
 	public String getAddressInput() {

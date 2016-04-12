@@ -859,6 +859,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			return;
 		}
 		
+		client.logOut();
+		
 		gui.removeClient(client);
 		clients.remove(connection);
 		
