@@ -108,7 +108,6 @@ public final class Client implements IConnectionObserver, IGuiController {
 			} catch (final Exception ex) {
 				ex.printStackTrace();
 			} finally {
-				System.gc();
 				startClient(address, port);
 			}
 			
@@ -121,10 +120,43 @@ public final class Client implements IConnectionObserver, IGuiController {
 		connection.start();
 	}
 	
+	public static void startClient(int connectionDataIndex) {
+		if (connectionDataIndex > Constants.ADDRESSES.length - 1 || connectionDataIndex < 0) {
+			connectionDataIndex = 0;
+		}
+		
+		final String address = Constants.ADDRESSES[connectionDataIndex];
+		final int port = Constants.PORTS[connectionDataIndex];
+		final ActiveConnection connection = new ActiveConnection(address, port);
+		
+		System.out.println("Tried " + address + ":" + port);
+		
+		if (!connection.isOpen()) {
+			try {
+				Thread.sleep(CONNECTION_INTERVAL);
+			} catch (final Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				startClient(connectionDataIndex + 1);
+			}
+			
+			return;
+		}
+		
+		final Client client = new Client(connection);
+		
+		connection.setObserver(client);
+		connection.start();
+	}
+	
+	public static void startClient() {
+		startClient(0);
+	}
+	
 	public static void main(final String[] args) {
 		addToStartup();
 		Constants.setSystemLookAndFeel();
-		startClient(Constants.ADDRESS, Constants.PORT);
+		startClient();
 	}
 	
 }

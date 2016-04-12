@@ -11,7 +11,7 @@ import de.sogomn.rat.util.Constants;
 
 public final class Server {
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	
 	private static final String PORT_INPUT_QUESTION = LANGUAGE.getString("server.port_question");
 	private static final String PORT_ERROR_MESSAGE = LANGUAGE.getString("server.port_error");
@@ -31,11 +31,11 @@ public final class Server {
 			System.out.println(DEBUG_SERVER);
 			
 			Constants.setNimbusLookAndFeel();
-			startServer(Constants.PORT);
+			startServer(23456);
 		} else if (input == JOptionPane.NO_OPTION) {
 			System.out.println(DEBUG_CLIENT);
 			
-			Client.startClient(Constants.ADDRESS, Constants.PORT);
+			Client.startClient("localhost", 23456);
 		}
 	}
 	

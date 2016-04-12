@@ -51,8 +51,8 @@ import de.sogomn.rat.packet.VoicePacket;
 import de.sogomn.rat.packet.WebsitePacket;
 import de.sogomn.rat.server.AbstractRattyController;
 import de.sogomn.rat.server.ActiveServer;
-import de.sogomn.rat.util.FrameEncoder.Frame;
 import de.sogomn.rat.util.Constants;
+import de.sogomn.rat.util.FrameEncoder.Frame;
 import de.sogomn.rat.util.XorCipher;
 
 /*
@@ -73,7 +73,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private long startTime;
 	
 	private static final String BUILDER_DATA_REPLACEMENT = "data";
-	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s" + System.lineSeparator() + "%s";
+	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s:%s";
 	private static final String BUILDER_MANIFEST_REPLACEMENT = "META-INF/MANIFEST.MF";
 	private static final byte[] BUILDER_MANIFEST_REPLACEMENT_DATA = ("Manifest-Version: 1.0" + System.lineSeparator() + "Class-Path: ." + System.lineSeparator() + "Main-Class: de.sogomn.rat.Client" + System.lineSeparator() + System.lineSeparator()).getBytes();
 	private static final String[] BUILDER_REMOVALS = {
@@ -476,7 +476,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		selectedFile = getSaveFile("JAR");
 		
 		if (selectedFile != null) {
-			final String text = "[" + selectedFile.getName() + "]";
+			final String text = selectedFile.getName();
 			
 			builder.setFileLabel(text);
 		} else {
@@ -506,6 +506,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			}
 		} catch (final IOException ex) {
 			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex.getMessage());
+		} finally {
+			builder.setVisible(false);
 		}
 	}
 	

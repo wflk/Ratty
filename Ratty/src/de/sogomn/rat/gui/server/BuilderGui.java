@@ -31,13 +31,17 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	private static final Dimension SIZE = new Dimension(500, 200);
 	private static final GridBagLayout LAYOUT = new GridBagLayout();
 	private static final EmptyBorder PADDING = new EmptyBorder(5, 5, 5, 5);
-	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getIntegerInstance();
+	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getInstance();
 	
 	private static final String ADDRESS = LANGUAGE.getString("builder.address");
 	private static final String PORT = LANGUAGE.getString("builder.port");
 	
 	public static final String CHOOSE = LANGUAGE.getString("builder.choose");
 	public static final String BUILD = LANGUAGE.getString("builder.build");
+	
+	static {
+		PORT_NUMBER_FORMAT.setGroupingUsed(false);
+	}
 	
 	public BuilderGui() {
 		frame = new JFrame();

