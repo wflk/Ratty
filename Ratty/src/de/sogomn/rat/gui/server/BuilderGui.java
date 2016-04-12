@@ -116,7 +116,7 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	}
 	
 	public void setVisible(final boolean visible) {
-		frame.setVisible(true);
+		frame.setVisible(visible);
 	}
 	
 	public void close() {

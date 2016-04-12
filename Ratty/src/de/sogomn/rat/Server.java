@@ -11,7 +11,7 @@ import de.sogomn.rat.util.Constants;
 
 public final class Server {
 	
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	
 	private static final String PORT_INPUT_QUESTION = LANGUAGE.getString("server.port_question");
 	private static final String PORT_ERROR_MESSAGE = LANGUAGE.getString("server.port_error");
