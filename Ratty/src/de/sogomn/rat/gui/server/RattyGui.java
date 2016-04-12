@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +23,6 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -35,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
@@ -55,7 +54,6 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private JPopupMenu menu;
 	private JMenuBar menuBar;
 	private JButton build, attack;
-	private JFileChooser fileChooser;
 	private ServerClient selectedClient;
 	
 	private static final String TITLE = "Ratty " + Constants.VERSION;
@@ -63,6 +61,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 6, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
 	private static final int ROW_HEIGHT = 25;
+	private static final int TABLE_HEADER_HEIGHT = 30;
 	
 	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
 	private static final BufferedImage FILE_MANAGEMENT_ICON = CATEGORY_ICONS[1];
@@ -124,11 +123,8 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		menuBar = new JMenuBar();
 		build = new JButton(BUILD);
 		attack = new JButton(ATTACK);
-		fileChooser = new JFileChooser();
 		
 		final Container contentPane = frame.getContentPane();
-		final String currentPath = System.getProperty("user.dir");
-		final File currentDirectory = new File(currentPath);
 		final JMenu surveillance = createMenu(SURVEILLANCE, SURVEILLANCE_ICON, SURVEILLANCE_ITEM_DATA);
 		final JMenu fileManagement = createMenu(FILE_MANAGEMENT, FILE_MANAGEMENT_ICON, FILE_MANAGEMENT_ITEM_DATA);
 		final JMenu utility = createMenu(UTILITY, UTILITY_ICON, UTILITY_ITEM_DATA);
@@ -150,8 +146,13 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 				table.setRowSelectionInterval(row, row);
 			}
 		};
+		final DefaultTableCellRenderer cellRenderer = (DefaultTableCellRenderer)tableHeader.getDefaultRenderer();
+		final int tableHeaderWidth = tableHeader.getWidth();
+		final Dimension tableHeaderSize = new Dimension(tableHeaderWidth, TABLE_HEADER_HEIGHT);
 		
 		tableHeader.setReorderingAllowed(false);
+		tableHeader.setPreferredSize(tableHeaderSize);
+		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
 		
 		attack.setActionCommand(ATTACK);
 		attack.addActionListener(this::actionPerformed);
@@ -173,7 +174,6 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setShowGrid(true);
 		table.addMouseListener(rightClickAdapter);
-		fileChooser.setCurrentDirectory(currentDirectory);
 		
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		contentPane.add(menuBar, BorderLayout.SOUTH);

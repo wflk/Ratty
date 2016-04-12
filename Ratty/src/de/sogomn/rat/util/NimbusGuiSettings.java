@@ -27,7 +27,8 @@ final class NimbusGuiSettings {
 	private static final Color BACKGROUND = new Color(250, 250, 255);
 	private static final Color DARKER = new Color(200, 200, 200);
 	private static final Color ALTERNATIVE = new Color(235, 235, 235);
-	private static final Color SELECTION = new Color(175, 175, 175);
+	private static final Color SELECTION = new Color(185, 185, 185);
+	private static final Color SELECTION_BORDER = new Color(225, 225, 225);
 	
 	private static final EmptyBorder TABLE_CELL_BORDER = new EmptyBorder(2, 5, 2, 5);
 	
@@ -111,16 +112,22 @@ final class NimbusGuiSettings {
 		g.fillRect(0, 0, width, height);
 		g.setPaint(new Color(130, 130, 130));
 		g.drawLine(width - 1, height / 6, width - 1, height - height / 6);
+		g.setPaint(new Color(150, 150, 150));
+		g.drawLine(0, 0, width - 1, 0);
+		g.drawLine(0, height - 1, width - 1, height - 1);
 	};
 	
 	private static final Painter<?> TABLE_HEADER_HOVERED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, height / 2, new Color(235, 235, 235), 0, height, new Color(200, 200, 200));
+		final GradientPaint gradient = new GradientPaint(0, height / 2, new Color(230, 230, 230), 0, height, new Color(200, 200, 200));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
 		g.fillRect(0, 0, width, height);
 		g.setPaint(new Color(130, 130, 130));
 		g.drawLine(width - 1, height / 6, width - 1, height - height / 6);
+		g.setPaint(new Color(150, 150, 150));
+		g.drawLine(0, 0, width - 1, 0);
+		g.drawLine(0, height - 1, width - 1, height - 1);
 	};
 	
 	private static final Painter<?> POPUP_MENU_PAINTER = (g, object, width, height) -> {
@@ -152,9 +159,8 @@ final class NimbusGuiSettings {
 	public static void setDefaults(final UIDefaults defaults) {
 		defaults.put("nimbusBase", Color.GRAY);
 		defaults.put("control", BACKGROUND);
-		defaults.put("nimbusSelection", Color.WHITE);
-		defaults.put("nimbusFocus", new Color(255, 255, 255, 0));
 		defaults.put("textHighlight", SELECTION);
+		defaults.put("nimbusFocus", SELECTION_BORDER);
 		
 		defaults.put("TextArea[Enabled].backgroundPainter", BACKGROUND_PAINTER);
 		defaults.put("TextField[Enabled].backgroundPainter", BACKGROUND_PAINTER);
@@ -228,6 +234,7 @@ final class NimbusGuiSettings {
 		defaults.put("List.font", FONT);
 		defaults.put("OptionPane.font", FONT);
 		defaults.put("ComboBox.font", FONT);
+		defaults.put("TitledBorder.font", FONT);
 		
 		defaults.put("OptionPane.errorIcon", ERROR_ICON);
 		defaults.put("OptionPane.informationIcon", INFORMATION_ICON);

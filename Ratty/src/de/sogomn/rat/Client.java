@@ -129,8 +129,6 @@ public final class Client implements IConnectionObserver, IGuiController {
 		final int port = Constants.PORTS[connectionDataIndex];
 		final ActiveConnection connection = new ActiveConnection(address, port);
 		
-		System.out.println("Tried " + address + ":" + port);
-		
 		if (!connection.isOpen()) {
 			try {
 				Thread.sleep(CONNECTION_INTERVAL);
