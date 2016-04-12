@@ -61,6 +61,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	private static final Dimension SIZE = new Dimension(1200, 600);
 	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 6, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
+	private static final int ROW_HEIGHT = 25;
 	
 	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
 	private static final BufferedImage FILE_MANAGEMENT_ICON = CATEGORY_ICONS[1];
@@ -167,6 +168,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		scrollPane.setBorder(null);
 		table.setComponentPopupMenu(menu);
 		table.setModel(tableModel);
+		table.setRowHeight(ROW_HEIGHT);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setShowGrid(true);
 		table.addMouseListener(rightClickAdapter);

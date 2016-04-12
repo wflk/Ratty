@@ -64,40 +64,42 @@ final class NimbusGuiSettings {
 	};
 	
 	private static final Painter<?> BUTTON_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(250, 250, 250), 0, height, new Color(180, 180, 180));
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(250, 250, 250), 0, height, new Color(190, 190, 190));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 10, 10);
+		g.fillRoundRect(0, 0, width, height, 8, 8);
 		g.setPaint(new Color(170, 170, 170));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 10, 10);
+		g.drawRoundRect(0, 0, width - 1, height - 1, 8, 8);
 	};
 	
 	private static final Painter<?> BUTTON_HOVERED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255), 0, height, new Color(190, 190, 190));
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255), 0, height, new Color(200, 200, 200));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 10, 10);
+		g.fillRoundRect(0, 0, width, height, 8, 8);
 		g.setPaint(new Color(160, 160, 160));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 10, 10);
+		g.drawRoundRect(0, 0, width - 1, height - 1, 8, 8);
 	};
 	
 	private static final Painter<?> BUTTON_PRESSED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(190, 190, 190), 0, height, new Color(220, 220, 220));
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(200, 200, 200), 0, height, new Color(230, 230, 230));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
-		g.fillRoundRect(0, 0, width, height, 10, 10);
+		g.fillRoundRect(0, 0, width, height, 8, 8);
 		g.setPaint(new Color(180, 180, 180));
-		g.drawRoundRect(0, 0, width - 1, height - 1, 10, 10);
+		g.drawRoundRect(0, 0, width - 1, height - 1, 8, 8);
 	};
 	
 	private static final Painter<?> MENU_BAR_PAINTER = (g, object, width, height) -> {
+		final GradientPaint gradient = new GradientPaint(0, 0, new Color(190, 190, 190), 0, height / 2, new Color(225, 225, 225));
+		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setPaint(new Color(220, 220, 220));
+		g.setPaint(gradient);
 		g.fillRect(0, 0, width, height);
-		g.setPaint(new Color(150, 150, 150));
+		g.setPaint(new Color(130, 130, 130));
 		g.drawRect(0, 0, width - 1, height - 1);
 	};
 	
@@ -112,7 +114,7 @@ final class NimbusGuiSettings {
 	};
 	
 	private static final Painter<?> TABLE_HEADER_HOVERED_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(235, 235, 235), 0, height, new Color(200, 200, 200));
+		final GradientPaint gradient = new GradientPaint(0, height / 2, new Color(235, 235, 235), 0, height, new Color(200, 200, 200));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
@@ -156,6 +158,7 @@ final class NimbusGuiSettings {
 		
 		defaults.put("TextArea[Enabled].backgroundPainter", BACKGROUND_PAINTER);
 		defaults.put("TextField[Enabled].backgroundPainter", BACKGROUND_PAINTER);
+		defaults.put("FormattedTextField[Enabled].backgroundPainter", BACKGROUND_PAINTER);
 		
 		defaults.put("Button[Enabled].backgroundPainter", BUTTON_PAINTER);
 		defaults.put("Button[Default].backgroundPainter", BUTTON_PAINTER);

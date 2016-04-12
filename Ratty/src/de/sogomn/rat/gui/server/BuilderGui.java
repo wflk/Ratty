@@ -2,6 +2,7 @@ package de.sogomn.rat.gui.server;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,13 +10,16 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.text.NumberFormat;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.rat.gui.IGuiController;
@@ -23,19 +27,29 @@ import de.sogomn.rat.gui.IGuiController;
 final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	
 	private JFrame frame;
-	private JLabel addressLabel, portLabel, fileLabel;
 	private JTextField address;
 	private JFormattedTextField port;
-	private JButton choose, build;
+	private JButton add, remove, choose, build;
+	private JList<String> list;
+	private JPanel leftPanel, rightPanel;
+	private JSplitPane splitPane;
 	
-	private static final Dimension SIZE = new Dimension(500, 200);
-	private static final GridBagLayout LAYOUT = new GridBagLayout();
+	private DefaultListModel<String> listModel;
+	
+	private static final Dimension SIZE = new Dimension(500, 300);
+	private static final GridBagLayout LAYOUT_LEFT = new GridBagLayout();
+	private static final BorderLayout LAYOUT_RIGHT = new BorderLayout();
 	private static final EmptyBorder PADDING = new EmptyBorder(5, 5, 5, 5);
 	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getInstance();
 	
 	private static final String ADDRESS = LANGUAGE.getString("builder.address");
 	private static final String PORT = LANGUAGE.getString("builder.port");
 	
+	private static final TitledBorder ADDRESS_BORDER = new TitledBorder(ADDRESS);
+	private static final TitledBorder PORT_BORDER = new TitledBorder(PORT);
+	
+	public static final String ADD = LANGUAGE.getString("builder.add");
+	public static final String REMOVE = LANGUAGE.getString("builder.remove");
 	public static final String CHOOSE = LANGUAGE.getString("builder.choose");
 	public static final String BUILD = LANGUAGE.getString("builder.build");
 	
@@ -45,66 +59,74 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	
 	public BuilderGui() {
 		frame = new JFrame();
-		addressLabel = new JLabel(ADDRESS);
-		portLabel = new JLabel(PORT);
-		fileLabel = new JLabel();
 		address = new JTextField();
 		port = new JFormattedTextField(PORT_NUMBER_FORMAT);
+		add = new JButton(ADD);
+		remove = new JButton(REMOVE);
 		choose = new JButton(CHOOSE);
 		build = new JButton(BUILD);
+		list = new JList<String>();
+		listModel = new DefaultListModel<String>();
 		
+		list.setModel(listModel);
+		add.setActionCommand(ADD);
+		add.addActionListener(this::buttonClicked);
+		remove.setActionCommand(REMOVE);
+		remove.addActionListener(this::buttonClicked);
 		choose.setActionCommand(CHOOSE);
 		choose.addActionListener(this::buttonClicked);
 		build.setActionCommand(BUILD);
 		build.addActionListener(this::buttonClicked);
+		address.setBorder(ADDRESS_BORDER);
+		port.setBorder(PORT_BORDER);
 		
-		final JPanel contentPane = createPanel();
+		leftPanel = createLeftPanel();
+		rightPanel = createRightPanel();
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
 		
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		frame.setContentPane(contentPane);
+		frame.setContentPane(splitPane);
 		frame.setPreferredSize(SIZE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 	}
 	
-	private JPanel createPanel() {
+	private JPanel createLeftPanel() {
 		final JPanel panel = new JPanel();
 		final GridBagConstraints c = new GridBagConstraints();
 		
 		panel.setBorder(PADDING);
-		panel.setLayout(LAYOUT);
+		panel.setLayout(LAYOUT_LEFT);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = c.weighty = 1;
-		panel.add(addressLabel, c);
+		c.insets = new Insets(3, 3, 3, 3);
 		
-		c.gridx = 1;
-		c.weightx = 3;
+		c.gridy = 1;
 		panel.add(address, c);
 		
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weightx = 1;
-		panel.add(portLabel, c);
-		
-		c.gridx = 1;
-		c.weightx = 3;
+		c.gridy = 2;
 		panel.add(port, c);
 		
-		c.gridx = 0;
-		c.gridy = 2;
-		c.weightx = 1;
-		panel.add(fileLabel, c);
+		c.gridy = 3;
+		panel.add(add, c);
 		
-		c.gridx = 1;
+		c.gridy = 4;
 		panel.add(choose, c);
 		
-		c.gridx = 0;
-		c.gridy = 3;
-		c.gridwidth = 2;
-		c.weighty = 5;
-		c.insets = new Insets(10, 0, 0, 0);
+		c.gridy = 5;
+		c.anchor = GridBagConstraints.SOUTH;
 		panel.add(build, c);
+		
+		return panel;
+	}
+	
+	private JPanel createRightPanel() {
+		final JPanel panel = new JPanel();
+		
+		panel.setLayout(LAYOUT_RIGHT);
+		panel.add(list, BorderLayout.CENTER);
+		panel.add(remove, BorderLayout.SOUTH);
 		
 		return panel;
 	}
@@ -113,6 +135,14 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		final String command = a.getActionCommand();
 		
 		notifyListeners(controller -> controller.userInput(command, this));
+	}
+	
+	public void addListEntry(final String entry) {
+		listModel.addElement(entry);
+	}
+	
+	public void removeListEntry(final String entry) {
+		listModel.removeElement(entry);
 	}
 	
 	public void setVisible(final boolean visible) {
@@ -124,16 +154,29 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		frame.dispose();
 	}
 	
-	public void setFileLabel(final String text) {
-		fileLabel.setText(text);
-	}
-	
 	public String getAddressInput() {
 		return address.getText();
 	}
 	
 	public String getPortInput() {
 		return port.getText();
+	}
+	
+	public String getSelectedListEntry() {
+		return list.getSelectedValue();
+	}
+	
+	public String[] getListEntries() {
+		final int size = listModel.size();
+		final String[] entries = new String[size];
+		
+		for (int i = 0; i < size; i++) {
+			final String entry = listModel.getElementAt(i);
+			
+			entries[i] = entry;
+		}
+		
+		return entries;
 	}
 	
 }
