@@ -100,12 +100,12 @@ final class NimbusGuiSettings {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);
 		g.fillRect(0, 0, width, height);
-		g.setPaint(new Color(130, 130, 130));
+		g.setPaint(new Color(150, 150, 150));
 		g.drawRect(0, 0, width - 1, height - 1);
 	};
 	
 	private static final Painter<?> TABLE_HEADER_PAINTER = (g, object, width, height) -> {
-		final GradientPaint gradient = new GradientPaint(0, 0, new Color(225, 225, 225), 0, height, new Color(190, 190, 190));
+		final GradientPaint gradient = new GradientPaint(0, height / 2, new Color(225, 225, 225), 0, height, new Color(190, 190, 190));
 		
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setPaint(gradient);

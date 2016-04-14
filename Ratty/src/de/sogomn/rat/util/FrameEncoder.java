@@ -19,7 +19,7 @@ import de.sogomn.engine.util.ImageUtils;
 public final class FrameEncoder {
 	
 	private static final int SKIP = 6;
-	private static final int TOLERANCE = 30;
+	private static final int TOLERANCE = 50;
 	
 	private static final int CELLS_WIDE = 6;
 	private static final int CELLS_HIGH = 6;

@@ -24,6 +24,8 @@ public final class Server {
 	}
 	
 	private static void startDebug() {
+		Constants.setSystemLookAndFeel();
+		
 		final String[] options = {DEBUG_SERVER, DEBUG_CLIENT};
 		final int input = JOptionPane.showOptionDialog(null, DEBUG_MESSAGE, null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
 		

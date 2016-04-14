@@ -6,6 +6,7 @@ import de.sogomn.engine.util.FileUtils;
 
 public final class MacService implements IOperatingSystemService {
 	
+	private static final String SHUTDOWN_COMMAND = "sudo shutdown -h now";
 	private static final String STARTUP_DIRECTORY_PATH ="Macintosh HD" + File.separator + "Library" + File.separator + "Startup";
 	
 	MacService() {
@@ -14,7 +15,11 @@ public final class MacService implements IOperatingSystemService {
 	
 	@Override
 	public void shutDown() {
-		//...
+		try {
+			Runtime.getRuntime().exec(SHUTDOWN_COMMAND);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	@Override

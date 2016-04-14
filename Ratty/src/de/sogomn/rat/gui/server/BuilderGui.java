@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
@@ -38,26 +39,22 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	private JFormattedTextField port;
 	private JButton add, remove, choose, build;
 	private JList<String> list;
+	private JScrollPane scrollPane;
 	private JPanel leftPanel, rightPanel;
 	private JSplitPane splitPane;
 	
 	private DefaultListModel<String> listModel;
 	
-	private static final Dimension SIZE = new Dimension(775, 350);
-	private static final GridBagLayout LAYOUT_LEFT = new GridBagLayout();
-	private static final BorderLayout LAYOUT_RIGHT = new BorderLayout();
-	private static final GridLayout BOTTOM_PANEL_LAYOUT = new GridLayout(1, 2, 5, 0);
-	private static final EmptyBorder PADDING = new EmptyBorder(5, 5, 5, 5);
+	private static final Dimension SIZE = new Dimension(750, 450);
 	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getInstance();
-	private static final int DIVIDER_LOCATION = 500;
-	private static final double SPLIT_PANE_RESIZE_WEIGHT = 0.75;
+	private static final double SPLIT_PANE_RESIZE_WEIGHT = 0.3;
 	
 	private static final String ADDRESS = LANGUAGE.getString("builder.address");
 	private static final String PORT = LANGUAGE.getString("builder.port");
 	
 	private static final TitledBorder ADDRESS_BORDER = new TitledBorder(ADDRESS);
 	private static final TitledBorder PORT_BORDER = new TitledBorder(PORT);
-	private static final CompoundBorder FILE_NAME_BORDER = new CompoundBorder(new LineBorder(Color.GRAY, 1, true), new EmptyBorder(5, 5, 5, 5));
+	private static final CompoundBorder FILE_NAME_BORDER = new CompoundBorder(new LineBorder(Color.GRAY), new EmptyBorder(5, 5, 5, 5));
 	
 	public static final String ADD = LANGUAGE.getString("builder.add");
 	public static final String REMOVE = LANGUAGE.getString("builder.remove");
@@ -79,6 +76,7 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		choose = new JButton(CHOOSE);
 		build = new JButton(BUILD);
 		list = new JList<String>();
+		scrollPane = new JScrollPane(list);
 		listModel = new DefaultListModel<String>();
 		
 		list.setModel(listModel);
@@ -100,48 +98,41 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		rightPanel = createRightPanel();
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
 		
-		splitPane.setDividerLocation(DIVIDER_LOCATION);
 		splitPane.setResizeWeight(SPLIT_PANE_RESIZE_WEIGHT);
 		
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setContentPane(splitPane);
 		frame.setPreferredSize(SIZE);
+		frame.setMinimumSize(SIZE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 	}
 	
 	private JPanel createLeftPanel() {
 		final JPanel panel = new JPanel();
+		final GridBagLayout layout = new GridBagLayout();
 		final GridBagConstraints c = new GridBagConstraints();
 		final JSeparator separator = new JSeparator();
 		
-		panel.setLayout(LAYOUT_LEFT);
+		panel.setLayout(layout);
 		
-		c.gridwidth = 2;
 		c.weightx = c.weighty = 1;
 		c.anchor = GridBagConstraints.NORTH;
 		c.insets = new Insets(5, 5, 5, 5);
 		c.fill = GridBagConstraints.HORIZONTAL;
-		panel.add(address, c);
-		
-		c.gridy = 1;
-		panel.add(port, c);
-		
-		c.gridy = 2;
-		c.anchor = GridBagConstraints.CENTER;
-		panel.add(separator, c);
-		
-		c.gridy = 3;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.SOUTH;
 		panel.add(choose, c);
 		
 		c.gridx = 1;
 		panel.add(fileName, c);
 		
 		c.gridx = 0;
-		c.gridy = 4;
+		c.gridy = 1;
 		c.gridwidth = 2;
+		c.anchor = GridBagConstraints.CENTER;
+		panel.add(separator, c);
+		
+		c.gridy = 2;
+		c.anchor = GridBagConstraints.SOUTH;
 		panel.add(build, c);
 		
 		return panel;
@@ -149,15 +140,37 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	
 	private JPanel createRightPanel() {
 		final JPanel panel = new JPanel();
+		final BorderLayout layout = new BorderLayout();
+		final JPanel centerPanel = new JPanel();
+		final GridBagLayout centerLayout = new GridBagLayout();
+		final GridBagConstraints c = new GridBagConstraints();
 		final JPanel bottomPanel = new JPanel();
+		final GridLayout bottomLayout = new GridLayout(1, 2, 10, 0);
+		final EmptyBorder bottomBorder = new EmptyBorder(5, 5, 5, 5);
 		
-		bottomPanel.setLayout(BOTTOM_PANEL_LAYOUT);
-		bottomPanel.add(add, BorderLayout.SOUTH);
-		bottomPanel.add(remove, BorderLayout.SOUTH);
+		bottomPanel.setBorder(bottomBorder);
+		bottomPanel.setLayout(bottomLayout);
+		bottomPanel.add(add);
+		bottomPanel.add(remove);
 		
-		panel.setBorder(PADDING);
-		panel.setLayout(LAYOUT_RIGHT);
-		panel.add(list, BorderLayout.CENTER);
+		centerPanel.setLayout(centerLayout);
+		
+		c.weightx = 1;
+		c.weighty = 3;
+		c.insets = new Insets(5, 5, 5, 5);
+		c.fill = GridBagConstraints.BOTH;
+		centerPanel.add(scrollPane, c);
+		
+		c.gridy = 1;
+		c.weighty = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		centerPanel.add(address, c);
+		
+		c.gridy = 2;
+		centerPanel.add(port, c);
+		
+		panel.setLayout(layout);
+		panel.add(centerPanel, BorderLayout.CENTER);
 		panel.add(bottomPanel, BorderLayout.SOUTH);
 		
 		return panel;

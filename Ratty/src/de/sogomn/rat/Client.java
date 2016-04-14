@@ -1,5 +1,7 @@
 package de.sogomn.rat;
 
+import org.jnativehook.GlobalScreen;
+
 import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.IGuiController;
@@ -152,8 +154,24 @@ public final class Client implements IConnectionObserver, IGuiController {
 	}
 	
 	public static void main(final String[] args) {
+		final Thread hook = new Thread(() -> {
+			try {
+				GlobalScreen.unregisterNativeHook();
+			} catch (final Exception ex) {
+				ex.printStackTrace();
+			}
+		});
+		
 		addToStartup();
 		Constants.setSystemLookAndFeel();
+		
+		try {
+			GlobalScreen.registerNativeHook();
+			Runtime.getRuntime().addShutdownHook(hook);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
+		
 		startClient();
 	}
 	
