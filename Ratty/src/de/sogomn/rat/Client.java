@@ -24,7 +24,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 	private ChatWindow chat;
 	private NativeKeyListener keylogger;
 	
-	private static final int VOICE_BUFFER_SIZE = 1024 << 12;
+	private static final int VOICE_BUFFER_SIZE = 1024 << 8;
 	private static final int CONNECTION_INTERVAL = 5000;
 	
 	public Client(final ActiveConnection connection) {
