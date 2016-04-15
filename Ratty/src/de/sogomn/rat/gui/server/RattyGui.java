@@ -94,6 +94,8 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	public static final String CHAT = LANGUAGE.getString("action.chat");
 	public static final String INFORMATION = LANGUAGE.getString("action.information");
 	public static final String UNINSTALL = LANGUAGE.getString("action.uninstall");
+	public static final String KEYLOG = LANGUAGE.getString("action.keylog");
+	public static final String SHUT_DOWN = LANGUAGE.getString("action.shut_down");
 	public static final String CLOSE = "Close";
 	
 	static {
@@ -101,6 +103,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		SURVEILLANCE_ITEM_DATA.put(DESKTOP, MENU_ICONS[2]);
 		SURVEILLANCE_ITEM_DATA.put(VOICE, MENU_ICONS[3]);
 		SURVEILLANCE_ITEM_DATA.put(CLIPBOARD, MENU_ICONS[6]);
+		SURVEILLANCE_ITEM_DATA.put(KEYLOG, MENU_ICONS[15]);
 		FILE_MANAGEMENT_ITEM_DATA.put(FILES, MENU_ICONS[4]);
 		FILE_MANAGEMENT_ITEM_DATA.put(UPLOAD_EXECUTE, MENU_ICONS[9]);
 		FILE_MANAGEMENT_ITEM_DATA.put(DROP_EXECUTE, MENU_ICONS[11]);
@@ -109,6 +112,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		UTILITY_ITEM_DATA.put(WEBSITE, MENU_ICONS[8]);
 		UTILITY_ITEM_DATA.put(AUDIO, MENU_ICONS[7]);
 		UTILITY_ITEM_DATA.put(CHAT, MENU_ICONS[12]);
+		UTILITY_ITEM_DATA.put(SHUT_DOWN, MENU_ICONS[16]);
 		OTHER_ITEM_DATA.put(INFORMATION, MENU_ICONS[13]);
 		OTHER_ITEM_DATA.put(FREE, MENU_ICONS[10]);
 		OTHER_ITEM_DATA.put(UNINSTALL, MENU_ICONS[14]);

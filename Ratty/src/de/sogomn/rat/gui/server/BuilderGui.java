@@ -189,6 +189,10 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		});
 	}
 	
+	public void removeListEntries() {
+		listModel.clear();
+	}
+	
 	public void addListEntry(final String entry) {
 		listModel.addElement(entry);
 	}

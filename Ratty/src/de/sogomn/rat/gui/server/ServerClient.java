@@ -22,6 +22,7 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 	final DisplayPanel displayPanel;
 	final FileTree fileTree;
 	final ChatWindow chat;
+	final LoggingGui logger;
 	
 	public ServerClient(final ActiveConnection connection) {
 		this.connection = connection;
@@ -29,6 +30,7 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		displayPanel = new DisplayPanel();
 		fileTree = new FileTree();
 		chat = new ChatWindow();
+		logger = new LoggingGui();
 		
 		displayPanel.addListener(this);
 		fileTree.addListener(this);
@@ -51,6 +53,7 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		displayPanel.setTitle(title);
 		fileTree.setTitle(title);
 		chat.setTitle(title);
+		logger.setTitle(title);
 		
 		loggedIn = true;
 	}
@@ -61,6 +64,7 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		displayPanel.close();
 		fileTree.close();
 		chat.close();
+		logger.close();
 	}
 	
 	public void setStreamingDesktop(final boolean streamingDesktop) {
