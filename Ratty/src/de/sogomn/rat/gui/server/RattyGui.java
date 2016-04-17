@@ -22,38 +22,31 @@ import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
-import de.sogomn.engine.util.AbstractListenerContainer;
-import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.Resources;
 
 /*
  * CONSTANT OVERLOAD!!! WHEEE!
  */
-public final class RattyGui extends AbstractListenerContainer<IGuiController> implements IRattyGui {
-	
-	private JFrame frame;
+public final class RattyGui extends AbstractRattyGui {
 	
 	private JTable table;
 	private ServerClientTableModel tableModel;
 	private JScrollPane scrollPane;
 	private JPopupMenu menu;
 	private JMenuBar menuBar;
-	private JButton build, attack;
+	private JButton manageServers, build, attack;
 	private ServerClient selectedClient;
 	
 	private static final String TITLE = "Ratty " + Constants.VERSION;
@@ -96,6 +89,7 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	public static final String UNINSTALL = LANGUAGE.getString("action.uninstall");
 	public static final String KEYLOG = LANGUAGE.getString("action.keylog");
 	public static final String SHUT_DOWN = LANGUAGE.getString("action.shut_down");
+	public static final String MANAGE_SERVERS = LANGUAGE.getString("action.manage_servers");
 	public static final String CLOSE = "Close";
 	
 	static {
@@ -119,12 +113,12 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	}
 	
 	public RattyGui() {
-		frame = new JFrame(TITLE);
 		table = new JTable();
 		tableModel = new ServerClientTableModel();
 		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		menu = new JPopupMenu();
 		menuBar = new JMenuBar();
+		manageServers = new JButton(MANAGE_SERVERS);
 		build = new JButton(BUILD);
 		attack = new JButton(ATTACK);
 		
@@ -158,12 +152,15 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		tableHeader.setPreferredSize(tableHeaderSize);
 		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
 		
+		manageServers.setActionCommand(MANAGE_SERVERS);
+		manageServers.addActionListener(this::actionPerformed);
 		attack.setActionCommand(ATTACK);
 		attack.addActionListener(this::actionPerformed);
 		build.setActionCommand(BUILD);
 		build.addActionListener(this::actionPerformed);
 		menuBar.setLayout(MENU_BAR_LAYOUT);
 		menuBar.setMargin(MENU_BAR_MARGIN);
+		menuBar.add(manageServers);
 		menuBar.add(build);
 		menuBar.add(attack);
 		menu.add(surveillance);
@@ -182,14 +179,13 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		contentPane.add(menuBar, BorderLayout.SOUTH);
 		
+		frame.setTitle(TITLE);
+		frame.setIconImages(Resources.GUI_ICONS);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(closingAdapter);
 		frame.setPreferredSize(SIZE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
-		frame.setIconImages(Resources.GUI_ICONS);
-		frame.setVisible(true);
-		frame.requestFocus();
 	}
 	
 	private JMenu createMenu(final String name, final BufferedImage image, final Map<String, BufferedImage> data) {
@@ -226,11 +222,9 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
+	@Override
 	public void close() {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(false);
-			frame.dispose();
-		});
+		super.close();
 		
 		notifyListeners(controller -> controller.userInput(CLOSE, this));
 	}
@@ -257,51 +251,6 @@ public final class RattyGui extends AbstractListenerContainer<IGuiController> im
 	}
 	
 	@Override
-	public boolean showWarning(final String message, final String yes, final String no) {
-		final String[] options = {yes, no};
-		final int input = JOptionPane.showOptionDialog(frame, message, null, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, null);
-		
-		if (input == JOptionPane.YES_OPTION) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	@Override
-	public void showError(final String message) {
-		JOptionPane.showMessageDialog(frame, message, null, JOptionPane.ERROR_MESSAGE, null);
-	}
-	
-	@Override
-	public void showMessage(final String message) {
-		final JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE);
-		final JDialog dialog = pane.createDialog(frame, null);
-		
-		dialog.setModal(false);
-		dialog.setVisible(true);
-	}
-	
-	@Override
-	public int showOptions(final String message, final String yes, final String no, final String cancel) {
-		final String[] options = {yes, no, cancel};
-		final int input = JOptionPane.showOptionDialog(frame, message, null, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
-		
-		return input;
-	}
-	
-	@Override
-	public String getInput(final String message) {
-		final String input = JOptionPane.showInputDialog(frame, message);
-		
-		return input;
-	}
-	
-	@Override
-	public String getInput() {
-		return getInput(null);
-	}
-	
 	public ServerClient getSelectedClient() {
 		return selectedClient;
 	}

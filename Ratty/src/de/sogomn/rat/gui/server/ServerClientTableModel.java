@@ -17,6 +17,7 @@ final class ServerClientTableModel extends AbstractTableModel {
 	private static final Column NAME = new Column(LANGUAGE.getString("column.name"), String.class, ServerClient::getName);
 	private static final Column LOCATION = new Column(LANGUAGE.getString("column.location"), ImageIcon.class, ServerClient::getFlag);
 	private static final Column IP_ADDRESS = new Column(LANGUAGE.getString("column.address"), String.class, ServerClient::getAddress);
+	private static final Column PORT = new Column(LANGUAGE.getString("column.port"), String.class, ServerClient::getPort);
 	private static final Column OS = new Column(LANGUAGE.getString("column.os"), String.class, ServerClient::getOs);
 	private static final Column VERSION = new Column(LANGUAGE.getString("column.version"), String.class, ServerClient::getVersion);
 	private static final Column STREAMING_DESKTOP = new Column(LANGUAGE.getString("column.desktop"), Boolean.class, ServerClient::isStreamingDesktop);
@@ -30,6 +31,7 @@ final class ServerClientTableModel extends AbstractTableModel {
 		addColumn(NAME);
 		addColumn(LOCATION);
 		addColumn(IP_ADDRESS);
+		addColumn(PORT);
 		addColumn(OS);
 		addColumn(VERSION);
 		addColumn(STREAMING_DESKTOP);

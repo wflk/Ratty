@@ -10,14 +10,11 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
-import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
 
-public final class ChatWindow extends AbstractListenerContainer<IGuiController> {
+public final class ChatWindow extends AbstractGui {
 	
-	private JFrame frame;
 	private JTextArea chat;
 	private JTextField submit;
 	private JScrollPane scrollPane;
@@ -30,7 +27,6 @@ public final class ChatWindow extends AbstractListenerContainer<IGuiController> 
 	public static final String MESSAGE_SENT = "Message sent";
 	
 	public ChatWindow() {
-		frame = new JFrame();
 		chat = new JTextArea();
 		submit = new JTextField();
 		scrollPane = new JScrollPane(chat, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -66,13 +62,6 @@ public final class ChatWindow extends AbstractListenerContainer<IGuiController> 
 		submit.setText("");
 	}
 	
-	public void close() {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(false);
-			frame.dispose();
-		});
-	}
-	
 	public void addLine(final String line) {
 		chat.append(line + "\r\n");
 		
@@ -80,16 +69,6 @@ public final class ChatWindow extends AbstractListenerContainer<IGuiController> 
 		final int bottom = scrollBar.getMaximum();
 		
 		scrollBar.setValue(bottom);
-	}
-	
-	public void setVisible(final boolean visible) {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(visible);
-		});
-	}
-	
-	public void setTitle(final String title) {
-		frame.setTitle(title);
 	}
 	
 	public String getMessage() {

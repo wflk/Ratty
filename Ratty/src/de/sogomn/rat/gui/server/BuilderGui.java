@@ -23,18 +23,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import de.sogomn.engine.util.AbstractListenerContainer;
-import de.sogomn.rat.gui.IGuiController;
+import de.sogomn.rat.gui.AbstractGui;
 
-final class BuilderGui extends AbstractListenerContainer<IGuiController> {
+final class BuilderGui extends AbstractGui {
 	
-	private JFrame frame;
 	private JTextField address, fileName;
 	private JFormattedTextField port;
 	private JButton add, remove, choose, build;
@@ -67,7 +64,6 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	}
 	
 	public BuilderGui() {
-		frame = new JFrame();
 		address = new JTextField();
 		port = new JFormattedTextField(PORT_NUMBER_FORMAT);
 		fileName = new JTextField(NO_FILE);
@@ -182,13 +178,6 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
-	public void close() {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(false);
-			frame.dispose();
-		});
-	}
-	
 	public void removeListEntries() {
 		listModel.clear();
 	}
@@ -199,12 +188,6 @@ final class BuilderGui extends AbstractListenerContainer<IGuiController> {
 	
 	public void removeListEntry(final String entry) {
 		listModel.removeElement(entry);
-	}
-	
-	public void setVisible(final boolean visible) {
-		SwingUtilities.invokeLater(() -> {
-			frame.setVisible(visible);
-		});
 	}
 	
 	public void setAddressInput(final String input) {

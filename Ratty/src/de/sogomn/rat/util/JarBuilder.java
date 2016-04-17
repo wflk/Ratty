@@ -1,4 +1,4 @@
-package de.sogomn.rat.builder;
+package de.sogomn.rat.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,8 +8,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-
-import de.sogomn.rat.util.Constants;
 
 public final class JarBuilder {
 	

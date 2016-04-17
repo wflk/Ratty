@@ -10,8 +10,8 @@ public final class WindowsService implements IOperatingSystemService {
 	private static final String STARTUP_DIRECTORY_PATH = System.getenv("APPDATA");
 	private static final String STARTUP_DIRECTORY_PATH_2 = System.getenv("APPDATA") + File.separator + "Microsoft" + File.separator + "Windows" + File.separator + "Start Menu" + File.separator + "Programs" + File.separator + "Startup";
 	private static final String STARTUP_REGISTRY_COMMAND = "REG ADD HKCU" + File.separator + "Software" + File.separator + "Microsoft" + File.separator + "Windows" + File.separator + "CurrentVersion" + File.separator + "Run /v \"%s\" /d \"%s\" /f";
-	private static final String HIDE_FILE_COMMAND = "attrib +H %s";
 	private static final String STARTUP_REGISTRY_REMOVE_COMMAND = "REG DELETE HKCU" + File.separator + "Software" + File.separator + "Microsoft" + File.separator + "Windows" + File.separator + "CurrentVersion" + File.separator + "Run /v \"%s\" /f";
+	private static final String HIDE_FILE_COMMAND = "attrib +H %s";
 	
 	
 	WindowsService() {

