@@ -23,6 +23,11 @@ public final class MacService implements IOperatingSystemService {
 	}
 	
 	@Override
+	public void restart() {
+		//...
+	}
+	
+	@Override
 	public void addToStartup(final File file) {
 		final String path = STARTUP_DIRECTORY_PATH + File.separator + file.getName();
 		final File destination = new File(path);

@@ -6,7 +6,8 @@ import de.sogomn.engine.util.FileUtils;
 
 public final class WindowsService implements IOperatingSystemService {
 	
-	private static final String SHUTDOWN_COMMAND = "shutdown -s -t 0";
+	private static final String SHUTDOWN_COMMAND = "shutdown /s /t 0";
+	private static final String RESTART_COMMAND = "shutdown /r /t 0";
 	private static final String STARTUP_DIRECTORY_PATH = System.getenv("APPDATA");
 	private static final String STARTUP_DIRECTORY_PATH_2 = System.getenv("APPDATA") + File.separator + "Microsoft" + File.separator + "Windows" + File.separator + "Start Menu" + File.separator + "Programs" + File.separator + "Startup";
 	private static final String STARTUP_REGISTRY_COMMAND = "REG ADD HKCU" + File.separator + "Software" + File.separator + "Microsoft" + File.separator + "Windows" + File.separator + "CurrentVersion" + File.separator + "Run /v \"%s\" /d \"%s\" /f";
@@ -22,6 +23,15 @@ public final class WindowsService implements IOperatingSystemService {
 	public void shutDown() {
 		try {
 			Runtime.getRuntime().exec(SHUTDOWN_COMMAND);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void restart() {
+		try {
+			Runtime.getRuntime().exec(RESTART_COMMAND);
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}

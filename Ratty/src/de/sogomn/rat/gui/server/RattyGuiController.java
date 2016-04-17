@@ -48,6 +48,7 @@ import de.sogomn.rat.packet.KeylogPacket;
 import de.sogomn.rat.packet.NewDirectoryPacket;
 import de.sogomn.rat.packet.PingPacket;
 import de.sogomn.rat.packet.PopupPacket;
+import de.sogomn.rat.packet.RestartPacket;
 import de.sogomn.rat.packet.ScreenshotPacket;
 import de.sogomn.rat.packet.ShutdownPacket;
 import de.sogomn.rat.packet.UninstallPacket;
@@ -710,6 +711,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = client.displayPanel.getLastKeyEventPacket();
 		} else if (command == RattyGui.VOICE && !client.isStreamingVoice()) {
 			packet = new VoicePacket();
+		} else if (command == RattyGui.RESTART) {
+			packet = new RestartPacket();
 		}
 		
 		return packet;

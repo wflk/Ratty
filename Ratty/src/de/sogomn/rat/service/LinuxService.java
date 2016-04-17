@@ -14,6 +14,11 @@ public final class LinuxService implements IOperatingSystemService {
 	}
 	
 	@Override
+	public void restart() {
+		//...
+	}
+	
+	@Override
 	public void addToStartup(final File file) {
 		//...
 	}

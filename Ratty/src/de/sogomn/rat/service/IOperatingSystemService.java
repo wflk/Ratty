@@ -6,6 +6,8 @@ public interface IOperatingSystemService {
 	
 	void shutDown();
 	
+	void restart();
+	
 	void addToStartup(final File file);
 	
 	void removeFromStartup(final String name);

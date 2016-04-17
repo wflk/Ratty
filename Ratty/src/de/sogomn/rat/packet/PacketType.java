@@ -31,7 +31,8 @@ public enum PacketType {
 	COMPUTER_INFORMATION(24, ComputerInfoPacket.class),
 	UNINSTALL(25, UninstallPacket.class),
 	KEYLOG(26, KeylogPacket.class),
-	SHUTDOWN(27, ShutdownPacket.class);
+	SHUTDOWN(27, ShutdownPacket.class),
+	RESTART(28, RestartPacket.class);
 	
 	public final byte id;
 	public final Class<? extends IPacket> clazz;

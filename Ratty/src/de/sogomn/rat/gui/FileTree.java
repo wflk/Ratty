@@ -30,7 +30,7 @@ public final class FileTree extends AbstractGui {
 	
 	private FileTreeNode nodeClicked;
 	
-	private static final Dimension SIZE = new Dimension(500, 500);
+	private static final Dimension SIZE = new Dimension(500, 650);
 	private static final String ROOT_NAME = "";
 	private static final String SEPARATOR_REGEX = "[\\\\\\/]";
 	

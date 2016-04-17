@@ -89,6 +89,7 @@ public final class RattyGui extends AbstractRattyGui {
 	public static final String UNINSTALL = LANGUAGE.getString("action.uninstall");
 	public static final String KEYLOG = LANGUAGE.getString("action.keylog");
 	public static final String SHUT_DOWN = LANGUAGE.getString("action.shut_down");
+	public static final String RESTART = LANGUAGE.getString("action.restart");
 	public static final String MANAGE_SERVERS = LANGUAGE.getString("action.manage_servers");
 	public static final String CLOSE = "Close";
 	
@@ -106,7 +107,8 @@ public final class RattyGui extends AbstractRattyGui {
 		UTILITY_ITEM_DATA.put(WEBSITE, MENU_ICONS[8]);
 		UTILITY_ITEM_DATA.put(AUDIO, MENU_ICONS[7]);
 		UTILITY_ITEM_DATA.put(CHAT, MENU_ICONS[12]);
-		UTILITY_ITEM_DATA.put(SHUT_DOWN, MENU_ICONS[16]);
+		OTHER_ITEM_DATA.put(RESTART, MENU_ICONS[17]);
+		OTHER_ITEM_DATA.put(SHUT_DOWN, MENU_ICONS[16]);
 		OTHER_ITEM_DATA.put(INFORMATION, MENU_ICONS[13]);
 		OTHER_ITEM_DATA.put(FREE, MENU_ICONS[10]);
 		OTHER_ITEM_DATA.put(UNINSTALL, MENU_ICONS[14]);
