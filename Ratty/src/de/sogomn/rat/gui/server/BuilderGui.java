@@ -113,7 +113,6 @@ final class BuilderGui extends AbstractGui {
 		panel.setLayout(layout);
 		
 		c.weightx = c.weighty = 1;
-		c.anchor = GridBagConstraints.NORTH;
 		c.insets = new Insets(5, 5, 5, 5);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		panel.add(choose, c);
@@ -124,11 +123,9 @@ final class BuilderGui extends AbstractGui {
 		c.gridx = 0;
 		c.gridy = 1;
 		c.gridwidth = 2;
-		c.anchor = GridBagConstraints.CENTER;
 		panel.add(separator, c);
 		
 		c.gridy = 2;
-		c.anchor = GridBagConstraints.SOUTH;
 		panel.add(build, c);
 		
 		return panel;
