@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 Johannes Boczek
+ */
+
 package de.sogomn.rat.gui;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;

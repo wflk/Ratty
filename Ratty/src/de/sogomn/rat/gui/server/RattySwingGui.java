@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 Johannes Boczek
+ */
+
 package de.sogomn.rat.gui.server;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
@@ -108,9 +112,9 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		UTILITY_ITEM_DATA.put(WEBSITE, MENU_ICONS[8]);
 		UTILITY_ITEM_DATA.put(AUDIO, MENU_ICONS[7]);
 		UTILITY_ITEM_DATA.put(CHAT, MENU_ICONS[12]);
+		OTHER_ITEM_DATA.put(INFORMATION, MENU_ICONS[13]);
 		OTHER_ITEM_DATA.put(RESTART, MENU_ICONS[17]);
 		OTHER_ITEM_DATA.put(SHUT_DOWN, MENU_ICONS[16]);
-		OTHER_ITEM_DATA.put(INFORMATION, MENU_ICONS[13]);
 		OTHER_ITEM_DATA.put(FREE, MENU_ICONS[10]);
 		OTHER_ITEM_DATA.put(UNINSTALL, MENU_ICONS[14]);
 	}

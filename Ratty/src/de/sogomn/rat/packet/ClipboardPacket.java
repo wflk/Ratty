@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 Johannes Boczek
+ */
+
 package de.sogomn.rat.packet;
 
 import java.awt.HeadlessException;

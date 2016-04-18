@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 Johannes Boczek
+ */
+
 package de.sogomn.rat;
 
 import de.sogomn.rat.packet.IPacket;
