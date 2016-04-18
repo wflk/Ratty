@@ -17,7 +17,7 @@ public final class Constants {
 	
 	private static final String DATA_PATH = "/data";
 	
-	public static final String VERSION = "1.28.0";
+	public static final String VERSION = "1.28.1";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
 	public static final String[] ADDRESSES;
