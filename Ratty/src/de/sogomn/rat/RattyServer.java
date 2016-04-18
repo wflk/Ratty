@@ -15,7 +15,7 @@ import de.sogomn.rat.util.Constants;
 
 public final class RattyServer {
 	
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final int DEBUG_PORT = 23456;
 	
 	private static final String DEBUG_MESSAGE = LANGUAGE.getString("debug.question");
