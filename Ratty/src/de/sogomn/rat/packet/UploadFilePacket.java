@@ -15,7 +15,7 @@ public final class UploadFilePacket implements IPacket {
 	private static final String SEPARATOR = "/";
 	private static final byte NO = 0;
 	private static final byte YES = 1;
-	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
+	private static final String TEMP_DIRECTORY_PATH = System.getProperty("java.io.tmpdir");
 	
 	public UploadFilePacket(final String filePath, final String directoryPath, final boolean execute) {
 		this.directoryPath = directoryPath.replaceAll(SEPARATOR_REGEX, SEPARATOR);
@@ -65,7 +65,7 @@ public final class UploadFilePacket implements IPacket {
 		executeType = connection.readByte();
 		
 		if (directoryPath.isEmpty()) {
-			directoryPath = TEMP_DIR;
+			directoryPath = TEMP_DIRECTORY_PATH;
 		}
 	}
 	

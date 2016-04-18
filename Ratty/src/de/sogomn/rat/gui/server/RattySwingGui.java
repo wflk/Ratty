@@ -33,13 +33,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
+import de.sogomn.rat.gui.AbstractSwingGui;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.Resources;
 
 /*
  * CONSTANT OVERLOAD!!! WHEEE!
  */
-public final class RattyGui extends AbstractRattyGui {
+public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 	
 	private JTable table;
 	private ServerClientTableModel tableModel;
@@ -114,7 +115,7 @@ public final class RattyGui extends AbstractRattyGui {
 		OTHER_ITEM_DATA.put(UNINSTALL, MENU_ICONS[14]);
 	}
 	
-	public RattyGui() {
+	public RattySwingGui() {
 		table = new JTable();
 		tableModel = new ServerClientTableModel();
 		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -133,7 +134,7 @@ public final class RattyGui extends AbstractRattyGui {
 		final WindowAdapter closingAdapter = new WindowAdapter() {
 			@Override
 			public void windowClosing(final WindowEvent w) {
-				close();
+				notifyListeners(controller -> controller.userInput(CLOSE, this));
 			}
 		};
 		final MouseAdapter rightClickAdapter = new MouseAdapter() {
@@ -222,13 +223,6 @@ public final class RattyGui extends AbstractRattyGui {
 		final String command = a.getActionCommand();
 		
 		notifyListeners(controller -> controller.userInput(command, this));
-	}
-	
-	@Override
-	public void close() {
-		super.close();
-		
-		notifyListeners(controller -> controller.userInput(CLOSE, this));
 	}
 	
 	@Override

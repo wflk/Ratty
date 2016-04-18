@@ -18,9 +18,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import de.sogomn.engine.util.ImageUtils;
-
-public final class FileTree extends AbstractGui {
+public final class FileTree extends AbstractSwingGui {
 	
 	private FileTreeNode root;
 	private JTree tree;
@@ -93,7 +91,6 @@ public final class FileTree extends AbstractGui {
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setPreferredSize(SIZE);
 		frame.setContentPane(scrollPane);
-		frame.setIconImage(ImageUtils.EMPTY_IMAGE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 	}

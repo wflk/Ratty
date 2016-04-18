@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 
-public final class LoggingGui extends AbstractGui {
+public final class LoggingGui extends AbstractSwingGui {
 	
 	private JTextArea textArea;
 	private JScrollPane scrollPane;

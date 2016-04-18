@@ -7,6 +7,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.SwingUtilities;
+
 import de.sogomn.engine.IKeyboardListener;
 import de.sogomn.engine.IMouseListener;
 import de.sogomn.engine.Screen;
@@ -58,7 +60,6 @@ public final class DisplayPanel extends AbstractListenerContainer<IGuiController
 			
 			g.drawImage(image, 0, 0, null);
 		});
-		screen.setIcons(ImageUtils.EMPTY_IMAGE);
 		
 		return screen;
 	}
@@ -132,7 +133,9 @@ public final class DisplayPanel extends AbstractListenerContainer<IGuiController
 	
 	public void close() {
 		if (screen != null) {
-			screen.close();
+			SwingUtilities.invokeLater(() -> {
+				screen.close();
+			});
 		}
 	}
 	

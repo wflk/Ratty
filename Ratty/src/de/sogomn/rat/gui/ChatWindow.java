@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 
 import de.sogomn.engine.util.ImageUtils;
 
-public final class ChatWindow extends AbstractGui {
+public final class ChatWindow extends AbstractSwingGui {
 	
 	private JTextArea chat;
 	private JTextField submit;

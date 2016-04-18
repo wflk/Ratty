@@ -17,7 +17,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
 
 import de.sogomn.engine.util.ImageUtils;
-import de.sogomn.rat.Server;
+import de.sogomn.rat.RattyServer;
 
 /*
  * WHEEE! Hardcoding!
@@ -142,7 +142,7 @@ final class NimbusGuiSettings {
 		Font newFont;
 		
 		try {
-			newFont = Font.createFont(Font.TRUETYPE_FONT, Server.class.getResourceAsStream("/lato.ttf")).deriveFont(14f);
+			newFont = Font.createFont(Font.TRUETYPE_FONT, RattyServer.class.getResourceAsStream("/lato.ttf")).deriveFont(14f);
 		} catch (final IOException | FontFormatException ex) {
 			ex.printStackTrace();
 			

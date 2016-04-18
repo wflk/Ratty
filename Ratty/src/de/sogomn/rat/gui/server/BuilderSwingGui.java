@@ -28,9 +28,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import de.sogomn.rat.gui.AbstractGui;
+import de.sogomn.rat.gui.AbstractSwingGui;
 
-final class BuilderGui extends AbstractGui {
+public final class BuilderSwingGui extends AbstractSwingGui implements IBuilderGui {
 	
 	private JTextField address, fileName;
 	private JFormattedTextField port;
@@ -63,7 +63,7 @@ final class BuilderGui extends AbstractGui {
 		PORT_NUMBER_FORMAT.setGroupingUsed(false);
 	}
 	
-	public BuilderGui() {
+	public BuilderSwingGui() {
 		address = new JTextField();
 		port = new JFormattedTextField(PORT_NUMBER_FORMAT);
 		fileName = new JTextField(NO_FILE);
@@ -175,42 +175,62 @@ final class BuilderGui extends AbstractGui {
 		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
-	public void removeListEntries() {
-		listModel.clear();
-	}
-	
+	@Override
 	public void addListEntry(final String entry) {
 		listModel.addElement(entry);
 	}
 	
+	@Override
 	public void removeListEntry(final String entry) {
 		listModel.removeElement(entry);
 	}
 	
+	@Override
+	public void clearListEntries() {
+		listModel.clear();
+	}
+	
+	@Override
+	public boolean containsListEntry(final String entry) {
+		return listModel.contains(entry);
+	}
+	
+	@Override
 	public void setAddressInput(final String input) {
 		address.setText(input);
 	}
 	
+	@Override
 	public void setPortInput(final String input) {
 		port.setText(input);
 	}
 	
+	@Override
 	public void setFileName(final String name) {
 		fileName.setText(name);
 	}
 	
+	@Override
 	public String getAddressInput() {
 		return address.getText();
 	}
 	
+	@Override
 	public String getPortInput() {
 		return port.getText();
 	}
 	
+	@Override
+	public String getFileName() {
+		return fileName.getText();
+	}
+	
+	@Override
 	public String getSelectedListEntry() {
 		return list.getSelectedValue();
 	}
 	
+	@Override
 	public String[] getListEntries() {
 		final int size = listModel.size();
 		final String[] entries = new String[size];

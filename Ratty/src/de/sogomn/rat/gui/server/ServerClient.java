@@ -32,10 +32,6 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		fileTree = new FileTree();
 		chat = new ChatWindow();
 		logger = new LoggingGui();
-		
-		displayPanel.addListener(this);
-		fileTree.addListener(this);
-		chat.addListener(this);
 	}
 	
 	@Override
@@ -51,6 +47,10 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		
 		final String title = name + " " + getAddress();
 		
+		displayPanel.addListener(this);
+		fileTree.addListener(this);
+		chat.addListener(this);
+		logger.addListener(this);
 		displayPanel.setTitle(title);
 		fileTree.setTitle(title);
 		chat.setTitle(title);
@@ -62,9 +62,13 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 	public void logOut() {
 		loggedIn = false;
 		
+		displayPanel.removeAllListeners();
 		displayPanel.close();
+		fileTree.removeAllListeners();
 		fileTree.close();
+		chat.removeAllListeners();
 		chat.close();
+		logger.removeAllListeners();
 		logger.close();
 	}
 	

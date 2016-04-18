@@ -17,9 +17,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import de.sogomn.rat.gui.AbstractGui;
+import de.sogomn.rat.gui.AbstractSwingGui;
 
-final class ServerListGui extends AbstractGui {
+public final class ServerListSwingGui extends AbstractSwingGui implements IServerListGui {
 	
 	private JList<String> list;
 	private JScrollPane scrollPane;
@@ -38,7 +38,7 @@ final class ServerListGui extends AbstractGui {
 	
 	private DefaultListModel<String> listModel;
 	
-	public ServerListGui() {
+	public ServerListSwingGui() {
 		list = new JList<String>();
 		scrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		port = new JFormattedTextField(PORT_NUMBER_FORMAT);
@@ -94,28 +94,39 @@ final class ServerListGui extends AbstractGui {
 		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
-	public void addItem(final String item) {
-		listModel.addElement(item);
+	@Override
+	public void addListEntry(final String entry) {
+		listModel.addElement(entry);
 	}
 	
-	public void removeItem(final String item) {
-		listModel.removeElement(item);
+	@Override
+	public void removeListEntry(final String entry) {
+		listModel.removeElement(entry);
 	}
 	
-	public void setPort(final String text) {
-		port.setText(text);
+	@Override
+	public void clearListEntries() {
+		listModel.clear();
 	}
 	
-	public boolean contains(final String item) {
-		return listModel.contains(item);
+	@Override
+	public boolean containsListEntry(final String entry) {
+		return listModel.contains(entry);
 	}
 	
+	@Override
+	public void setPortInput(final String input) {
+		port.setText(input);
+	}
+	
+	@Override
+	public String getPortInput() {
+		return port.getText();
+	}
+	
+	@Override
 	public String getSelectedItem() {
 		return list.getSelectedValue();
-	}
-	
-	public String getPort() {
-		return port.getText();
 	}
 	
 }
