@@ -106,12 +106,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_pt.properties",
 		"language/lang_fr.properties",
 		"language/lang_ro.properties",
+		"language/lang_sr.properties",
+		"language/lang_sr_Latn.properties",
 		"de/sogomn/rat/Server.class",
 		"de/sogomn/rat/util/Resources.class",
 		"de/sogomn/rat/util/JarBuilder.class",
 		"de/sogomn/rat/server/ActiveServer.class",
 		"de/sogomn/rat/server/AbstractRattyController.class",
-		"de/sogomn/rat/server/IServerObserver.class",
+		"de/sogomn/rat/server/IServerObserver.class"
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");
