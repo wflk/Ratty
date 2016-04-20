@@ -4,7 +4,7 @@
 
 package de.sogomn.rat.service;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public final class LinuxService implements IOperatingSystemService {
 	
@@ -23,7 +23,7 @@ public final class LinuxService implements IOperatingSystemService {
 	}
 	
 	@Override
-	public void addToStartup(final File file) {
+	public void addToStartup(final Path file) {
 		//...
 	}
 	

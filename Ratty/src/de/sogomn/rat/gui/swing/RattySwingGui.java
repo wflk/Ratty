@@ -2,9 +2,8 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui.server;
+package de.sogomn.rat.gui.swing;
 
-import static de.sogomn.rat.util.Constants.LANGUAGE;
 import static de.sogomn.rat.util.Resources.CATEGORY_ICONS;
 import static de.sogomn.rat.util.Resources.MENU_ICONS;
 
@@ -37,7 +36,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 
-import de.sogomn.rat.gui.AbstractSwingGui;
+import de.sogomn.rat.gui.IRattyGui;
+import de.sogomn.rat.gui.ServerClient;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.Resources;
 
@@ -66,37 +66,10 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 	private static final BufferedImage UTILITY_ICON = CATEGORY_ICONS[2];
 	private static final BufferedImage OTHER_ICON = CATEGORY_ICONS[3];
 	
-	private static final String SURVEILLANCE = LANGUAGE.getString("menu.surveillance");
-	private static final String FILE_MANAGEMENT = LANGUAGE.getString("menu.file_management");
-	private static final String UTILITY = LANGUAGE.getString("menu.utility");
-	private static final String OTHER = LANGUAGE.getString("menu.other");
 	private static final LinkedHashMap<String, BufferedImage> FILE_MANAGEMENT_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
 	private static final LinkedHashMap<String, BufferedImage> SURVEILLANCE_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
 	private static final LinkedHashMap<String, BufferedImage> UTILITY_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
 	private static final LinkedHashMap<String, BufferedImage> OTHER_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
-	
-	public static final String POPUP = LANGUAGE.getString("action.popup");
-	public static final String SCREENSHOT = LANGUAGE.getString("action.screenshot");
-	public static final String DESKTOP = LANGUAGE.getString("action.desktop");
-	public static final String VOICE = LANGUAGE.getString("action.voice");
-	public static final String FILES = LANGUAGE.getString("action.files");
-	public static final String COMMAND = LANGUAGE.getString("action.command");
-	public static final String CLIPBOARD = LANGUAGE.getString("action.clipboard");
-	public static final String WEBSITE = LANGUAGE.getString("action.website");
-	public static final String AUDIO = LANGUAGE.getString("action.audio");
-	public static final String UPLOAD_EXECUTE = LANGUAGE.getString("action.upload_execute");
-	public static final String FREE = LANGUAGE.getString("action.free");
-	public static final String BUILD = LANGUAGE.getString("action.build");
-	public static final String ATTACK = LANGUAGE.getString("action.attack");
-	public static final String DROP_EXECUTE = LANGUAGE.getString("action.drop_execute");
-	public static final String CHAT = LANGUAGE.getString("action.chat");
-	public static final String INFORMATION = LANGUAGE.getString("action.information");
-	public static final String UNINSTALL = LANGUAGE.getString("action.uninstall");
-	public static final String KEYLOG = LANGUAGE.getString("action.keylog");
-	public static final String SHUT_DOWN = LANGUAGE.getString("action.shut_down");
-	public static final String RESTART = LANGUAGE.getString("action.restart");
-	public static final String MANAGE_SERVERS = LANGUAGE.getString("action.manage_servers");
-	public static final String CLOSE = "Close";
 	
 	static {
 		SURVEILLANCE_ITEM_DATA.put(SCREENSHOT, MENU_ICONS[1]);

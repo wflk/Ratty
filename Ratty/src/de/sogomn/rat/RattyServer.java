@@ -8,19 +8,18 @@ import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 import javax.swing.JOptionPane;
 
-import de.sogomn.rat.gui.server.BuilderSwingGui;
-import de.sogomn.rat.gui.server.IBuilderGui;
-import de.sogomn.rat.gui.server.IRattyGui;
-import de.sogomn.rat.gui.server.IServerListGui;
-import de.sogomn.rat.gui.server.RattyGuiController;
-import de.sogomn.rat.gui.server.RattySwingGui;
-import de.sogomn.rat.gui.server.ServerListSwingGui;
+import de.sogomn.rat.gui.IRattyGuiFactory;
+import de.sogomn.rat.gui.RattyGuiController;
+import de.sogomn.rat.gui.swing.RattySwingGuiFactory;
 import de.sogomn.rat.util.Constants;
 
 public final class RattyServer {
 	
 	private static final boolean DEBUG = true;
+	private static final String DEBUG_ADDRESS = "localhost";
 	private static final int DEBUG_PORT = 23456;
+	
+	private static final IRattyGuiFactory GUI_FACTORY = new RattySwingGuiFactory();
 	
 	private static final String DEBUG_MESSAGE = LANGUAGE.getString("debug.question");
 	private static final String DEBUG_SERVER = LANGUAGE.getString("debug.server");
@@ -43,36 +42,23 @@ public final class RattyServer {
 		} else if (input == JOptionPane.NO_OPTION) {
 			System.out.println(DEBUG_CLIENT);
 			
-			RattyClient.startClient("localhost", DEBUG_PORT);
+			RattyClient.registerNativeHook();
+			RattyClient.startClient(DEBUG_ADDRESS, DEBUG_PORT);
 		}
 	}
 	
 	public static void startServer() {
 		Constants.setNimbusLookAndFeel();
 		
-		final IRattyGui gui = new RattySwingGui();
-		final IBuilderGui builder = new BuilderSwingGui();
-		final IServerListGui serverList = new ServerListSwingGui();
-		final RattyGuiController controller = new RattyGuiController(gui, builder, serverList);
-		
-		serverList.addListener(controller);
-		builder.addListener(controller);
-		gui.addListener(controller);
-		gui.setVisible(true);
+		new RattyGuiController(GUI_FACTORY);
 	}
 	
 	public static void startServer(final int port) {
 		Constants.setNimbusLookAndFeel();
 		
-		final IRattyGui gui = new RattySwingGui();
-		final IBuilderGui builder = new BuilderSwingGui();
-		final IServerListGui serverList = new ServerListSwingGui();
-		final RattyGuiController controller = new RattyGuiController(gui, builder, serverList);
+		final RattyGuiController controller = new RattyGuiController(GUI_FACTORY);
 		
 		controller.startServer(port);
-		builder.addListener(controller);
-		gui.addListener(controller);
-		gui.setVisible(true);
 	}
 	
 	public static void main(final String[] args) {

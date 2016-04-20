@@ -2,7 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui;
+package de.sogomn.rat.gui.swing;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
 

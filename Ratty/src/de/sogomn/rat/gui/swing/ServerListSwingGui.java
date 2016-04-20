@@ -2,9 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui.server;
-
-import static de.sogomn.rat.util.Constants.LANGUAGE;
+package de.sogomn.rat.gui.swing;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -21,7 +19,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import de.sogomn.rat.gui.AbstractSwingGui;
+import de.sogomn.rat.gui.IServerListGui;
 
 public final class ServerListSwingGui extends AbstractSwingGui implements IServerListGui {
 	
@@ -32,9 +30,6 @@ public final class ServerListSwingGui extends AbstractSwingGui implements IServe
 	
 	private static final Dimension SIZE = new Dimension(500, 300);
 	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getInstance();
-	
-	public static final String START = LANGUAGE.getString("server.start");
-	public static final String STOP = LANGUAGE.getString("server.stop");
 	
 	static {
 		PORT_NUMBER_FORMAT.setGroupingUsed(false);

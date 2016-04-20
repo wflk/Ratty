@@ -2,9 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui.server;
-
-import static de.sogomn.rat.util.Constants.LANGUAGE;
+package de.sogomn.rat.gui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,7 +30,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import de.sogomn.rat.gui.AbstractSwingGui;
+import de.sogomn.rat.gui.IBuilderGui;
 
 public final class BuilderSwingGui extends AbstractSwingGui implements IBuilderGui {
 	
@@ -50,18 +48,9 @@ public final class BuilderSwingGui extends AbstractSwingGui implements IBuilderG
 	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getInstance();
 	private static final double SPLIT_PANE_RESIZE_WEIGHT = 0.3;
 	
-	private static final String ADDRESS = LANGUAGE.getString("builder.address");
-	private static final String PORT = LANGUAGE.getString("builder.port");
-	
 	private static final TitledBorder ADDRESS_BORDER = new TitledBorder(ADDRESS);
 	private static final TitledBorder PORT_BORDER = new TitledBorder(PORT);
 	private static final CompoundBorder FILE_NAME_BORDER = new CompoundBorder(new LineBorder(Color.GRAY), new EmptyBorder(5, 5, 5, 5));
-	
-	public static final String ADD = LANGUAGE.getString("builder.add");
-	public static final String REMOVE = LANGUAGE.getString("builder.remove");
-	public static final String CHOOSE = LANGUAGE.getString("builder.choose");
-	public static final String BUILD = LANGUAGE.getString("builder.build");
-	public static final String NO_FILE = LANGUAGE.getString("builder.no_file");
 	
 	static {
 		PORT_NUMBER_FORMAT.setGroupingUsed(false);

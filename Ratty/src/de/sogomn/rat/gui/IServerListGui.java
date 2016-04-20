@@ -2,11 +2,14 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui.server;
+package de.sogomn.rat.gui;
 
-import de.sogomn.rat.gui.IGui;
+import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 public interface IServerListGui extends IGui {
+	
+	String START = LANGUAGE.getString("server.start");
+	String STOP = LANGUAGE.getString("server.stop");
 	
 	void addListEntry(final String entry);
 	

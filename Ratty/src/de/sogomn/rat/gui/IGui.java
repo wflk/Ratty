@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface IGui {
 	
+	String CLOSE = "Close";
+	
 	void addListener(final IGuiController controller);
 	
 	void removeListener(final IGuiController controller);
@@ -40,5 +42,7 @@ public interface IGui {
 	default String getInput() {
 		return getInput(null);
 	}
+	
+	boolean isVisible();
 	
 }

@@ -25,7 +25,7 @@ public final class UninstallPacket implements IPacket {
 	
 	@Override
 	public void execute(final ActiveConnection connection) {
-		final String name = Constants.JAR_FILE.getName();
+		final String name = Constants.JAR_FILE.getFileName().toString();
 		
 		Constants.OS_SERVICE.removeFromStartup(name);
 		

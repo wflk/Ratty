@@ -2,7 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui;
+package de.sogomn.rat.gui.swing;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -19,6 +19,7 @@ import de.sogomn.engine.Screen;
 import de.sogomn.engine.Screen.ResizeBehavior;
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.engine.util.ImageUtils;
+import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.packet.KeyEventPacket;
 import de.sogomn.rat.packet.MouseEventPacket;
 import de.sogomn.rat.util.FrameEncoder.Frame;

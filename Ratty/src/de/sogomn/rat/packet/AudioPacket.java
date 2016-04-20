@@ -4,7 +4,7 @@
 
 package de.sogomn.rat.packet;
 
-import java.io.File;
+import java.nio.file.Path;
 
 import de.sogomn.engine.fx.Sound;
 import de.sogomn.engine.util.FileUtils;
@@ -14,7 +14,7 @@ public final class AudioPacket implements IPacket {
 	
 	private byte[] data;
 	
-	public AudioPacket(final File file) {
+	public AudioPacket(final Path file) {
 		data = FileUtils.readExternalData(file);
 	}
 	

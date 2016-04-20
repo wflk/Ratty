@@ -2,19 +2,17 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui.server;
+package de.sogomn.rat.gui;
 
 import javax.swing.ImageIcon;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.gui.ChatWindow;
-import de.sogomn.rat.gui.DisplayPanel;
-import de.sogomn.rat.gui.FileTree;
-import de.sogomn.rat.gui.IGuiController;
-import de.sogomn.rat.gui.LoggingGui;
+import de.sogomn.rat.gui.swing.ChatSwingGui;
+import de.sogomn.rat.gui.swing.DisplayPanel;
+import de.sogomn.rat.gui.swing.LoggingGui;
 
-final class ServerClient extends AbstractListenerContainer<IGuiController> implements IGuiController {
+public final class ServerClient extends AbstractListenerContainer<IGuiController> implements IGuiController {
 	
 	private boolean loggedIn;
 	
@@ -25,16 +23,16 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 	
 	final ActiveConnection connection;
 	final DisplayPanel displayPanel;
-	final FileTree fileTree;
-	final ChatWindow chat;
+	final IFileBrowserGui fileBrowser;
+	final ChatSwingGui chat;
 	final LoggingGui logger;
 	
-	public ServerClient(final ActiveConnection connection) {
+	ServerClient(final ActiveConnection connection, final IRattyGuiFactory guiFactory) {
 		this.connection = connection;
 		
 		displayPanel = new DisplayPanel();
-		fileTree = new FileTree();
-		chat = new ChatWindow();
+		fileBrowser = guiFactory.createFileBrowserGui();
+		chat = new ChatSwingGui();
 		logger = new LoggingGui();
 	}
 	
@@ -52,11 +50,11 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		final String title = name + " " + getAddress();
 		
 		displayPanel.addListener(this);
-		fileTree.addListener(this);
+		fileBrowser.addListener(this);
 		chat.addListener(this);
 		logger.addListener(this);
 		displayPanel.setTitle(title);
-		fileTree.setTitle(title);
+		fileBrowser.setTitle(title);
 		chat.setTitle(title);
 		logger.setTitle(title);
 		
@@ -68,8 +66,8 @@ final class ServerClient extends AbstractListenerContainer<IGuiController> imple
 		
 		displayPanel.removeAllListeners();
 		displayPanel.close();
-		fileTree.removeAllListeners();
-		fileTree.close();
+		fileBrowser.removeAllListeners();
+		fileBrowser.close();
 		chat.removeAllListeners();
 		chat.close();
 		logger.removeAllListeners();

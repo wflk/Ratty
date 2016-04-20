@@ -2,7 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui.server;
+package de.sogomn.rat.gui.swing;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
 
@@ -11,6 +11,8 @@ import java.util.function.Function;
 
 import javax.swing.ImageIcon;
 import javax.swing.table.AbstractTableModel;
+
+import de.sogomn.rat.gui.ServerClient;
 
 final class ServerClientTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 919111102883611810L;

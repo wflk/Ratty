@@ -2,7 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui;
+package de.sogomn.rat.gui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -16,8 +16,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import de.sogomn.engine.util.ImageUtils;
+import de.sogomn.rat.gui.IChatGui;
 
-public final class ChatWindow extends AbstractSwingGui {
+public final class ChatSwingGui extends AbstractSwingGui implements IChatGui {
 	
 	private JTextArea chat;
 	private JTextField submit;
@@ -28,9 +29,7 @@ public final class ChatWindow extends AbstractSwingGui {
 	private static final Dimension SIZE = new Dimension(500, 500);
 	private static final String USER_PREFIX = "You: ";
 	
-	public static final String MESSAGE_SENT = "Message sent";
-	
-	public ChatWindow() {
+	public ChatSwingGui() {
 		chat = new JTextArea();
 		submit = new JTextField();
 		scrollPane = new JScrollPane(chat, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -60,14 +59,17 @@ public final class ChatWindow extends AbstractSwingGui {
 			
 			notifyListeners(controller -> controller.userInput(MESSAGE_SENT, this));
 			
-			addLine(USER_PREFIX + message);
+			appendLine(USER_PREFIX + message);
 		}
 		
 		submit.setText("");
 	}
 	
-	public void addLine(final String line) {
-		chat.append(line + "\r\n");
+	@Override
+	public void appendLine(String line) {
+		line += System.lineSeparator();
+		
+		chat.append(line);
 		
 		final JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
 		final int bottom = scrollBar.getMaximum();
@@ -75,12 +77,9 @@ public final class ChatWindow extends AbstractSwingGui {
 		scrollBar.setValue(bottom);
 	}
 	
-	public String getMessage() {
+	@Override
+	public String getMessageInput() {
 		return message;
-	}
-	
-	public boolean isVisible() {
-		return frame.isVisible();
 	}
 	
 }

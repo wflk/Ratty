@@ -2,7 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui;
+package de.sogomn.rat.gui.swing;
 
 import java.awt.Image;
 import java.util.List;
@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
+import de.sogomn.rat.gui.IGui;
+import de.sogomn.rat.gui.IGuiController;
 
 public abstract class AbstractSwingGui extends AbstractListenerContainer<IGuiController> implements IGui {
 	
@@ -91,6 +93,11 @@ public abstract class AbstractSwingGui extends AbstractListenerContainer<IGuiCon
 		final String input = JOptionPane.showInputDialog(frame, message);
 		
 		return input;
+	}
+	
+	@Override
+	public boolean isVisible() {
+		return frame.isVisible();
 	}
 	
 }

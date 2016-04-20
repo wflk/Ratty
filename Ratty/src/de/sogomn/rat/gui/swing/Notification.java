@@ -2,7 +2,7 @@
  * Copyright 2016 Johannes Boczek
  */
 
-package de.sogomn.rat.gui;
+package de.sogomn.rat.gui.swing;
 
 import javax.swing.Icon;
 import javax.swing.JDialog;
