@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface IGui {
 	
-	String CLOSE = "Close";
-	
 	void addListener(final IGuiController controller);
 	
 	void removeListener(final IGuiController controller);

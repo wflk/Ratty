@@ -5,7 +5,7 @@
 package de.sogomn.rat.gui;
 
 
-public interface IChatGui {
+public interface IChatGui extends IGui {
 	
 	String MESSAGE_SENT = "Message sent";
 	

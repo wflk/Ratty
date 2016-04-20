@@ -15,4 +15,10 @@ public interface IRattyGuiFactory {
 	
 	IFileBrowserGui createFileBrowserGui();
 	
+	IDisplayGui createDisplayGui();
+	
+	IChatGui createChatGui();
+	
+	ILoggingGui createLoggingGui();
+	
 }

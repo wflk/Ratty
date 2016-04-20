@@ -33,6 +33,7 @@ public interface IRattyGui extends IGui {
 	String SHUT_DOWN = LANGUAGE.getString("action.shut_down");
 	String RESTART = LANGUAGE.getString("action.restart");
 	String MANAGE_SERVERS = LANGUAGE.getString("action.manage_servers");
+	String CLOSE = "Close";
 	
 	void addClient(final ServerClient client);
 	

