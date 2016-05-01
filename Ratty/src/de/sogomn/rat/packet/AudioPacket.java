@@ -15,7 +15,7 @@ public final class AudioPacket implements IPacket {
 	private byte[] data;
 	
 	public AudioPacket(final Path file) {
-		data = FileUtils.readExternalData(file);
+		data = FileUtils.readExternalData(file.toString());
 	}
 	
 	public AudioPacket(final String path) {

@@ -6,8 +6,6 @@ package de.sogomn.rat.gui;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
 
-import java.nio.file.Path;
-
 public interface IFileBrowserGui extends IGui {
 	
 	String REQUEST = LANGUAGE.getString("action.request_files");
@@ -18,17 +16,28 @@ public interface IFileBrowserGui extends IGui {
 	String NEW_DIRECTORY = LANGUAGE.getString("action.new_directory");
 	String DROP_FILE = LANGUAGE.getString("action.drop_file");
 	String INFORMATION = LANGUAGE.getString("action.file_information");
+	String REQUEST_ROOT = "ROOTS";
 	
-	void setDirectory(final Path directory);
+	void setDirectory(final String path);
 	
-	void addFile(final Path file);
+	void addFile(final String path);
 	
-	void removeFile(final Path file);
+	void addRoot(final String root);
+	
+	void removeFile(final String path);
+	
+	void removeRoot(final String root);
 	
 	void clearFiles();
 	
-	Path getDirectory();
+	void clearRoots();
 	
-	Path getSelectedFile();
+	boolean isDirectory(final String path);
+	
+	String getCurrentDirectory();
+	
+	String getSelectedFile();
+	
+	String getSelectedRoot();
 	
 }

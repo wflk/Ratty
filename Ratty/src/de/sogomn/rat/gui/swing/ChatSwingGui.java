@@ -15,7 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.gui.IChatGui;
 
 public final class ChatSwingGui extends AbstractSwingGui implements IChatGui {
@@ -44,7 +43,6 @@ public final class ChatSwingGui extends AbstractSwingGui implements IChatGui {
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 		contentPane.add(submit, BorderLayout.SOUTH);
 		
-		frame.setIconImage(ImageUtils.EMPTY_IMAGE);
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setPreferredSize(SIZE);
 		frame.pack();

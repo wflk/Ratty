@@ -13,13 +13,11 @@ public final class UploadFilePacket implements IPacket {
 	private byte[] data;
 	private byte executeType;
 	
-	private static final String SEPARATOR_REGEX = "[\\\\\\/]";
-	private static final String SEPARATOR = "/";
 	private static final byte NO = 0;
 	private static final byte YES = 1;
 	
 	public UploadFilePacket(final String path, final byte[] data, final boolean execute) {
-		this.path = path.replaceAll(SEPARATOR_REGEX, SEPARATOR);
+		this.path = path;
 		this.data = data;
 		
 		executeType = execute ? YES : NO;
