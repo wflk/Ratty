@@ -4,8 +4,19 @@
 
 package de.sogomn.rat.util;
 
-import static de.sogomn.rat.util.Resources.FILE_ICONS;
-import static de.sogomn.rat.util.Resources.NOTIFICATION_ICONS;
+import static de.sogomn.rat.util.Resources.ICON_ERROR;
+import static de.sogomn.rat.util.Resources.ICON_FILE;
+import static de.sogomn.rat.util.Resources.ICON_FLOPPY_DISK;
+import static de.sogomn.rat.util.Resources.ICON_FOLDER;
+import static de.sogomn.rat.util.Resources.ICON_FOLDER_PLUS;
+import static de.sogomn.rat.util.Resources.ICON_FOLDER_UP;
+import static de.sogomn.rat.util.Resources.ICON_HARD_DRIVE;
+import static de.sogomn.rat.util.Resources.ICON_HOUSE;
+import static de.sogomn.rat.util.Resources.ICON_INFORMATION;
+import static de.sogomn.rat.util.Resources.ICON_LIST;
+import static de.sogomn.rat.util.Resources.ICON_QUESTION;
+import static de.sogomn.rat.util.Resources.ICON_SEARCH;
+import static de.sogomn.rat.util.Resources.ICON_WARNING;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -20,7 +31,6 @@ import javax.swing.UIDefaults;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
 
-import de.sogomn.engine.util.ImageUtils;
 import de.sogomn.rat.RattyServer;
 
 /*
@@ -37,21 +47,6 @@ final class NimbusGuiSettings {
 	private static final EmptyBorder TABLE_CELL_BORDER = new EmptyBorder(2, 5, 2, 5);
 	
 	private static final Font FONT;
-	
-	private static final ImageIcon ERROR_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[0], 2));
-	private static final ImageIcon INFORMATION_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[1], 2));
-	private static final ImageIcon QUESTION_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[2], 2));
-	private static final ImageIcon WARNING_ICON = new ImageIcon(ImageUtils.scaleImage(NOTIFICATION_ICONS[3], 2));
-	private static final ImageIcon SAVE_ICON = new ImageIcon(FILE_ICONS[0]);
-	private static final ImageIcon FOLDER_ICON = new ImageIcon(FILE_ICONS[1]);
-	private static final ImageIcon FOLDER_OPEN_ICON = new ImageIcon(FILE_ICONS[2]);
-	private static final ImageIcon FILE_ICON = new ImageIcon(FILE_ICONS[3]);
-	private static final ImageIcon LIST_ICON = new ImageIcon(FILE_ICONS[4]);
-	private static final ImageIcon DISC_ICON = new ImageIcon(FILE_ICONS[5]);
-	private static final ImageIcon HOME_ICON = new ImageIcon(FILE_ICONS[6]);
-	private static final ImageIcon NEW_FOLDER_ICON = new ImageIcon(FILE_ICONS[7]);
-	private static final ImageIcon UP_FOLDER_ICON = new ImageIcon(FILE_ICONS[8]);
-	private static final ImageIcon DETAILS_ICON = new ImageIcon(FILE_ICONS[9]);
 	
 	private static final Painter<?> SELECTION_PAINTER = (g, object, width, height) -> {
 		g.setColor(SELECTION);
@@ -240,21 +235,19 @@ final class NimbusGuiSettings {
 		defaults.put("ComboBox.font", FONT);
 		defaults.put("TitledBorder.font", FONT);
 		
-		defaults.put("OptionPane.errorIcon", ERROR_ICON);
-		defaults.put("OptionPane.informationIcon", INFORMATION_ICON);
-		defaults.put("OptionPane.questionIcon", QUESTION_ICON);
-		defaults.put("OptionPane.warningIcon", WARNING_ICON);
-		defaults.put("FileChooser.directoryIcon", FOLDER_ICON);
-		defaults.put("FileChooser.floppyDriveIcon", SAVE_ICON);
-		defaults.put("FileChooser.homeFolderIcon", HOME_ICON);
-		defaults.put("FileChooser.listViewIcon", LIST_ICON);
-		defaults.put("FileChooser.newFolderIcon", NEW_FOLDER_ICON);
-		defaults.put("FileChooser.upFolderIcon", UP_FOLDER_ICON);
-		defaults.put("FileChooser.hardDriveIcon", DISC_ICON);
-		defaults.put("FileChooser.detailsViewIcon", DETAILS_ICON);
-		defaults.put("Tree.closedIcon", FOLDER_ICON);
-		defaults.put("Tree.openIcon", FOLDER_OPEN_ICON);
-		defaults.put("Tree.leafIcon", FILE_ICON);
+		defaults.put("OptionPane.errorIcon", new ImageIcon(ICON_ERROR));
+		defaults.put("OptionPane.informationIcon", new ImageIcon(ICON_INFORMATION));
+		defaults.put("OptionPane.questionIcon", new ImageIcon(ICON_QUESTION));
+		defaults.put("OptionPane.warningIcon", new ImageIcon(ICON_WARNING));
+		defaults.put("FileChooser.directoryIcon", new ImageIcon(ICON_FOLDER));
+		defaults.put("FileChooser.floppyDriveIcon", new ImageIcon(ICON_FLOPPY_DISK));
+		defaults.put("FileChooser.homeFolderIcon", new ImageIcon(ICON_HOUSE));
+		defaults.put("FileChooser.listViewIcon", new ImageIcon(ICON_LIST));
+		defaults.put("FileChooser.newFolderIcon", new ImageIcon(ICON_FOLDER_PLUS));
+		defaults.put("FileChooser.upFolderIcon", new ImageIcon(ICON_FOLDER_UP));
+		defaults.put("FileChooser.hardDriveIcon", new ImageIcon(ICON_HARD_DRIVE));
+		defaults.put("FileChooser.detailsViewIcon", new ImageIcon(ICON_SEARCH));
+		defaults.put("FileChooser.fileIcon", new ImageIcon(ICON_FILE));
 	}
 	
 }

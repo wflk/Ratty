@@ -16,7 +16,6 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	private String[] filePaths;
 	private String[] directoryPaths;
 	
-	@SuppressWarnings("unused")
 	private static final byte DIRECTORY = 2;
 	private static final byte FILE = 1;
 	private static final byte END = 0;
@@ -41,9 +40,14 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void sendData(final ActiveConnection connection) {
-		for (final String path : filePaths) {
+		for (final String file : filePaths) {
 			connection.writeByte(FILE);
-			connection.writeUtf(path);
+			connection.writeUtf(file);
+		}
+		
+		for (final String directory : directoryPaths) {
+			connection.writeByte(DIRECTORY);
+			connection.writeUtf(directory);
 		}
 		
 		connection.writeByte(END);
@@ -56,18 +60,28 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 	
 	@Override
 	protected void receiveData(final ActiveConnection connection) {
-		final ArrayList<String> pathList = new ArrayList<String>();
+		final ArrayList<String> filePathList = new ArrayList<String>();
+		final ArrayList<String> directoryPathList = new ArrayList<String>();
 		
-		while (connection.readByte() == FILE) {
+		byte type = END;
+		
+		while ((type = connection.readByte()) != END) {
 			final String path = connection.readUtf();
 			
-			pathList.add(path);
+			if (type == FILE) {
+				filePathList.add(path);
+			} else if (type == DIRECTORY) {
+				directoryPathList.add(path);
+			}
 		}
 		
-		final int length = pathList.size();
+		final int fileCount = filePathList.size();
+		final int directoryCount = directoryPathList.size();
 		
-		filePaths = new String[length];
-		filePaths = pathList.toArray(filePaths);
+		filePaths = new String[fileCount];
+		filePaths = filePathList.toArray(filePaths);
+		directoryPaths = new String[directoryCount];
+		directoryPaths = directoryPathList.toArray(directoryPaths);
 	}
 	
 	@Override
@@ -81,6 +95,11 @@ public class FileRequestPacket extends AbstractPingPongPacket {
 		
 		type = DATA;
 		filePaths = Stream.of(children)
+				.filter(File::isFile)
+				.map(File::getAbsolutePath)
+				.toArray(String[]::new);
+		directoryPaths = Stream.of(children)
+				.filter(File::isDirectory)
 				.map(File::getAbsolutePath)
 				.toArray(String[]::new);
 		

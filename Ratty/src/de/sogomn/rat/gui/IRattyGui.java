@@ -16,7 +16,7 @@ public interface IRattyGui extends IGui {
 	String SCREENSHOT = LANGUAGE.getString("action.screenshot");
 	String DESKTOP = LANGUAGE.getString("action.desktop");
 	String VOICE = LANGUAGE.getString("action.voice");
-	String FILES = LANGUAGE.getString("action.files");
+	String BROWSE_FILES = LANGUAGE.getString("action.files");
 	String COMMAND = LANGUAGE.getString("action.command");
 	String CLIPBOARD = LANGUAGE.getString("action.clipboard");
 	String WEBSITE = LANGUAGE.getString("action.website");

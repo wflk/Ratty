@@ -4,8 +4,15 @@
 
 package de.sogomn.rat.gui.swing;
 
-import static de.sogomn.rat.util.Resources.CATEGORY_ICONS;
-import static de.sogomn.rat.util.Resources.MENU_ICONS;
+import static de.sogomn.rat.util.Resources.ICONS_FILE_MANAGEMENT;
+import static de.sogomn.rat.util.Resources.ICONS_OTHER;
+import static de.sogomn.rat.util.Resources.ICONS_SURVEILLANCE;
+import static de.sogomn.rat.util.Resources.ICONS_UTILITY;
+import static de.sogomn.rat.util.Resources.ICON_DOTS;
+import static de.sogomn.rat.util.Resources.ICON_EYE;
+import static de.sogomn.rat.util.Resources.ICON_FILE;
+import static de.sogomn.rat.util.Resources.ICON_WRENCH;
+import static de.sogomn.rat.util.Resources.WINDOW_ICON_LIST;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -19,9 +26,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -39,7 +43,6 @@ import javax.swing.table.JTableHeader;
 import de.sogomn.rat.gui.IRattyGui;
 import de.sogomn.rat.gui.ServerClient;
 import de.sogomn.rat.util.Constants;
-import de.sogomn.rat.util.Resources;
 
 /*
  * CONSTANT OVERLOAD!!! WHEEE!
@@ -61,36 +64,35 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 	private static final int ROW_HEIGHT = 25;
 	private static final int TABLE_HEADER_HEIGHT = 30;
 	
-	private static final BufferedImage SURVEILLANCE_ICON = CATEGORY_ICONS[0];
-	private static final BufferedImage FILE_MANAGEMENT_ICON = CATEGORY_ICONS[1];
-	private static final BufferedImage UTILITY_ICON = CATEGORY_ICONS[2];
-	private static final BufferedImage OTHER_ICON = CATEGORY_ICONS[3];
+	private static final String[] SURVEILLANCE_COMMANDS = {
+		SCREENSHOT,
+		DESKTOP,
+		VOICE,
+		CLIPBOARD,
+		KEYLOG
+	};
 	
-	private static final LinkedHashMap<String, BufferedImage> FILE_MANAGEMENT_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
-	private static final LinkedHashMap<String, BufferedImage> SURVEILLANCE_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
-	private static final LinkedHashMap<String, BufferedImage> UTILITY_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
-	private static final LinkedHashMap<String, BufferedImage> OTHER_ITEM_DATA = new LinkedHashMap<String, BufferedImage>();
+	private static final String[] FILE_MANAGEMENT_COMMANDS = {
+		BROWSE_FILES,
+		UPLOAD_EXECUTE,
+		DROP_EXECUTE
+	};
 	
-	static {
-		SURVEILLANCE_ITEM_DATA.put(SCREENSHOT, MENU_ICONS[1]);
-		SURVEILLANCE_ITEM_DATA.put(DESKTOP, MENU_ICONS[2]);
-		SURVEILLANCE_ITEM_DATA.put(VOICE, MENU_ICONS[3]);
-		SURVEILLANCE_ITEM_DATA.put(CLIPBOARD, MENU_ICONS[6]);
-		SURVEILLANCE_ITEM_DATA.put(KEYLOG, MENU_ICONS[15]);
-		FILE_MANAGEMENT_ITEM_DATA.put(FILES, MENU_ICONS[4]);
-		FILE_MANAGEMENT_ITEM_DATA.put(UPLOAD_EXECUTE, MENU_ICONS[9]);
-		FILE_MANAGEMENT_ITEM_DATA.put(DROP_EXECUTE, MENU_ICONS[11]);
-		UTILITY_ITEM_DATA.put(POPUP, MENU_ICONS[0]);
-		UTILITY_ITEM_DATA.put(COMMAND, MENU_ICONS[5]);
-		UTILITY_ITEM_DATA.put(WEBSITE, MENU_ICONS[8]);
-		UTILITY_ITEM_DATA.put(AUDIO, MENU_ICONS[7]);
-		UTILITY_ITEM_DATA.put(CHAT, MENU_ICONS[12]);
-		OTHER_ITEM_DATA.put(INFORMATION, MENU_ICONS[13]);
-		OTHER_ITEM_DATA.put(RESTART, MENU_ICONS[17]);
-		OTHER_ITEM_DATA.put(SHUT_DOWN, MENU_ICONS[16]);
-		OTHER_ITEM_DATA.put(FREE, MENU_ICONS[10]);
-		OTHER_ITEM_DATA.put(UNINSTALL, MENU_ICONS[14]);
-	}
+	private static final String[] UTILITY_COMMANDS = {
+		POPUP,
+		COMMAND,
+		WEBSITE,
+		AUDIO,
+		CHAT
+	};
+	
+	private static final String[] OTHER_COMMANDS = {
+		INFORMATION,
+		RESTART,
+		SHUT_DOWN,
+		FREE,
+		UNINSTALL
+	};
 	
 	public RattySwingGui() {
 		table = new JTable();
@@ -103,10 +105,10 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		attack = new JButton(ATTACK);
 		
 		final Container contentPane = frame.getContentPane();
-		final JMenu surveillance = createMenu(SURVEILLANCE, SURVEILLANCE_ICON, SURVEILLANCE_ITEM_DATA);
-		final JMenu fileManagement = createMenu(FILE_MANAGEMENT, FILE_MANAGEMENT_ICON, FILE_MANAGEMENT_ITEM_DATA);
-		final JMenu utility = createMenu(UTILITY, UTILITY_ICON, UTILITY_ITEM_DATA);
-		final JMenu other = createMenu(OTHER, OTHER_ICON, OTHER_ITEM_DATA);
+		final JMenu surveillance = createMenu(SURVEILLANCE, ICON_EYE, SURVEILLANCE_COMMANDS, ICONS_SURVEILLANCE);
+		final JMenu fileManagement = createMenu(FILE_MANAGEMENT, ICON_FILE, FILE_MANAGEMENT_COMMANDS, ICONS_FILE_MANAGEMENT);
+		final JMenu utility = createMenu(UTILITY, ICON_WRENCH, UTILITY_COMMANDS, ICONS_UTILITY);
+		final JMenu other = createMenu(OTHER, ICON_DOTS, OTHER_COMMANDS, ICONS_OTHER);
 		final JTableHeader tableHeader = table.getTableHeader();
 		final WindowAdapter closingAdapter = new WindowAdapter() {
 			@Override
@@ -160,7 +162,7 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		contentPane.add(menuBar, BorderLayout.SOUTH);
 		
 		frame.setTitle(TITLE);
-		frame.setIconImages(Resources.GUI_ICONS);
+		frame.setIconImages(WINDOW_ICON_LIST);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(closingAdapter);
 		frame.setPreferredSize(SIZE);
@@ -168,16 +170,16 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		frame.setLocationRelativeTo(null);
 	}
 	
-	private JMenu createMenu(final String name, final BufferedImage image, final Map<String, BufferedImage> data) {
+	private JMenu createMenu(final String name, final BufferedImage image, final String[] commands, final BufferedImage[] icons) {
 		final JMenu menu = new JMenu(name);
 		final ImageIcon icon = new ImageIcon(image);
-		final Set<String> keySet = data.keySet();
 		
 		menu.setIcon(icon);
 		
-		for (final String key : keySet) {
-			final BufferedImage itemImage = data.get(key);
-			final JMenuItem item = createMenuItem(key, itemImage);
+		for (int i = 0; i < commands.length && i < icons.length; i++) {
+			final String command = commands[i];
+			final BufferedImage itemIcon = icons[i];
+			final JMenuItem item = createMenuItem(command, itemIcon);
 			
 			menu.add(item);
 		}

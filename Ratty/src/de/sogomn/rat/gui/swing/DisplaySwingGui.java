@@ -56,8 +56,11 @@ public final class DisplaySwingGui extends AbstractListenerContainer<IGuiControl
 			}
 		};
 		
+		if (icons != null) {
+			screen.setIcons(icons);
+		}
+		
 		screen.setTitle(title);
-		screen.setIcons(icons);
 		screen.setResizeBehavior(ResizeBehavior.KEEP_ASPECT_RATIO);
 		screen.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 		screen.setBackgroundColor(Color.BLACK);

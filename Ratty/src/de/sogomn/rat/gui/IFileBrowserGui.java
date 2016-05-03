@@ -16,27 +16,40 @@ public interface IFileBrowserGui extends IGui {
 	String NEW_DIRECTORY = LANGUAGE.getString("action.new_directory");
 	String DROP_FILE = LANGUAGE.getString("action.drop_file");
 	String INFORMATION = LANGUAGE.getString("action.file_information");
+	String DIRECTORY_UP = LANGUAGE.getString("action.directory_up");
 	String REQUEST_ROOT = "ROOTS";
 	
-	void setDirectory(final String path);
+	void addFile(final String name);
 	
-	void addFile(final String path);
+	void addPath(final String path);
 	
-	void addRoot(final String root);
+	void addDirectory(final String name);
 	
-	void removeFile(final String path);
+	void addDirectoryPath(final String path);
 	
-	void removeRoot(final String root);
+	void addRoot(final String name);
+	
+	void removeEntry(final String name);
+	
+	void removeEntryPath(final String path);
+	
+	void removeRoot(final String name);
 	
 	void clearFiles();
 	
 	void clearRoots();
 	
-	boolean isDirectory(final String path);
+	void setDirectoryPath(final String path);
+	
+	boolean isDirectory(final String name);
 	
 	String getCurrentDirectory();
 	
+	String getParentDirectory();
+	
 	String getSelectedFile();
+	
+	String getSelectedFilePath();
 	
 	String getSelectedRoot();
 	
