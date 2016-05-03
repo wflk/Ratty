@@ -8,4 +8,8 @@ It has come to my attention that there are people using Ratty for malicious acti
 
 ---
 
-![Screenshot](http://i.imgur.com/i7fyZ5o.png "Screenshot")
+![Screenshot](http://i.imgur.com/S2uXS8l.png "Screenshot")
+
+---
+
+If you have any question hit me up on my Twitter @TheRealSogomn.
