@@ -12,4 +12,4 @@ It has come to my attention that there are people using Ratty for malicious acti
 
 ---
 
-If you have any question hit me up on my Twitter @TheRealSogomn.
+If you have any questions hit me up on my Twitter @TheRealSogomn.
