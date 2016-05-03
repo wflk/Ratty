@@ -4,6 +4,8 @@
 
 package de.sogomn.rat.gui.swing;
 
+import static de.sogomn.rat.util.Constants.LANGUAGE;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.TitledBorder;
 
 import de.sogomn.rat.gui.IServerListGui;
 
@@ -28,8 +31,11 @@ public final class ServerListSwingGui extends AbstractSwingGui implements IServe
 	private JFormattedTextField port;
 	private JButton start, stop;
 	
+	private static final String PORT = LANGUAGE.getString("server.port");
+	
 	private static final Dimension SIZE = new Dimension(500, 300);
 	private static final NumberFormat PORT_NUMBER_FORMAT = NumberFormat.getInstance();
+	private static final TitledBorder PORT_BORDER = new TitledBorder(PORT);
 	
 	static {
 		PORT_NUMBER_FORMAT.setGroupingUsed(false);
@@ -49,6 +55,7 @@ public final class ServerListSwingGui extends AbstractSwingGui implements IServe
 		start.addActionListener(this::buttonClicked);
 		stop.setActionCommand(STOP);
 		stop.addActionListener(this::buttonClicked);
+		port.setBorder(PORT_BORDER);
 		list.setModel(listModel);
 		
 		final JPanel contentPane = createPanel();

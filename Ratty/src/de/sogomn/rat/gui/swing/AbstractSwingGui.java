@@ -65,31 +65,55 @@ public abstract class AbstractSwingGui extends AbstractListenerContainer<IGuiCon
 	
 	@Override
 	public void showWarning(final String message) {
+		if (!isVisible()) {
+			return;
+		}
+		
 		showMessageDialog(JOptionPane.WARNING_MESSAGE, message);
 	}
 	
 	@Override
 	public int showWarning(final String message, final String yes, final String no) {
+		if (!isVisible()) {
+			return JOptionPane.CLOSED_OPTION;
+		}
+		
 		return showOptionDialog(JOptionPane.WARNING_MESSAGE, message, JOptionPane.YES_NO_OPTION, yes, no);
 	}
 	
 	@Override
 	public void showError(final String message) {
+		if (!isVisible()) {
+			return;
+		}
+		
 		showMessageDialog(JOptionPane.ERROR_MESSAGE, message);
 	}
 	
 	@Override
 	public void showMessage(final String message) {
+		if (!isVisible()) {
+			return;
+		}
+		
 		showMessageDialog(JOptionPane.INFORMATION_MESSAGE, message);
 	}
 	
 	@Override
 	public int showOptions(final String message, final String yes, final String no, final String cancel) {
+		if (!isVisible()) {
+			return JOptionPane.CLOSED_OPTION;
+		}
+		
 		return showOptionDialog(JOptionPane.QUESTION_MESSAGE, message, JOptionPane.YES_NO_CANCEL_OPTION, yes, no, cancel);
 	}
 	
 	@Override
 	public String getInput(final String message) {
+		if (!isVisible()) {
+			return null;
+		}
+		
 		final String input = JOptionPane.showInputDialog(frame, message);
 		
 		return input;

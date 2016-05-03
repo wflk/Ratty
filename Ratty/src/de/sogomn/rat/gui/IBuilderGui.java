@@ -8,13 +8,13 @@ import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 public interface IBuilderGui extends IGui {
 	
-	String ADDRESS = LANGUAGE.getString("builder.address");
-	String PORT = LANGUAGE.getString("builder.port");
-	String ADD = LANGUAGE.getString("builder.add");
-	String REMOVE = LANGUAGE.getString("builder.remove");
-	String CHOOSE = LANGUAGE.getString("builder.choose");
-	String BUILD = LANGUAGE.getString("builder.build");
-	String NO_FILE = LANGUAGE.getString("builder.no_file");
+	String ADDRESS = LANGUAGE.getString("server.address");
+	String PORT = LANGUAGE.getString("server.port");
+	String ADD = LANGUAGE.getString("server.add");
+	String REMOVE = LANGUAGE.getString("server.remove");
+	String CHOOSE = LANGUAGE.getString("server.choose");
+	String BUILD = LANGUAGE.getString("server.build");
+	String NO_FILE = LANGUAGE.getString("server.no_file");
 	
 	void addListEntry(final String entry);
 	
