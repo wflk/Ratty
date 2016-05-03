@@ -60,6 +60,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionListener;
 
@@ -67,6 +69,7 @@ import de.sogomn.rat.gui.IFileBrowserGui;
 
 public final class FileBrowserSwingGui extends AbstractSwingGui implements IFileBrowserGui {
 	
+	private JLabel pathLabel;
 	private JList<String> rootList;
 	private JList<FileEntry> fileList;
 	private FileCellRenderer fileListRenderer;
@@ -87,8 +90,12 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	private static final MatteBorder SPLIT_PANE_BORDER = new MatteBorder(0, 1, 0, 0, Color.BLACK);
 	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 6, 0);
 	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
+	private static final CompoundBorder PATH_LABEL_BORDER = new CompoundBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK), new EmptyBorder(5, 5, 5, 5));
+	private static final CompoundBorder ROOT_LIST_BORDER = new CompoundBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK), new EmptyBorder(5, 5, 5, 5));
+	private static final CompoundBorder FILE_LIST_BORDER = new CompoundBorder(new MatteBorder(0, 0, 1, 0, Color.BLACK), new EmptyBorder(5, 5, 5, 5));
 	
 	public FileBrowserSwingGui() {
+		pathLabel = new JLabel("...");
 		rootList = new JList<String>();
 		fileList = new JList<FileEntry>();
 		fileListRenderer = new FileCellRenderer(ICON_FILE, ICON_FOLDER);
@@ -161,10 +168,14 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		fileList.setComponentPopupMenu(menu);
 		fileList.addListSelectionListener(fileListener);
 		fileList.addMouseListener(doubleClickAdapter);
+		fileList.setBorder(FILE_LIST_BORDER);
 		rootList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		rootList.addListSelectionListener(rootListener);
+		rootList.setBorder(ROOT_LIST_BORDER);
 		rootList.setModel(rootListModel);
+		pathLabel.setBorder(PATH_LABEL_BORDER);
 		
+		contentPane.add(pathLabel, BorderLayout.NORTH);
 		contentPane.add(splitPane, BorderLayout.CENTER);
 		contentPane.add(menuBar, BorderLayout.SOUTH);
 		
@@ -331,6 +342,7 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	@Override
 	public void setDirectoryPath(final String path) {
 		directory = Paths.get(path);
+		pathLabel.setText(path);
 	}
 	
 	@Override
