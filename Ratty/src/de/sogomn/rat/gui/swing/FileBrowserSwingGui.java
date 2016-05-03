@@ -16,9 +16,18 @@ import static de.sogomn.rat.util.Resources.ICON_POINTER;
 import static de.sogomn.rat.util.Resources.ICON_QUESTION_MARK;
 import static de.sogomn.rat.util.Resources.ICON_WORLD_DOWN;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,6 +48,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.ListSelectionListener;
 
 import de.sogomn.rat.gui.IFileBrowserGui;
@@ -51,17 +61,20 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	private JScrollPane scrollPane;
 	private JSplitPane splitPane;
 	private JMenuBar menuBar;
-	private JButton directoryUp, upload, newDirectory;
+	private JButton directoryUp, upload, newDirectory, dropFile;
 	private JPopupMenu menu;
-	private JMenuItem request, download, execute, delete, dropFile, information;
+	private JMenuItem request, download, execute, delete, information;
 	
 	private DefaultListModel<String> rootListModel;
 	private DefaultListModel<FileEntry> fileListModel;
 	private Path directory;
 	
-	private static final Dimension SIZE = new Dimension(750, 550);
+	private static final int HEIGHT = 600;
 	private static final int DIVIDER_SIZE = 5;
-	private static final double SPLIT_PANE_RESIZE_WEIGHT = 0.25;
+	private static final double SPLIT_PANE_RESIZE_WEIGHT = 0.15;
+	private static final MatteBorder SPLIT_PANE_BORDER = new MatteBorder(0, 1, 0, 0, Color.BLACK);
+	private static final FlowLayout MENU_BAR_LAYOUT = new FlowLayout(FlowLayout.LEFT, 6, 0);
+	private static final Insets MENU_BAR_MARGIN = new Insets(3, 0, 3, 0);
 	
 	public FileBrowserSwingGui() {
 		rootList = new JList<String>();
@@ -73,17 +86,18 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		directoryUp = createButton(DIRECTORY_UP, ICON_FOLDER_UP);
 		upload = createButton(UPLOAD, ICON_ARROW_UP);
 		newDirectory = createButton(NEW_DIRECTORY, ICON_FOLDER_PLUS);
+		dropFile = createButton(DROP_FILE, ICON_WORLD_DOWN);
 		menu = new JPopupMenu();
 		request = createMenuItem(REQUEST, ICON_QUESTION_MARK);
 		download = createMenuItem(DOWNLOAD, ICON_ARROW_DOWN);
 		execute = createMenuItem(EXECUTE, ICON_POINTER);
 		delete = createMenuItem(DELETE, ICON_FILE_DELETE);
-		dropFile = createMenuItem(DROP_FILE, ICON_WORLD_DOWN);
 		information = createMenuItem(INFORMATION, ICON_EXCLAMATION_MARK);
 		rootListModel = new DefaultListModel<String>();
 		fileListModel = new DefaultListModel<FileEntry>();
 		directory = Paths.get("");
 		
+		final Container contentPane = frame.getContentPane();
 		final ListSelectionListener rootListener = l -> {
 			final boolean adjusting = l.getValueIsAdjusting();
 			
@@ -92,7 +106,24 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 			}
 		};
 		final ListSelectionListener fileListener = l -> {
-			rootList.setSelectedValue(null, false);
+			rootList.clearSelection();
+		};
+		final MouseAdapter doubleClickAdapter = new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent m) {
+				final Point mousePoint = m.getPoint();
+				final boolean doubleClick = m.getClickCount() == 2;
+				final int index = fileList.locationToIndex(mousePoint);
+				
+				if (doubleClick && index != -1) {
+					final Rectangle selectionRectangle = fileList.getCellBounds(index, index);
+					final boolean contains = selectionRectangle.contains(mousePoint);
+					
+					if (contains) {
+						notifyListeners(controller -> controller.userInput(REQUEST, this));
+					}
+				}
+			}
 		};
 		
 		menu.add(request);
@@ -101,26 +132,37 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		menu.add(execute);
 		menu.add(delete);
 		menu.add(newDirectory);
-		menu.add(dropFile);
 		menu.add(information);
+		menuBar.setLayout(MENU_BAR_LAYOUT);
+		menuBar.setMargin(MENU_BAR_MARGIN);
 		menuBar.add(directoryUp);
 		menuBar.add(upload);
 		menuBar.add(newDirectory);
+		menuBar.add(dropFile);
 		splitPane.setDividerSize(DIVIDER_SIZE);
 		splitPane.setResizeWeight(SPLIT_PANE_RESIZE_WEIGHT);
+		splitPane.setEnabled(false);
+		scrollPane.setBorder(SPLIT_PANE_BORDER);
 		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		fileList.setModel(fileListModel);
 		fileList.setCellRenderer(fileListRenderer);
 		fileList.setComponentPopupMenu(menu);
 		fileList.addListSelectionListener(fileListener);
+		fileList.addMouseListener(doubleClickAdapter);
 		rootList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		rootList.addListSelectionListener(rootListener);
 		rootList.setModel(rootListModel);
 		
+		contentPane.add(splitPane, BorderLayout.CENTER);
+		contentPane.add(menuBar, BorderLayout.SOUTH);
+		
 		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		frame.setContentPane(splitPane);
-		frame.setJMenuBar(menuBar);
-		frame.setPreferredSize(SIZE);
+		frame.pack();
+		
+		final Dimension size = frame.getSize();
+		final Dimension newSize = new Dimension(size.width, HEIGHT);
+		
+		frame.setPreferredSize(newSize);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 	}
@@ -152,11 +194,19 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		notifyListeners(controller -> controller.userInput(actionCommand, this));
 	}
 	
-	private void addEntry(final String name, final boolean directory) {
+	private void addFileEntry(final String name, final boolean directory) {
 		final FileEntry entry = new FileEntry(name, directory);
 		
 		SwingUtilities.invokeLater(() -> {
 			fileListModel.addElement(entry);
+		});
+	}
+	
+	private void removeFileEntry(final String name) {
+		final FileEntry entry = getEntryByName(name);
+		
+		SwingUtilities.invokeLater(() -> {
+			fileListModel.removeElement(entry);
 		});
 	}
 	
@@ -174,13 +224,7 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		return null;
 	}
 	
-	@Override
-	public void addFile(final String name) {
-		addEntry(name, false);
-	}
-
-	@Override
-	public void addPath(final String path) {
+	private String getNameByPath(final String path) {
 		final Path file = Paths.get(path);
 		final Path relativePath = directory.relativize(file);
 		final int level = relativePath.getNameCount();
@@ -188,25 +232,45 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		if (level == 1) {
 			final String name = relativePath.getFileName().toString();
 			
-			addEntry(name, false);
+			return name;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public void close() {
+		clearFiles();
+		clearRoots();
+		
+		super.close();
+	}
+	
+	@Override
+	public void addFile(final String name) {
+		addFileEntry(name, false);
+	}
+
+	@Override
+	public void addFilePath(final String path) {
+		final String name = getNameByPath(path);
+		
+		if (name != null) {
+			addFileEntry(name, false);
 		}
 	}
 	
 	@Override
 	public void addDirectory(final String name) {
-		addEntry(name, true);
+		addFileEntry(name, true);
 	}
 	
 	@Override
 	public void addDirectoryPath(final String path) {
-		final Path file = Paths.get(path);
-		final Path relativePath = directory.relativize(file);
-		final int level = relativePath.getNameCount();
+		final String name = getNameByPath(path);
 		
-		if (level == 1) {
-			final String name = relativePath.getFileName().toString();
-			
-			addEntry(name, true);
+		if (name != null) {
+			addFileEntry(name, true);
 		}
 	}
 	
@@ -219,22 +283,15 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	
 	@Override
 	public void removeEntry(final String name) {
-		SwingUtilities.invokeLater(() -> {
-			fileListModel.removeElement(name);
-		});
+		removeFileEntry(name);
 	}
 
 	@Override
 	public void removeEntryPath(final String path) {
-		final Path relativePath = Paths.get(path).relativize(directory);
-		final int level = relativePath.getNameCount();
+		final String name = getNameByPath(path);
 		
-		if (level == 1) {
-			final String name = relativePath.getFileName().toString();
-			
-			SwingUtilities.invokeLater(() -> {
-				fileListModel.removeElement(name);
-			});
+		if (name != null) {
+			removeFileEntry(name);
 		}
 	}
 	
@@ -270,10 +327,24 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		
 		return entry != null && entry.directory;
 	}
+	
+	@Override
+	public boolean isDirectoryPath(final String path) {
+		final String name = getNameByPath(path);
+		final FileEntry entry = getEntryByName(name);
+		
+		return entry != null && entry.directory;
+	}
 
 	@Override
-	public String getCurrentDirectory() {
-		return directory.toString().replace("\\", "/");
+	public String getCurrentDirectoryPath() {
+		String path = directory.toString().replace("\\", "/");
+		
+		if (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		
+		return path;
 	}
 	
 	@Override
@@ -294,9 +365,15 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	
 	@Override
 	public String getSelectedFilePath() {
+		final FileEntry selectedFile = fileList.getSelectedValue();
+		
+		if (selectedFile == null) {
+			return null;
+		}
+		
 		final String file = fileList.getSelectedValue().name.replace("\\", "/");
 		
-		String path = getCurrentDirectory();
+		String path = getCurrentDirectoryPath();
 		
 		if (file.endsWith("/")) {
 			path += file;
@@ -309,7 +386,13 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	
 	@Override
 	public String getSelectedRoot() {
-		return rootList.getSelectedValue().replace("\\", "/");
+		final String selectedRoot = rootList.getSelectedValue();
+		
+		if (selectedRoot != null) {
+			return selectedRoot.replace("\\", "/");
+		}
+		
+		return null;
 	}
 	
 	private class FileEntry {

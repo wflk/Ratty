@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.rat.ActiveConnection;
+import de.sogomn.rat.util.Resources;
 
 public final class ServerClient extends AbstractListenerContainer<IGuiController> implements IGuiController {
 	
@@ -31,6 +32,11 @@ public final class ServerClient extends AbstractListenerContainer<IGuiController
 		fileBrowser = guiFactory.createFileBrowserGui();
 		chat = guiFactory.createChatGui();
 		logger = guiFactory.createLoggingGui();
+		
+		displayPanel.setIcons(Resources.WINDOW_ICON_LIST);
+		fileBrowser.setIcons(Resources.WINDOW_ICON_LIST);
+		chat.setIcons(Resources.WINDOW_ICON_LIST);
+		logger.setIcons(Resources.WINDOW_ICON_LIST);
 	}
 	
 	@Override

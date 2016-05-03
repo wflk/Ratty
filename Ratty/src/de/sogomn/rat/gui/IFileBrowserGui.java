@@ -21,7 +21,7 @@ public interface IFileBrowserGui extends IGui {
 	
 	void addFile(final String name);
 	
-	void addPath(final String path);
+	void addFilePath(final String path);
 	
 	void addDirectory(final String name);
 	
@@ -43,7 +43,9 @@ public interface IFileBrowserGui extends IGui {
 	
 	boolean isDirectory(final String name);
 	
-	String getCurrentDirectory();
+	boolean isDirectoryPath(final String path);
+	
+	String getCurrentDirectoryPath();
 	
 	String getParentDirectory();
 	

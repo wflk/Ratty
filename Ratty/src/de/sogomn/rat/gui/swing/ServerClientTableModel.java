@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.function.Function;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import de.sogomn.rat.gui.ServerClient;
@@ -18,21 +19,21 @@ final class ServerClientTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 919111102883611810L;
 	
 	private ArrayList<ServerClient> serverClients;
-	private ArrayList<Column> columns;
+	private ArrayList<Column<?>> columns;
 	
-	private static final Column NAME = new Column(LANGUAGE.getString("column.name"), String.class, ServerClient::getName);
-	private static final Column LOCATION = new Column(LANGUAGE.getString("column.location"), ImageIcon.class, ServerClient::getFlag);
-	private static final Column IP_ADDRESS = new Column(LANGUAGE.getString("column.address"), String.class, ServerClient::getAddress);
-	private static final Column PORT = new Column(LANGUAGE.getString("column.port"), String.class, ServerClient::getPort);
-	private static final Column OS = new Column(LANGUAGE.getString("column.os"), String.class, ServerClient::getOs);
-	private static final Column VERSION = new Column(LANGUAGE.getString("column.version"), String.class, ServerClient::getVersion);
-	private static final Column STREAMING_DESKTOP = new Column(LANGUAGE.getString("column.desktop"), Boolean.class, ServerClient::isStreamingDesktop);
-	private static final Column STREAMING_VOICE = new Column(LANGUAGE.getString("column.voice"), Boolean.class, ServerClient::isStreamingVoice);
-	private static final Column PING = new Column(LANGUAGE.getString("column.ping"), String.class, ServerClient::getPing);
+	private static final Column<String> NAME = new Column<String>(LANGUAGE.getString("column.name"), String.class, ServerClient::getName);
+	private static final Column<ImageIcon> LOCATION = new Column<ImageIcon>(LANGUAGE.getString("column.location"), ImageIcon.class, ServerClient::getFlag);
+	private static final Column<String> IP_ADDRESS = new Column<String>(LANGUAGE.getString("column.address"), String.class, ServerClient::getAddress);
+	private static final Column<String> PORT = new Column<String>(LANGUAGE.getString("column.port"), String.class, ServerClient::getPort);
+	private static final Column<String> OS = new Column<String>(LANGUAGE.getString("column.os"), String.class, ServerClient::getOs);
+	private static final Column<String> VERSION = new Column<String>(LANGUAGE.getString("column.version"), String.class, ServerClient::getVersion);
+	private static final Column<Boolean> STREAMING_DESKTOP = new Column<Boolean>(LANGUAGE.getString("column.desktop"), Boolean.class, ServerClient::isStreamingDesktop);
+	private static final Column<Boolean> STREAMING_VOICE = new Column<Boolean>(LANGUAGE.getString("column.voice"), Boolean.class, ServerClient::isStreamingVoice);
+	private static final Column<Long> PING = new Column<Long>(LANGUAGE.getString("column.ping"), Long.class, ServerClient::getPing);
 	
 	public ServerClientTableModel() {
 		serverClients = new ArrayList<ServerClient>();
-		columns = new ArrayList<Column>();
+		columns = new ArrayList<Column<?>>();
 		
 		addColumn(NAME);
 		addColumn(LOCATION);
@@ -45,11 +46,11 @@ final class ServerClientTableModel extends AbstractTableModel {
 		addColumn(PING);
 	}
 	
-	public void addColumn(final Column column) {
+	public void addColumn(final Column<?> column) {
 		columns.add(column);
 	}
 	
-	public void removeColumn(final Column column) {
+	public void removeColumn(final Column<?> column) {
 		columns.remove(column);
 	}
 	
@@ -58,7 +59,7 @@ final class ServerClientTableModel extends AbstractTableModel {
 		final int columnCount = columns.size();
 		
 		if (columnIndex <= columnCount - 1 && columnIndex >= 0) {
-			final Column column = columns.get(columnIndex);
+			final Column<?> column = columns.get(columnIndex);
 			
 			return column.name;
 		}
@@ -70,7 +71,7 @@ final class ServerClientTableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(final int columnIndex) {
 		final int columnCount = columns.size();
 		if (columnIndex <= columnCount - 1 && columnIndex >= 0) {
-			final Column column = columns.get(columnIndex);
+			final Column<?> column = columns.get(columnIndex);
 			
 			return column.clazz;
 		}
@@ -92,7 +93,7 @@ final class ServerClientTableModel extends AbstractTableModel {
 			return null;
 		}
 		
-		final Column column = columns.get(columnIndex);
+		final Column<?> column = columns.get(columnIndex);
 		final Function<ServerClient, ?> value = column.value;
 		
 		return value.apply(serverClient);
@@ -109,13 +110,17 @@ final class ServerClientTableModel extends AbstractTableModel {
 	}
 	
 	public void addServerClient(final ServerClient client) {
-		serverClients.add(client);
-		fireTableDataChanged();
+		SwingUtilities.invokeLater(() -> {
+			serverClients.add(client);
+			fireTableDataChanged();
+		});
 	}
 	
 	public void removeServerClient(final ServerClient client) {
-		serverClients.remove(client);
-		fireTableDataChanged();
+		SwingUtilities.invokeLater(() -> {
+			serverClients.remove(client);
+			fireTableDataChanged();
+		});
 	}
 	
 	public ServerClient getServerClient(final int rowIndex) {
@@ -138,13 +143,13 @@ final class ServerClientTableModel extends AbstractTableModel {
 		return clients;
 	}
 	
-	public static final class Column {
+	public static final class Column<T> {
 		
 		final String name;
-		final Class<?> clazz;
-		final Function<ServerClient, ?> value;
+		final Class<T> clazz;
+		final Function<ServerClient, T> value;
 		
-		public Column(final String name, final Class<?> clazz, final Function<ServerClient, ?> value) {
+		public Column(final String name, final Class<T> clazz, final Function<ServerClient, T> value) {
 			this.name = name;
 			this.clazz = clazz;
 			this.value = value;
