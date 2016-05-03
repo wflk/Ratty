@@ -17,11 +17,15 @@
 package de.sogomn.rat.gui.swing;
 
 import java.awt.Image;
+import java.io.File;
 import java.util.List;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import de.sogomn.engine.util.AbstractListenerContainer;
 import de.sogomn.rat.gui.IGui;
@@ -30,9 +34,11 @@ import de.sogomn.rat.gui.IGuiController;
 public abstract class AbstractSwingGui extends AbstractListenerContainer<IGuiController> implements IGui {
 	
 	protected JFrame frame;
+	protected JFileChooser fileChooser;
 	
 	public AbstractSwingGui() {
 		frame = new JFrame();
+		fileChooser = new JFileChooser(".");
 	}
 	
 	private int showOptionDialog(final int messageType, final String message, final int optionType, final String... options) {
@@ -134,6 +140,60 @@ public abstract class AbstractSwingGui extends AbstractListenerContainer<IGuiCon
 	@Override
 	public boolean isVisible() {
 		return frame.isVisible();
+	}
+	
+	@Override
+	public File getOpenFile(final String type) {
+		final FileFilter filter;
+		
+		if (type != null) {
+			filter = new FileNameExtensionFilter("*." + type, type);
+		} else {
+			filter = null;
+		}
+		
+		fileChooser.setFileFilter(filter);
+		
+		final int input = fileChooser.showOpenDialog(frame);
+		
+		if (input == JFileChooser.APPROVE_OPTION) {
+			final File file = fileChooser.getSelectedFile();
+			
+			return file;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public File getSaveFile() {
+		final int input = fileChooser.showSaveDialog(frame);
+		
+		if (input == JFileChooser.APPROVE_OPTION) {
+			final File file = fileChooser.getSelectedFile();
+			
+			return file;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public File getSaveFile(final String type) {
+		File file = getSaveFile();
+		
+		if (file == null) {
+			return null;
+		}
+		
+		final String path = file.toString().toLowerCase();
+		final String suffix = "." + type.toLowerCase();
+		
+		if (!path.endsWith(suffix)) {
+			file = new File(file + suffix);
+		}
+		
+		return file;
 	}
 	
 }

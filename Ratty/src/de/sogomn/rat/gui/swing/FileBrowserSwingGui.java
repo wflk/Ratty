@@ -249,6 +249,11 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	
 	private String getNameByPath(final String path) {
 		final Path file = Paths.get(path);
+		
+		if (!file.getRoot().equals(directory.getRoot())) {
+			return null;
+		}
+		
 		final Path relativePath = directory.relativize(file);
 		final int level = relativePath.getNameCount();
 		

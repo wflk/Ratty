@@ -21,7 +21,9 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 
-public final class Notification {
+import de.sogomn.rat.gui.INotificationGui;
+
+public final class NotificationSwingGui implements INotificationGui {
 	
 	private JDialog dialog;
 	private JLabel label;
@@ -31,7 +33,7 @@ public final class Notification {
 	private static final int INTERVAL = 3;
 	private static final int WAIT_TIME = 3000;
 	
-	public Notification(final String text, final Icon icon) {
+	public NotificationSwingGui(final String text, final Icon icon) {
 		dialog = new JDialog();
 		label = new JLabel(text);
 		
@@ -48,14 +50,15 @@ public final class Notification {
 		dialog.setAlwaysOnTop(true);
 	}
 	
-	public Notification(final String text) {
+	public NotificationSwingGui(final String text) {
 		this(text, null);
 	}
 	
-	public Notification() {
+	public NotificationSwingGui() {
 		this("");
 	}
 	
+	@Override
 	public void trigger() {
 		if (dialog.isVisible() || !dialog.isDisplayable()) {
 			return;

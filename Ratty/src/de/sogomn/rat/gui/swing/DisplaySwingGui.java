@@ -24,6 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -222,6 +223,16 @@ public final class DisplaySwingGui extends AbstractListenerContainer<IGuiControl
 	@Override
 	public boolean isVisible() {
 		return screen.isVisible();
+	}
+	
+	@Override
+	public File getOpenFile(final String type) {
+		return null;
+	}
+	
+	@Override
+	public File getSaveFile(final String type) {
+		return null;
 	}
 	
 	@Override

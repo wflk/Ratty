@@ -16,11 +16,14 @@
 
 package de.sogomn.rat.gui.swing;
 
+import javax.swing.Icon;
+
 import de.sogomn.rat.gui.IBuilderGui;
 import de.sogomn.rat.gui.IChatGui;
 import de.sogomn.rat.gui.IDisplayGui;
 import de.sogomn.rat.gui.IFileBrowserGui;
 import de.sogomn.rat.gui.ILoggingGui;
+import de.sogomn.rat.gui.INotificationGui;
 import de.sogomn.rat.gui.IRattyGui;
 import de.sogomn.rat.gui.IRattyGuiFactory;
 import de.sogomn.rat.gui.IServerListGui;
@@ -65,6 +68,11 @@ public final class RattySwingGuiFactory implements IRattyGuiFactory {
 	@Override
 	public ILoggingGui createLoggingGui() {
 		return new LoggingSwingGui();
+	}
+	
+	@Override
+	public INotificationGui createNotificationGui(final String text, final Icon icon) {
+		return new NotificationSwingGui(text, icon);
 	}
 	
 }

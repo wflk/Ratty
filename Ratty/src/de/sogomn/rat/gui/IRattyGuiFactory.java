@@ -16,6 +16,7 @@
 
 package de.sogomn.rat.gui;
 
+import javax.swing.Icon;
 
 public interface IRattyGuiFactory {
 	
@@ -32,5 +33,11 @@ public interface IRattyGuiFactory {
 	IChatGui createChatGui();
 	
 	ILoggingGui createLoggingGui();
+	
+	INotificationGui createNotificationGui(final String text, final Icon icon);
+	
+	default INotificationGui createNotificationGui(final String text) {
+		return createNotificationGui(text, null);
+	}
 	
 }
