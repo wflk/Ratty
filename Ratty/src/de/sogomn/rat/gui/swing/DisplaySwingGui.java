@@ -135,7 +135,10 @@ public final class DisplaySwingGui extends AbstractListenerContainer<IGuiControl
 	
 	@Override
 	public void mouseMotionEvent(final int x, final int y, final int modifiers) {
-		//...
+		mouseX = x;
+		mouseY = y;
+		
+		//notifyListeners(controller -> controller.userInput(MOUSE_MOVED, this));//TODO
 	}
 	
 	@Override

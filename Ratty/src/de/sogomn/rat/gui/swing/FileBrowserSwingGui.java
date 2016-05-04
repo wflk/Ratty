@@ -24,6 +24,7 @@ import static de.sogomn.rat.util.Resources.ICON_FILE_DELETE;
 import static de.sogomn.rat.util.Resources.ICON_FOLDER;
 import static de.sogomn.rat.util.Resources.ICON_FOLDER_PLUS;
 import static de.sogomn.rat.util.Resources.ICON_FOLDER_UP;
+import static de.sogomn.rat.util.Resources.ICON_HARD_DRIVE;
 import static de.sogomn.rat.util.Resources.ICON_POINTER;
 import static de.sogomn.rat.util.Resources.ICON_QUESTION_MARK;
 import static de.sogomn.rat.util.Resources.ICON_WORLD_DOWN;
@@ -71,6 +72,7 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	
 	private JLabel pathLabel;
 	private JList<String> rootList;
+	private RootCellRenderer rootListRenderer;
 	private JList<FileEntry> fileList;
 	private FileCellRenderer fileListRenderer;
 	private JScrollPane scrollPane;
@@ -97,6 +99,7 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	public FileBrowserSwingGui() {
 		pathLabel = new JLabel("...");
 		rootList = new JList<String>();
+		rootListRenderer = new RootCellRenderer(ICON_HARD_DRIVE);
 		fileList = new JList<FileEntry>();
 		fileListRenderer = new FileCellRenderer(ICON_FILE, ICON_FOLDER);
 		scrollPane = new JScrollPane(fileList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -169,6 +172,7 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		fileList.addListSelectionListener(fileListener);
 		fileList.addMouseListener(doubleClickAdapter);
 		fileList.setBorder(FILE_LIST_BORDER);
+		rootList.setCellRenderer(rootListRenderer);
 		rootList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		rootList.addListSelectionListener(rootListener);
 		rootList.setBorder(ROOT_LIST_BORDER);
@@ -436,7 +440,7 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 		
 	}
 	
-	public static final class FileCellRenderer extends DefaultListCellRenderer {
+	private static final class FileCellRenderer extends DefaultListCellRenderer {
 		private static final long serialVersionUID = 7899145670559346634L;
 		
 		private Icon fileIcon, directoryIcon;
@@ -465,6 +469,30 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 			} else {
 				label.setIcon(fileIcon);
 			}
+			
+			return label;
+		}
+		
+	}
+	
+	private static final class RootCellRenderer extends DefaultListCellRenderer {
+		private static final long serialVersionUID = 7899145670559346634L;
+		
+		private Icon icon;
+		
+		public RootCellRenderer(final Icon icon) {
+			this.icon = icon;
+		}
+		
+		public RootCellRenderer(final BufferedImage icon) {
+			this(new ImageIcon(icon));
+		}
+		
+		@Override
+		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
+			final JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			
+			label.setIcon(icon);
 			
 			return label;
 		}

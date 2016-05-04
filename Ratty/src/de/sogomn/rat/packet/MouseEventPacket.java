@@ -26,17 +26,18 @@ public final class MouseEventPacket implements IPacket {
 	
 	private int x, y;
 	private int button;
-	private byte strokeType;
+	private byte eventType;
 	
 	public static final byte PRESS = 0;
 	public static final byte RELEASE = 1;
 	public static final byte CLICK = 2;
+	public static final byte MOVE = 3;
 	
 	public MouseEventPacket(final int x, final int y, final int button, final byte strokeType) {
 		this.x = x;
 		this.y = y;
 		this.button = button;
-		this.strokeType = strokeType;
+		this.eventType = strokeType;
 	}
 	
 	public MouseEventPacket() {
@@ -48,7 +49,7 @@ public final class MouseEventPacket implements IPacket {
 		connection.writeInt(x);
 		connection.writeInt(y);
 		connection.writeInt(button);
-		connection.writeByte(strokeType);
+		connection.writeByte(eventType);
 	}
 	
 	@Override
@@ -56,7 +57,7 @@ public final class MouseEventPacket implements IPacket {
 		x = connection.readInt();
 		y = connection.readInt();
 		button = connection.readInt();
-		strokeType = connection.readByte();
+		eventType = connection.readByte();
 	}
 	
 	@Override
@@ -64,16 +65,18 @@ public final class MouseEventPacket implements IPacket {
 		try {
 			final Robot rob = new Robot();
 			
-			if (strokeType == PRESS) {
+			if (eventType == PRESS) {
 				rob.mouseMove(x, y);
 				rob.mousePress(button);
-			} else if (strokeType == RELEASE) {
+			} else if (eventType == RELEASE) {
 				rob.mouseMove(x, y);
 				rob.mouseRelease(button);
-			} else if (strokeType == CLICK) {
+			} else if (eventType == CLICK) {
 				rob.mouseMove(x, y);
 				rob.mousePress(button);
 				rob.mousePress(button);
+			} else if (eventType == MOVE) {
+				rob.mouseMove(x, y);
 			}
 		} catch (final IllegalArgumentException ex) {
 			System.err.println("No valid mouse button");

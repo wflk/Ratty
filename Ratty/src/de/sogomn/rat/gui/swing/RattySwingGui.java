@@ -20,9 +20,12 @@ import static de.sogomn.rat.util.Resources.ICONS_FILE_MANAGEMENT;
 import static de.sogomn.rat.util.Resources.ICONS_OTHER;
 import static de.sogomn.rat.util.Resources.ICONS_SURVEILLANCE;
 import static de.sogomn.rat.util.Resources.ICONS_UTILITY;
+import static de.sogomn.rat.util.Resources.ICON_CROSSHAIR;
 import static de.sogomn.rat.util.Resources.ICON_DOTS;
 import static de.sogomn.rat.util.Resources.ICON_EYE;
 import static de.sogomn.rat.util.Resources.ICON_FILE;
+import static de.sogomn.rat.util.Resources.ICON_GEAR;
+import static de.sogomn.rat.util.Resources.ICON_SERVER;
 import static de.sogomn.rat.util.Resources.ICON_WRENCH;
 import static de.sogomn.rat.util.Resources.WINDOW_ICON_LIST;
 
@@ -112,9 +115,9 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		menu = new JPopupMenu();
 		menuBar = new JMenuBar();
-		manageServers = new JButton(MANAGE_SERVERS);
-		build = new JButton(BUILD);
-		attack = new JButton(ATTACK);
+		manageServers = createButton(MANAGE_SERVERS, ICON_SERVER);
+		build = createButton(BUILD, ICON_GEAR);
+		attack = createButton(ATTACK, ICON_CROSSHAIR);
 		
 		final Container contentPane = frame.getContentPane();
 		final JMenu surveillance = createMenu(SURVEILLANCE, ICON_EYE, SURVEILLANCE_COMMANDS, ICONS_SURVEILLANCE);
@@ -146,12 +149,6 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		tableHeader.setPreferredSize(tableHeaderSize);
 		cellRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
 		
-		manageServers.setActionCommand(MANAGE_SERVERS);
-		manageServers.addActionListener(this::actionPerformed);
-		attack.setActionCommand(ATTACK);
-		attack.addActionListener(this::actionPerformed);
-		build.setActionCommand(BUILD);
-		build.addActionListener(this::actionPerformed);
 		menuBar.setLayout(MENU_BAR_LAYOUT);
 		menuBar.setMargin(MENU_BAR_MARGIN);
 		menuBar.add(manageServers);
@@ -180,6 +177,16 @@ public final class RattySwingGui extends AbstractSwingGui implements IRattyGui {
 		frame.setPreferredSize(SIZE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
+	}
+	
+	private JButton createButton(final String name, final BufferedImage icon) {
+		final ImageIcon imageIcon = new ImageIcon(icon);
+		final JButton button = new JButton(name, imageIcon);
+		
+		button.setActionCommand(name);
+		button.addActionListener(this::actionPerformed);
+		
+		return button;
 	}
 	
 	private JMenu createMenu(final String name, final BufferedImage image, final String[] commands, final BufferedImage[] icons) {

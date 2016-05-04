@@ -29,7 +29,7 @@ public final class RattyServer {
 	
 	private static final boolean DEBUG = true;
 	private static final String DEBUG_ADDRESS = "localhost";
-	private static final int DEBUG_PORT = 23456;
+	private static final int DEBUG_PORT = 23457;
 	
 	private static final IRattyGuiFactory GUI_FACTORY = new RattySwingGuiFactory();
 	

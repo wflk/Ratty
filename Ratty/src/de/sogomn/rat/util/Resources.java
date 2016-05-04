@@ -76,6 +76,8 @@ public final class Resources {
 	public static final BufferedImage ICON_ARROW_UP = ICONS[38];
 	public static final BufferedImage ICON_QUESTION = ICONS[39];
 	public static final BufferedImage ICON_WARNING = ICONS[40];
+	public static final BufferedImage ICON_SERVER = ICONS[41];
+	public static final BufferedImage ICON_CROSSHAIR = ICONS[42];
 	
 	public static final BufferedImage[] ICONS_SURVEILLANCE = {
 		ICON_FRAME,

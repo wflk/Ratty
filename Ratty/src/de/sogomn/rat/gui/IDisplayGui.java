@@ -27,6 +27,7 @@ public interface IDisplayGui extends IGui {
 	String KEY_PRESSED = "Key pressed";
 	String KEY_RELEASED = "Key released";
 	String CLOSE = "Closed";
+	String MOUSE_MOVED = "Mouse moved";
 	
 	void showImage(final BufferedImage image);
 	
