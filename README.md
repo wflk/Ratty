@@ -9,7 +9,3 @@ It has come to my attention that there are people using Ratty for malicious acti
 ---
 
 ![Screenshot](http://i.imgur.com/S2uXS8l.png "Screenshot")
-
----
-
-If you have any questions hit me up on my Twitter @TheRealSogomn via direct message.
