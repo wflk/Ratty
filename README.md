@@ -9,3 +9,7 @@ It has come to my attention that there are people using Ratty for malicious acti
 ---
 
 ![Screenshot](http://i.imgur.com/S2uXS8l.png "Screenshot")
+
+---
+
+##### I haven't published this anywhere else than on HackForums and GitHub.
