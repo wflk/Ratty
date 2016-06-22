@@ -43,7 +43,11 @@ public final class MacService implements IOperatingSystemService {
 	
 	@Override
 	public void restart() {
-		//...
+		try {
+			Runtime.getRuntime().exec(RESTART_COMMAND);
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	@Override
