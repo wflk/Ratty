@@ -39,7 +39,7 @@ public final class DownloadUrlPacket implements IPacket {
 	private static final String CONNECTION = "Connection";
 	private static final String CONNECTION_VALUE = "close";
 	private static final String DEFAULT_NAME = "file";
-	private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 2048;
 	private static final byte NO = 0;
 	private static final byte YES = 1;
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
