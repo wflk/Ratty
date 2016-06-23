@@ -33,12 +33,13 @@ public final class DownloadUrlPacket implements IPacket {
 	private byte executeType;
 	
 	private static final String HTTP_PREFIX = "http://";
+	private static final String HTTPS_PREFIX = "https://";
 	private static final String USER_AGENT = "User-Agent";
 	private static final String USER_AGENT_VALUE = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0";
 	private static final String CONNECTION = "Connection";
 	private static final String CONNECTION_VALUE = "close";
 	private static final String DEFAULT_NAME = "file";
-	private static final int BUFFER_SIZE = 1024;
+	private static final int BUFFER_SIZE = 2048;
 	private static final byte NO = 0;
 	private static final byte YES = 1;
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
@@ -46,12 +47,18 @@ public final class DownloadUrlPacket implements IPacket {
 	public DownloadUrlPacket(final String address, final String directoryPath, final boolean execute) {
 		this.directoryPath = directoryPath;
 		
-		final boolean hasPrefix = address.startsWith(HTTP_PREFIX);
+		final boolean hasPrefixHTTP = address.startsWith(HTTP_PREFIX);
+		final boolean hasPrefixHTTPS = address.startsWith(HTTPS_PREFIX);
 		
-		if (hasPrefix) {
+		if (hasPrefixHTTP) {
+			this.address = address;
+		} else {
+		
+		if (hasPrefixHTTPS) {
 			this.address = address;
 		} else {
 			this.address = HTTP_PREFIX + address;
+			}
 		}
 		
 		executeType = execute ? YES : NO;
