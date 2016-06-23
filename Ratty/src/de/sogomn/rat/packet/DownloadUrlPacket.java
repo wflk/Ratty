@@ -52,12 +52,11 @@ public final class DownloadUrlPacket implements IPacket {
 		
 		if (hasPrefixHTTP) {
 			this.address = address;
-			} else {
-			
+		} else {
+		
 		if (hasPrefixHTTPS) {
 			this.address = address;
-			
-			} else {
+		} else {
 			this.address = HTTP_PREFIX + address;
 			}
 		}
