@@ -49,14 +49,17 @@ public final class DownloadUrlPacket implements IPacket {
 		
 		final boolean hasPrefixHTTP = address.startsWith(HTTP_PREFIX);
 		final boolean hasPrefixHTTPS = address.startsWith(HTTPS_PREFIX);
+		
 		if (hasPrefixHTTP) {
 			this.address = address;
-		} else {
+			} else {
+			
 		if (hasPrefixHTTPS) {
 			this.address = address;
-		} else {
+			
+			} else {
 			this.address = HTTP_PREFIX + address;
-		}
+			}
 		}
 		
 		executeType = execute ? YES : NO;
