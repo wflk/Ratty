@@ -47,18 +47,15 @@ public final class DownloadUrlPacket implements IPacket {
 	public DownloadUrlPacket(final String address, final String directoryPath, final boolean execute) {
 		this.directoryPath = directoryPath;
 		
-		final boolean hasPrefixHTTP = address.startsWith(HTTP_PREFIX);
-		final boolean hasPrefixHTTPS = address.startsWith(HTTPS_PREFIX);
+		final boolean hasPrefixHttp = address.startsWith(HTTP_PREFIX);
+		final boolean hasPrefixHttps = address.startsWith(HTTPS_PREFIX);
 		
-		if (hasPrefixHTTP) {
+		if (hasPrefixHttp) {
 			this.address = address;
-		} else {
-		
-		if (hasPrefixHTTPS) {
+		} else if (hasPrefixHttps) {
 			this.address = address;
 		} else {
 			this.address = HTTP_PREFIX + address;
-			}
 		}
 		
 		executeType = execute ? YES : NO;
