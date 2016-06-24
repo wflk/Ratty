@@ -50,6 +50,28 @@ public final class NotificationSwingGui implements INotificationGui {
 		dialog.setAlwaysOnTop(true);
 	}
 	
+	private void moveForward() throws InterruptedException {
+		while (dialog.getX() < 0) {
+			final int x = dialog.getX() + 1;
+			final int y = dialog.getY();
+			
+			dialog.setLocation(x, y);
+			
+			Thread.sleep(INTERVAL);
+		}
+	}
+	
+	private void moveBackwards() throws InterruptedException {
+		while (dialog.getX() > -dialog.getWidth()) {
+			final int x = dialog.getX() - 1;
+			final int y = dialog.getY();
+			
+			dialog.setLocation(x, y);
+			
+			Thread.sleep(INTERVAL);
+		}
+	}
+	
 	public NotificationSwingGui(final String text) {
 		this(text, null);
 	}
@@ -66,25 +88,9 @@ public final class NotificationSwingGui implements INotificationGui {
 		
 		final Runnable runnable = () -> {
 			try {
-				while (dialog.getX() < 0) {
-					final int x = dialog.getX() + 1;
-					final int y = dialog.getY();
-					
-					dialog.setLocation(x, y);
-					
-					Thread.sleep(INTERVAL);
-				}
-				
+				moveForward();
 				Thread.sleep(WAIT_TIME);
-				
-				while (dialog.getX() > -dialog.getWidth()) {
-					final int x = dialog.getX() - 1;
-					final int y = dialog.getY();
-					
-					dialog.setLocation(x, y);
-					
-					Thread.sleep(INTERVAL);
-				}
+				moveBackwards();
 			} catch (final Exception ex) {
 				ex.printStackTrace();
 			}
