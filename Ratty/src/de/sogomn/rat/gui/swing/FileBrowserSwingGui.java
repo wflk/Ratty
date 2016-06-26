@@ -216,9 +216,11 @@ public final class FileBrowserSwingGui extends AbstractSwingGui implements IFile
 	}
 	
 	private void actionPerformed(final ActionEvent a) {
+		if (!fileList.isSelectionEmpty()){
 		final String actionCommand = a.getActionCommand();
 		
 		notifyListeners(controller -> controller.userInput(actionCommand, this));
+		}
 	}
 	
 	private void addFileEntry(final String name, final boolean directory) {
